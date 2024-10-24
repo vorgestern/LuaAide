@@ -82,13 +82,13 @@ class LuaField
     friend inline LuaStack&operator<<(LuaStack&, const LuaField&);
     friend inline LuaStack&operator>>(LuaStack&, const LuaField&);
     const char*name{nullptr};
-    bool replace_table{true}; //!< Wenn true, wird Tabelle<<LuaField("x") Tabelle auf dem Stack durch Tabelle.x ersetzen, sonst zusätzlich auf den Stack legen.
+    bool replace_table{true}; //!< Wenn true, wird Tabelle<<LuaField("x") Tabelle auf dem Stack durch Tabelle.x ersetzen, sonst zusÃ¤tzlich auf den Stack legen.
 public:
     LuaField(const char s[], bool replace=false): name(s), replace_table(replace){}
 };
 
 //! Diese Klasse erleichtert den Aufruf einer Elementfunktion
-//! (in Lua wäre das z.B. X:MyFunction(self, a, b, c)),
+//! (in Lua wÃ¤re das z.B. X:MyFunction(self, a, b, c)),
 //! indem sie die Elementfunktion ermittelt und den Stack geeignet vorbereitet:
 //!
 //! Der Aufruf wird so realisiert:
@@ -99,7 +99,7 @@ public:
 //! Nach der Ausgabe von LuaColonCall() (Stack<<X<<a<<b<<c<<LuaColonCall("MyFunction",3))
 //! liegt auf dem Stack
 //! [X:MyFunction X a b c],
-//! nach >>1 (wenn ein Rückgabewert erwartet wird)
+//! nach >>1 (wenn ein RÃ¼ckgabewert erwartet wird)
 //! [result]
 class LuaColonCall
 {
@@ -112,7 +112,7 @@ public:
 };
 
 //! Diese Klasse erleichtert den Aufruf einer Funktion,
-//! die in einer Struktur abgelegt ist. In Lua wäre das
+//! die in einer Struktur abgelegt ist. In Lua wÃ¤re das
 //! z.B. Maintainer.func(...);
 //! Das Object (z.B. Maintainer) wird beim Aufruf mit LuaStack<<LuaDotCall
 //! oben auf dem Stack erwartet und vom Stack genommen.
@@ -191,7 +191,7 @@ class LuaStack
 {
     friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
-    friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
+    friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurÃ¼ck.
     friend inline LuaStack&operator<<(LuaStack&S, bool b){ lua_pushboolean(S.L, b?1:0); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, int n){ lua_pushinteger(S.L, n); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, unsigned n){ lua_pushinteger(S.L, static_cast<int>(n)); return S; }
@@ -239,7 +239,7 @@ public:
     long long toint(int pos){ return lua_tointeger(L, pos); }
     double todouble(int pos){ return lua_tonumber(L, pos); }
 
-    //! dofile() und dostring() erlauben jeweils die Übergabe von Argumenten im Stil (argc, argv).
+    //! dofile() und dostring() erlauben jeweils die Ãœbergabe von Argumenten im Stil (argc, argv).
     //! Sie werden auf den Stack gelegt und sind dann mit args={...} abrufbar!
     bool dofile(const char filename[], int argc, char*argv[]);
     bool dostring(const char text[], int argc, char*argv[], const char tag[]);
@@ -258,9 +258,9 @@ class LuaCall: public LuaStack
     friend LuaCall operator<<(LuaStack&, LuaColonCall&);
 
     // Aufruf der Funktion mit dem Operator >>
-    friend int operator>>(LuaCall&S, int numresults); // Führt den Aufruf aus. Gibt rc zurück.
+    friend int operator>>(LuaCall&S, int numresults); // FÃ¼hrt den Aufruf aus. Gibt rc zurÃ¼ck.
 
-    //! Dieser Konstruktor ist nur für Freunde zugänglich.
+    //! Dieser Konstruktor ist nur fÃ¼r Freunde zugÃ¤nglich.
     //! Diese haben u.U. bereits Informationen auf den Stack gelegt,
     //! die am Ende entfernt werden sollen.
     LuaCall(lua_State*, unsigned start);
@@ -292,8 +292,8 @@ public:
 };
 
 /*
-    LuaIterator realisiert eine Schleife über die Elemente des obersten Objekts auf dem Stack.
-    Das Äquivalent in Lua ist
+    LuaIterator realisiert eine Schleife Ã¼ber die Elemente des obersten Objekts auf dem Stack.
+    Das Ã„quivalent in Lua ist
         for name,value in pairs(X) do
         end
     So benutzt man LuaIterator
@@ -308,15 +308,15 @@ public:
 class LuaIterator
 {
     lua_State*L{nullptr};
-    unsigned index{1}; //!< Index in Lua-Zählweise
-    friend bool next(LuaIterator&X) //!< Erwartet den bisherigen Index auf dem Stack, inkrementiert ihn und legt den zugehörigen Wert auf den Stack
+    unsigned index{1}; //!< Index in Lua-ZÃ¤hlweise
+    friend bool next(LuaIterator&X) //!< Erwartet den bisherigen Index auf dem Stack, inkrementiert ihn und legt den zugehÃ¶rigen Wert auf den Stack
     {
         return lua_next(X.L, -2)!=0;
     }
 public:
     LuaIterator(LuaStack&S): L(S)
     {
-        // Lege nil als ungültigen Index als Startwert auf dem Stack.
+        // Lege nil als ungÃ¼ltigen Index als Startwert auf dem Stack.
         lua_pushnil(L);  // first key
     }
     ~LuaIterator()

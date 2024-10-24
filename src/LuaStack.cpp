@@ -195,7 +195,7 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 LuaCall operator<<(LuaStack&S, LuaColonCall&C)
 {
-    // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgef¸hrt werden.
+    // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgef√ºhrt werden.
     //           C.name="Funktion"
     //           C.numargs=3
     // Auf dem Stack liegt zu Beginn: [X, a, b, c]
@@ -208,12 +208,12 @@ LuaCall operator<<(LuaStack&S, LuaColonCall&C)
     }
     else
     {
-        // Dies f¸hrt trotzdem zum Absturz, weil der Operator>> nichts davon erf‰hrt.
+        // Dies f√ºhrt trotzdem zum Absturz, weil der Operator>> nichts davon erf√§hrt.
         // TODO: Behebe dies.
         printf("ColonCall: Object has no field '%s' (function required).\n", C.name);
         lua_pop(S.L, 1);
     }
-    return LuaCall(S.L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zug‰nglich.
+    return LuaCall(S.L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zug√§nglich.
 }
 
 LuaCall operator<<(LuaStack&S, LuaDotCall&C)

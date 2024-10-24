@@ -14,7 +14,7 @@ LuaCall&operator<<(LuaCall&S, const LuaUpValue&V)
 
 static int TracebackAdder(lua_State*Q)
 {
-    // Dieser ErrorHandler fügt der Fehlermeldung den Stacktrace hinzu.
+    // Dieser ErrorHandler fÃ¼gt der Fehlermeldung den Stacktrace hinzu.
     // https://stackoverflow.com/questions/63570555/how-do-i-improve-lua-internal-error-messages-to-include-line-numbers
     const char*msg=lua_tostring(Q, -1);
     luaL_traceback(Q, Q, msg, 2);
