@@ -2,16 +2,10 @@
 #ifndef LUAAIDE_H
 #define LUAAIDE_H
 
-#include<functional>
-#include<string_view>
-#include<ostream>
-
-extern "C"
-{
-#include<lua.h>
-#include<lualib.h>
-#include<lauxlib.h>
-}
+#include <functional>
+#include <string_view>
+#include <ostream>
+#include <lua.hpp>
 
 class LuaStack;
 class LuaCall;
