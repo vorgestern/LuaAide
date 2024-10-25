@@ -11,5 +11,5 @@ libLuaAide.a: b/LuaAide.o b/LuaCall.o b/LuaChunk.o b/LuaStack.o b/stringformat.o
 b/%.o: src/%.cpp include/LuaAide.h
 	g++ -o $@ -c $< $(CPPFLAGS)
 
-b/%: examples/%.cpp include/LuaAide.h
+b/%: examples/%.cpp libLuaAide.a
 	g++ -o $@ $< $(CPPFLAGS) -L. -lLuaAide -llua5.4
