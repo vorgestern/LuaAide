@@ -51,5 +51,19 @@ int main()
         printf("Call script with 23, 21; Return values are sum=%lld, diff=%lld\n", sum1, diff1);
     }
 
+    {
+        auto C=Q<<LuaCode(R"xxx(
+            local drop,this=math.randomseed(21, 23)
+            local num=math.tointeger(...)
+            local X={}
+            for k=1,num do table.insert(X, tostring(k)) end
+            return "start", table.unpack(X)
+        )xxx");
+        const auto h1=height(C); // 3
+        C<<11   >>-1;
+        const auto h2=height(C); // 14 ==> Differenz 11. Schlussfolgerung: Q<<LuaCode sollte schon den Stack sauber hinterlassen.
+        for (auto n=1; n<=h2; ++n) printf("%d/%d/%d: %s\n", n+1, h1, h2, C.tostring(-n));
+    }
+
     return 0;
 }
