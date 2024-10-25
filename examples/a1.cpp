@@ -57,21 +57,19 @@ int main()
         printf("Call script with 23, 21; Return values are sum=%lld, diff=%lld\n", sum1, diff1);
     }
 
-    Q.clear();
-    if (height(Q)==0)
+    if (true)
     {
-        auto C=Q<<LuaCode(R"xxx(
+        auto C=Q.clear()<<LuaCode(R"xxx(
             local drop,this=math.randomseed(21, 23)
             local num=math.tointeger(...)
             local X={}
             for k=1,num do table.insert(X, "item_"..tostring(k)) end
             return table.unpack(X)
         )xxx");
-        C<<11   >>-1;
+        C<<11   >>-1; // -1: keep all results
         const auto h=height(C);
         for (auto n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n));
     }
-    else printf("Skip demo (Stack not zero but %d)\n", height(Q));
 
     return 0;
 }
