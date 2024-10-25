@@ -1,4 +1,5 @@
 
+#include <ostream>
 #include <LuaAide.h>
 
 // #define LIMIT_DUMP_DEPTH 0

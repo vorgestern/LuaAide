@@ -4,7 +4,6 @@
 
 #include <functional>
 #include <string_view>
-#include <ostream>
 #include <lua.hpp>
 
 class LuaStack;
