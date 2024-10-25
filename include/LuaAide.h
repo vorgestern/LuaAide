@@ -318,7 +318,7 @@ public:
         // Lege nil als ungültigen Index als Startwert auf dem Stack.
         lua_pushnil(L);  // first key
     }
-    ~LuaIterator()
+   ~LuaIterator()
     {
         // Nimm den Index wieder vom Stack, den der Konstruktor abgelegt hat.
     //  lua_pop(L,1);

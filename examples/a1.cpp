@@ -71,5 +71,48 @@ int main()
         for (auto n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n));
     }
 
+    if (true)
+    {
+        printf("\nIterate over list:\n");
+        auto C=Q.clear()<<LuaCode(R"xxx(
+            local drop,this=math.randomseed(21, 23)
+            local num=math.tointeger(...)
+            local X={}
+            for k=1,num do table.insert(X, "item_"..tostring(k)) end
+            return X
+        )xxx");
+        C<<11>>1;
+        for (LuaIterator I(C); next(I); ++I)
+        {
+            const char*value=C.tostring(-1);
+            const char*key=C.dup(-2).tostring(-1);
+            printf("[%u]: '%s' '%s'\n", (unsigned)I, key, value);
+            C.drop(1);
+        }
+    }
+
+    if (true)
+    {
+        printf("\nIterate over table:\n");
+        auto C=Q.clear()<<LuaCode(R"xxx(
+            local X={}
+            X.name="LuaAide"
+            X.typ="table"
+            X.meta={date="2024-10-25"}
+            X[1]=21
+            X[2]=22
+            X[4]=24
+            return X
+        )xxx");
+        C<<11>>1;
+        for (LuaIterator I(C); next(I); ++I)
+        {
+            const char*value=C.tostring(-1);
+            const char*key=C.dup(-2).tostring(-1);
+            printf("[%u]: %s '%s'\n", (unsigned)I, key, value);
+            C.drop(1);
+        }
+    }
+
     return 0;
 }
