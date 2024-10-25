@@ -237,7 +237,7 @@ LuaCall operator<<(LuaStack&S, const LuaChunk&X)
     return LuaCall(S);
 }
 
-LuaCall operator<<(LuaStack&S, LuaCode&C)
+LuaCall operator<<(LuaStack&S, const LuaCode&C)
 {
     const int rc=luaL_loadstring(S, C.text);
     if (rc!=LUA_OK) lua_error(S);

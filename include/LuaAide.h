@@ -134,7 +134,7 @@ public:
 
 class LuaCode
 {
-    friend LuaCall operator<<(LuaStack&, LuaCode&);
+    friend LuaCall operator<<(LuaStack&, const LuaCode&);
     const char*text{nullptr};
 public:
     LuaCode(const char s[]): text(s){}
@@ -210,7 +210,7 @@ class LuaStack
     friend LuaCall operator<<(LuaStack&, LuaColonCall&);
     friend LuaCall operator<<(LuaStack&, LuaDotCall&);
     friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
-    friend LuaCall operator<<(LuaStack&, LuaCode&);
+    friend LuaCall operator<<(LuaStack&, const LuaCode&);
     friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
     friend inline LuaStack&operator>>(LuaStack&S, const LuaField&F){ lua_setfield(S.L, -2, F.name); return S; }
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
@@ -279,6 +279,11 @@ inline LuaCall&operator<<(LuaCall&S, lua_CFunction X){ static_cast<LuaStack&>(S)
 inline LuaCall&operator<<(LuaCall&S, const LuaTable&X){ static_cast<LuaStack&>(S)<<X; return S; }
 inline LuaCall&operator<<(LuaCall&S, std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(S); return S; }
 inline LuaCall&operator<<(LuaCall&S, const LuaClosure&X){ static_cast<LuaStack&>(S)<<X; return S; }
+inline LuaCall&operator<<(LuaCall&S, int n){ static_cast<LuaStack&>(S)<<n; return S; }
+inline LuaCall&operator<<(LuaCall&S, unsigned n){ static_cast<LuaStack&>(S)<<n; return S; }
+inline LuaCall&operator<<(LuaCall&S, bool f){ static_cast<LuaStack&>(S)<<f; return S; }
+inline LuaCall&operator<<(LuaCall&S, float x){ static_cast<LuaStack&>(S)<<x; return S; }
+inline LuaCall&operator<<(LuaCall&S, double x){ static_cast<LuaStack&>(S)<<x; return S; }
 LuaCall&operator<<(LuaCall&, const LuaUpValue&);
 
 class LuaDotCall2: public LuaCall
