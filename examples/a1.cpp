@@ -9,30 +9,35 @@ int main()
 
     if (true)
     {
+        printf("\nSimple script:\n");
         auto C=Q<<LuaCode("print 'Dies ist ein einfaches Lua Script'");
         C>>0;
     }
 
     if (true)
     {
+        printf("\nScript with argument:\n");
         auto C=Q<<LuaCode("arg=...; print('Dies ist ein einfaches Lua Script mit Argument', arg)");
         C<<"Hoppla">>0;
     }
 
     if (true)
     {
+        printf("\nScript with arguments:\n");
         auto C=Q<<LuaCode("args={...}; print('Dies ist ein einfaches Lua Script mit Argumenten', table.concat(args, ', '))");
         C<<"Hü"<<"Hott"<<21<<22u<<1.56f<<5.62   >>0;
     }
 
     if (true)
     {
+        printf("\nScript with arguments:\n");
         auto C=Q<<LuaCode("local args,a={...},{}; for _,k in ipairs(args) do table.insert(a, tostring(k)) end; print('Dies ist ein einfaches Lua Script mit Argumenten', table.concat(a, ', '))");
         C<<"Hü"<<"Hott"<<21<<true<<23   >>0;
     }
 
     if (true)
     {
+        printf("\nScript with arguments:\n");
         auto C=Q<<LuaCode(R"xxx(
             local args,a={...},{}
             -- table.concat cannot handle bool!
@@ -44,6 +49,7 @@ int main()
 
     if (true)
     {
+        printf("\nScript with two return values:\n");
         auto C=Q<<LuaCode(R"xxx(
             local a,b=...
             return a+b, a-b
@@ -59,6 +65,7 @@ int main()
 
     if (true)
     {
+        printf("\nScript with unknown number of return values:\n");
         auto C=Q.clear()<<LuaCode(R"xxx(
             local drop,this=math.randomseed(21, 23)
             local num=math.tointeger(...)
