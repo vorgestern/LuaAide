@@ -121,5 +121,19 @@ int main()
         }
     }
 
+    if (true)
+    {
+        printf("\nLege eine Tabelle mit benannten Feldern an:\n");
+        Q.clear()<<LuaTable()
+            <<"1.2.3">>LuaField("version")
+            <<"vorgestern">>LuaField("author")
+            >>LuaGlobal("A");
+        auto C=Q<<LuaCode(R"xxx(
+            print "Felder von A:"
+            for k,v in pairs(A) do print(k,v) end
+        )xxx");
+        C>>0;
+    }
+
     return 0;
 }
