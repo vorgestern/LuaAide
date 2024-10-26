@@ -20,7 +20,7 @@ b/%.o: src/%.cpp include/LuaAide.h
 # ============================================================
 
 LuaAideTest: src/testmain.cpp $(XFILES:%=bt/%.o)
-	g++ -o $@ $^ $(CPPFLAGS) -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
+	g++ -o $@ $^ $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
 bt/%.o: src/%.cpp include/LuaAide.h
 	g++ -o $@ -c $< $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1

@@ -143,6 +143,13 @@ LuaStack&LuaStack::clear()
     if (ns>0) lua_pop(L, ns);
     return *this;
 }
+LuaStack&LuaStack::drop(unsigned num)
+{
+    const int nd=(int)num;
+    const int ns=lua_gettop(L);
+    lua_pop(L, nd>ns?ns:nd);
+    return*this;
+}
 
 LuaStack&LuaStack::swap()
 {
@@ -264,3 +271,201 @@ LuaStack&operator<<(LuaStack&S, const LuaUpValue&V)
     lua_pushvalue(S, stackindex);
     return S;
 }
+
+// ============================================================================
+
+#ifdef UNITTEST
+#include <gtest/gtest.h>
+
+class StackEnv: public ::testing::Test
+{
+protected:
+    LuaStack Q{};
+    void SetUp() override { Q=LuaStack::New(true, nullptr); }
+    void TearDown() override { Q.Close(); }
+};
+
+TEST_F(StackEnv, Version)
+{
+    ASSERT_EQ(504, version(Q));
+}
+
+TEST_F(StackEnv, InitialHeight)
+{
+    ASSERT_EQ(0, height(Q));
+}
+
+TEST_F(StackEnv, Height)
+{
+    Q<<21<<"Hoppla";
+    ASSERT_EQ(2, height(Q));
+}
+
+TEST_F(StackEnv, Drop)
+{
+    Q<<21<<"Hoppla";
+    ASSERT_EQ(2, height(Q));
+    Q.drop(1);
+    ASSERT_EQ(1, height(Q));
+    Q.drop(1);
+    ASSERT_EQ(0, height(Q));
+    ASSERT_NO_THROW(Q.drop(1));
+    ASSERT_EQ(0, height(Q));
+}
+
+TEST_F(StackEnv, Swap)
+{
+    Q<<21<<22;
+    ASSERT_EQ(21, Q.toint(-2));
+    ASSERT_EQ(22, Q.toint(-1));
+    Q.swap();
+    ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_EQ(21, Q.toint(-1));
+}
+
+TEST_F(StackEnv, Dup)
+{
+    Q<<21;
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(21, Q.toint(-1));
+    Q.dup();
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(21, Q.toint(-1));
+    ASSERT_EQ(21, Q.toint(-2));
+}
+
+TEST_F(StackEnv, DupSecond)
+{
+    Q<<21<<22;
+    Q.dup(-2);
+    ASSERT_EQ(3, height(Q));
+    ASSERT_EQ(21, Q.toint(-3));
+    ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_EQ(21, Q.toint(-1));
+}
+
+TEST_F(StackEnv, HasNilAt)
+{
+    Q<<21<<LuaNil()<<22;
+    ASSERT_EQ(3, height(Q));
+    ASSERT_FALSE(Q.hasnilat(-4));
+    ASSERT_FALSE(Q.hasnilat(-3));
+    ASSERT_TRUE( Q.hasnilat(-2));
+    ASSERT_FALSE(Q.hasnilat(-1));
+    ASSERT_FALSE(Q.hasnilat( 1));
+    ASSERT_TRUE( Q.hasnilat( 2));
+    ASSERT_FALSE(Q.hasnilat( 3));
+    ASSERT_FALSE(Q.hasnilat( 4));
+}
+
+TEST_F(StackEnv, PosValid)
+{
+    Q<<21<<22<<23<<24;
+    ASSERT_EQ(4, height(Q));
+    EXPECT_FALSE(Q.posvalid(-5));
+    EXPECT_TRUE (Q.posvalid(-4));
+    EXPECT_TRUE (Q.posvalid(-3));
+    EXPECT_TRUE (Q.posvalid(-2));
+    EXPECT_TRUE (Q.posvalid(-1));
+    EXPECT_FALSE(Q.posvalid( 0));
+    EXPECT_TRUE (Q.posvalid( 1));
+    EXPECT_TRUE (Q.posvalid( 2));
+    EXPECT_TRUE (Q.posvalid( 3));
+    EXPECT_TRUE (Q.posvalid( 4));
+    EXPECT_FALSE(Q.posvalid( 5));
+}
+
+TEST_F(StackEnv, HasStringAt)
+{
+    // Beachte dass String und Number gegenseitig akzeptiert werden,
+    // weil die Konvertierbarkeit gewährleistet ist.
+    Q<<true<<"abc"<<true<<true;
+    ASSERT_EQ(4, height(Q));
+    EXPECT_FALSE(Q.hasstringat(-5));
+    EXPECT_FALSE(Q.hasstringat(-4));
+    EXPECT_TRUE( Q.hasstringat(-3));
+    EXPECT_FALSE(Q.hasstringat(-2));
+    EXPECT_FALSE(Q.hasstringat(-1));
+    EXPECT_FALSE(Q.hasstringat( 0));
+    EXPECT_FALSE(Q.hasstringat( 1));
+    EXPECT_TRUE( Q.hasstringat( 2));
+    EXPECT_FALSE(Q.hasstringat( 3));
+    EXPECT_FALSE(Q.hasstringat( 4));
+    EXPECT_FALSE(Q.hasstringat( 5));
+}
+
+TEST_F(StackEnv, HasBoolAt)
+{
+    Q<<-21.2<<false<<"abc"<<true<<nil;
+    ASSERT_EQ(5, height(Q));
+    EXPECT_FALSE(Q.hasboolat(-6));
+    EXPECT_FALSE(Q.hasboolat(-5));
+    EXPECT_TRUE (Q.hasboolat(-4));
+    EXPECT_FALSE(Q.hasboolat(-3));
+    EXPECT_TRUE (Q.hasboolat(-2));
+    EXPECT_FALSE(Q.hasboolat(-1));
+    EXPECT_FALSE(Q.hasboolat( 0));
+    EXPECT_FALSE(Q.hasboolat( 1));
+    EXPECT_TRUE (Q.hasboolat( 2));
+    EXPECT_FALSE(Q.hasboolat( 3));
+    EXPECT_TRUE (Q.hasboolat( 4));
+    EXPECT_FALSE(Q.hasboolat( 5));
+    EXPECT_FALSE(Q.hasboolat( 6));
+}
+
+TEST_F(StackEnv, HasIntAt)
+{
+    Q<<true<<21<<true<<true;
+    ASSERT_EQ(4, height(Q));
+    EXPECT_FALSE(Q.hasintat(-5));
+    EXPECT_FALSE(Q.hasintat(-4));
+    EXPECT_TRUE( Q.hasintat(-3));
+    EXPECT_FALSE(Q.hasintat(-2));
+    EXPECT_FALSE(Q.hasintat(-1));
+    EXPECT_FALSE(Q.hasintat( 0));
+    EXPECT_FALSE(Q.hasintat( 1));
+    EXPECT_TRUE( Q.hasintat( 2));
+    EXPECT_FALSE(Q.hasintat( 3));
+    EXPECT_FALSE(Q.hasintat( 4));
+    EXPECT_FALSE(Q.hasintat( 5));
+}
+
+TEST_F(StackEnv, HasTableAt)
+{
+    Q<<true<<LuaTable()<<true<<true;
+    ASSERT_EQ(4, height(Q));
+    EXPECT_FALSE(Q.hastableat(-5));
+    EXPECT_FALSE(Q.hastableat(-4));
+    EXPECT_TRUE( Q.hastableat(-3));
+    EXPECT_FALSE(Q.hastableat(-2));
+    EXPECT_FALSE(Q.hastableat(-1));
+    EXPECT_FALSE(Q.hastableat( 0));
+    EXPECT_FALSE(Q.hastableat( 1));
+    EXPECT_TRUE( Q.hastableat( 2));
+    EXPECT_FALSE(Q.hastableat( 3));
+    EXPECT_FALSE(Q.hastableat( 4));
+    EXPECT_FALSE(Q.hastableat( 5));
+}
+
+#if 0
+static int dummyfunc(lua_State*){ return 0; }
+
+TEST_F(StackEnv, HasFunctionAt)
+{
+    Q<<true<<dummyfunc<<true<<true;
+    ASSERT_EQ(4, height(Q));
+    EXPECT_FALSE(Q.hasfunctionat(-5));
+    EXPECT_FALSE(Q.hasfunctionat(-4));
+    EXPECT_TRUE( Q.hasfunctionat(-3));
+    EXPECT_FALSE(Q.hasfunctionat(-2));
+    EXPECT_FALSE(Q.hasfunctionat(-1));
+    EXPECT_FALSE(Q.hasfunctionat( 0));
+    EXPECT_FALSE(Q.hasfunctionat( 1));
+    EXPECT_TRUE( Q.hasfunctionat( 2));
+    EXPECT_FALSE(Q.hasfunctionat( 3));
+    EXPECT_FALSE(Q.hasfunctionat( 4));
+    EXPECT_FALSE(Q.hasfunctionat( 5));
+}
+#endif
+
+#endif

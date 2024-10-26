@@ -207,20 +207,24 @@ class LuaStack
     friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
     friend inline LuaStack&operator>>(LuaStack&S, const LuaField&F){ lua_setfield(S.L, -2, F.name); return S; }
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
+
 protected:
     lua_State*L{nullptr};
+
 public:
     LuaStack(){}
     LuaStack(lua_State*L1): L(L1){}
     operator lua_State*()const{ return L; }
     LuaStack&clear();
     LuaStack&swap(); //!< Tausche die beiden obersten Werte auf dem Stack.
-    LuaStack&drop(unsigned num){ lua_pop(L, (int)num); return*this; }
+    LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
-    bool hasnilat(int pos){ return lua_isnil(L, pos)!=0; }
-    bool hasstringat(int pos){ return lua_isstring(L, pos)!=0; }
-    bool hasboolat(int pos){ return lua_isboolean(L, pos)!=0; }
+    bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
+
+    bool hasnilat(int pos){ return posvalid(pos) && lua_isnil(L, pos)!=0; }
+    bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
+    bool hasboolat(int pos){ return posvalid(pos) && lua_isboolean(L, pos)!=0; }
     bool hasintat(int pos){ return lua_isnumber(L, pos)!=0; }
     bool hastableat(int pos){ return lua_istable(L, pos)!=0; }
     bool hasfunctionat(int pos){ return lua_isfunction(L, pos)!=0; }
@@ -243,6 +247,14 @@ public:
         if (defaultlibs) luaL_openlibs(L);
         if (errorhandler!=nullptr) lua_atpanic(L, errorhandler);
         return L;
+    }
+    void Close()
+    {
+        if (L!=nullptr)
+        {
+            lua_close(L);
+            L=nullptr;
+        }
     }
 };
 
