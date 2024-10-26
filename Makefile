@@ -2,30 +2,45 @@
 XFILES   := LuaAide LuaCall LuaChunk LuaStack stringformat
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 
-all: dir libLuaAide.a LuaAideTest b/a1
+all: dir libLuaAide.a LuaAideTest b/a1 luaaide.so
+clean:
+	@rm -rf b/* bt/* libLuaAide.a LuaAideTest
 
 # ============================================================
 
 dir:
-	@mkdir -p b bt
+	@mkdir -p b/luaaide bt
 
 # ============================================================
 
 libLuaAide.a: $(XFILES:%=b/%.o)
-	ar -crs $@ $^
+	@echo $<
+	@ar -crs $@ $^
 
 b/%.o: src/%.cpp include/LuaAide.h
-	g++ -o $@ -c $< $(CPPFLAGS)
+	@echo $<
+	@g++ -fpic -o $@ -c $< $(CPPFLAGS)
 
 # ============================================================
 
 LuaAideTest: src/testmain.cpp $(XFILES:%=bt/%.o)
-	g++ -o $@ $^ $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
+	@echo $<
+	@g++ -o $@ $^ $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
 bt/%.o: src/%.cpp include/LuaAide.h
-	g++ -o $@ -c $< $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
+	@echo $<
+	@g++ -o $@ -c $< $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
 
 # ============================================================
 
 b/%: examples/%.cpp libLuaAide.a
-	g++ -o $@ $< $(CPPFLAGS) -L. -lLuaAide -llua5.4
+	@echo $<
+	@g++ -o $@ $< $(CPPFLAGS) -L. -lLuaAide -llua5.4
+
+# ============================================================
+
+luaaide.so: b/luaaide/main.o libLuaAide.a
+	g++ -shared -fpic -o $@ $^
+
+b/luaaide/main.o: modules/luaaide/main.cpp
+	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS)
