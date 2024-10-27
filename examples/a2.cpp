@@ -8,7 +8,7 @@ using namespace std;
 int democlosure(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaTable(0, 0)<<LuaUpValue(1)<<luarot_3;      // Result, Map, Arg
+    Q<<LuaTable(0, 0)<<LuaUpValue(1)<<luarot_3;              // Result, Map, Arg
     LuaAbsIndex Result(Q, -3), Map(Q, -2), Arg(Q, -1);
 //  cout<<Q;
     for (LuaIterator J(Q); next(J); ++J)
@@ -17,20 +17,10 @@ int democlosure(lua_State*L)
         //                                                   // Result, Map, Arg, key, value
         Q.dup(-1);
         lua_gettable(L, stackindex(Map));                    // Result, Map, Arg, key, value, Map[value]
-        if (Q.hasnilat(-1))
-        {
-            printf("\n%u is nil", (unsigned)J);
-            // Result[J]=value
-            Q.drop(1);                                       // Result, Map, Arg, key, value
-            Q.dup(-1);                                       // Result, Map, Arg, key, value, value
-            lua_seti(L, stackindex(Result), (unsigned)J);    // Result, Map, Arg, key, value
-        }
-        else
-        {
-            printf("\n%u is not nil", (unsigned)J);
-            // Result[J]=Up1[value]                          // Result, Map, Arg, key, value, Map[value]
-            lua_seti(L, stackindex(Result), (unsigned)J);    // Result, Map, Arg, key, value
-        }
+        // Wenn nil: Result[J]=value
+        // sonst:    Result[J]=Map[value]
+        if (Q.hasnilat(-1)) Q.drop(1).dup(-1);               // Result, Map, Arg, key, value, value
+        lua_seti(L, stackindex(Result), (unsigned)J);        // Result, Map, Arg, key, value
     }                                                        // Result, Map, Arg
     Q.drop(2);                                               // Result
     return 1;
