@@ -189,7 +189,6 @@ class LuaStack
     friend inline LuaStack&operator<<(LuaStack&S, double x){ lua_pushnumber(S.L, x); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaValue&X){ lua_pushvalue(S.L, stackindex(X)); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaGlobal&X){ lua_getglobal(S.L, X.name); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaField&X){ lua_getfield(S.L, -1, X.name); if (X.replace_table) lua_remove(S.L, -2); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaAbsIndex&X){ lua_pushvalue(S.L, stackindex(X)); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaNil&X){ lua_pushnil(S.L); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaTable&X){ lua_createtable(S.L, X.numindex, X.numfields); return S; }
@@ -201,7 +200,6 @@ class LuaStack
     friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
     friend LuaCall operator<<(LuaStack&, const LuaCode&);
     friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
-    friend inline void operator>>(LuaStack&S, const LuaError&X){ lua_error(S.L); }
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
 
 protected:
@@ -216,7 +214,8 @@ public:
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
-    LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
+    void operator>>(const LuaError&){ lua_error(L); }
+    LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
 
