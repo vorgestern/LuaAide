@@ -9,6 +9,7 @@
 class LuaStack;
 class LuaCall;
 
+const class LuaNil {} nil;
 const class LuaError {} luaerror;
 
 class LuaValue
@@ -149,15 +150,6 @@ class LuaArray: public LuaTable
 public:
     LuaArray(unsigned numindex): LuaTable(numindex, 0){}
 };
-
-class LuaNil
-{
-    friend inline LuaStack&operator<<(LuaStack&, const LuaNil&);
-public:
-    LuaNil(){}
-};
-
-const LuaNil nil;
 
 class LuaLightUserData
 {
