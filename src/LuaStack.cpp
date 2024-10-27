@@ -200,7 +200,7 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 // **********************************************************************
 
-LuaCall LuaStack::operator<<(LuaColonCall&C)
+LuaCall LuaStack::operator<<(const LuaColonCall&C)
 {
     // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgeführt werden.
     //           C.name="Funktion"
@@ -223,7 +223,7 @@ LuaCall LuaStack::operator<<(LuaColonCall&C)
     return LuaCall(L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
 }
 
-LuaCall LuaStack::operator<<(LuaDotCall&C)
+LuaCall LuaStack::operator<<(const LuaDotCall&C)
 {
     const int objectindex=-1;
     lua_getfield(L, objectindex, C.name);

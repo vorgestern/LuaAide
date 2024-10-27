@@ -210,8 +210,8 @@ public:
     LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
     LuaCall  operator<<(lua_CFunction);
     LuaCall  operator<<(const LuaChunk&);
-    LuaCall  operator<<(LuaColonCall&);
-    LuaCall  operator<<(LuaDotCall&);
+    LuaCall  operator<<(const LuaColonCall&);
+    LuaCall  operator<<(const LuaDotCall&);
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
