@@ -8,12 +8,9 @@ int democlosure(lua_State*L)
 {
     LuaStack Q(L);
     Q<<LuaTable(0, 0)<<LuaUpValue(1)<<luarot_3;              // Result, Map, Arg
-    auto Result=Q.index(-3), Map=Q.index(-2); // , Arg=Q.index(-1);
-//  cout<<Q;
-    for (LuaIterator J(Q); next(J); ++J)
+    auto Result=Q.index(-3), Map=Q.index(-2);
+    for (LuaIterator J(Q); next(J); ++J)                     // Result, Map, Arg, key, value
     {
-        // printf("\nRunde %u (height %u)", (unsigned)J, height(Q));
-        //                                                   // Result, Map, Arg, key, value
         Q.dup(-1);
         lua_gettable(L, stackindex(Map));                    // Result, Map, Arg, key, value, Map[value]
         // Wenn nil: Result[J]=value
