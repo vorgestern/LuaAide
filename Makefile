@@ -1,6 +1,7 @@
 
 XFILES   := LuaAide LuaCall LuaChunk LuaStack stringformat
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
+CXXFLAGS := --std=c++20
 
 all: dir libLuaAide.a LuaAideTest b/a1 luaaide.so
 clean:
@@ -19,23 +20,23 @@ libLuaAide.a: $(XFILES:%=b/%.o)
 
 b/%.o: src/%.cpp include/LuaAide.h
 	@echo $<
-	@g++ -fpic -o $@ -c $< $(CPPFLAGS)
+	@g++ -fpic -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
 # ============================================================
 
 LuaAideTest: src/testmain.cpp $(XFILES:%=bt/%.o)
 	@echo $<
-	@g++ -o $@ $^ $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
+	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
 bt/%.o: src/%.cpp include/LuaAide.h
 	@echo $<
-	@g++ -o $@ -c $< $(CPPFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
+	@g++ -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
 
 # ============================================================
 
 b/%: examples/%.cpp libLuaAide.a
 	@echo $<
-	@g++ -o $@ $< $(CPPFLAGS) -L. -lLuaAide -llua5.4
+	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
 
 # ============================================================
 
@@ -43,4 +44,4 @@ luaaide.so: b/luaaide/main.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
 b/luaaide/main.o: modules/luaaide/main.cpp
-	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS)
+	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
