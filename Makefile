@@ -35,7 +35,7 @@ bt/%.o: src/%.cpp $(XHEADER)
 
 # ============================================================
 
-b/%: examples/%.cpp libLuaAide.a
+b/%: examples/%.cpp libLuaAide.a $(XHEADER)
 	@echo $<
 	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
 
