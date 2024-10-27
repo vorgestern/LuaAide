@@ -200,7 +200,7 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 // **********************************************************************
 
-LuaCall operator<<(LuaStack&S, LuaColonCall&C)
+LuaCall LuaStack::operator<<(LuaColonCall&C)
 {
     // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgeführt werden.
     //           C.name="Funktion"
@@ -208,19 +208,19 @@ LuaCall operator<<(LuaStack&S, LuaColonCall&C)
     // Auf dem Stack liegt zu Beginn: [X, a, b, c]
     const int objectindex=-1-C.numargs;     // -4 zeigt auf X
     // Ermittle die Elementfunktion X[name].
-    lua_getfield(S.L, objectindex, C.name); // [X, a, b, c, Funktion]
-    if (!lua_isnil(S.L, -1))
+    lua_getfield(L, objectindex, C.name); // [X, a, b, c, Funktion]
+    if (!lua_isnil(L, -1))
     {
-        lua_insert(S.L, -1+objectindex); // [Funktion, X, a, b, c]
+        lua_insert(L, -1+objectindex); // [Funktion, X, a, b, c]
     }
     else
     {
         // Dies führt trotzdem zum Absturz, weil der Operator>> nichts davon erfährt.
         // TODO: Behebe dies.
         printf("ColonCall: Object has no field '%s' (function required).\n", C.name);
-        lua_pop(S.L, 1);
+        lua_pop(L, 1);
     }
-    return LuaCall(S.L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
+    return LuaCall(L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
 }
 
 LuaCall operator<<(LuaStack&S, LuaDotCall&C)
