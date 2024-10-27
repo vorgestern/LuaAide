@@ -75,7 +75,7 @@ int main()
         )xxx");
         C<<11   >>-1; // -1: keep all results
         const auto h=height(C);
-        for (auto n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n));
+        for (unsigned n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n));
     }
 
     if (true)
