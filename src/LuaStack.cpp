@@ -237,11 +237,11 @@ LuaCall operator<<(LuaStack&S, LuaGlobalCall&C)
     return LuaCall(S);
 }
 
-LuaCall operator<<(LuaStack&S, const LuaChunk&X)
+LuaCall LuaStack::operator<<(const LuaChunk&X)
 {
-    const int rc=luaL_loadbufferx(S.L, X.buffer, X.bufferlength, X.buffername, "bt");
-    if (rc!=LUA_OK) lua_error(S);
-    return LuaCall(S);
+    const int rc=luaL_loadbufferx(L, X.buffer, X.bufferlength, X.buffername, "bt");
+    if (rc!=LUA_OK) lua_error(L);
+    return LuaCall(L);
 }
 
 LuaCall operator<<(LuaStack&S, const LuaCode&C)
