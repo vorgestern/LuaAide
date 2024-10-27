@@ -65,12 +65,11 @@ extern "C" int luaopen_luaaide(lua_State*L)
     // for (int k=-h1; k<0; ++k){ printf("\n#%d ", k);  printval(L, k); }
     Q<<LuaTable()
         <<"1.2.3">>LuaField("version")
-        <<pwd>>LuaField("pwd");
+        <<pwd>>LuaField("pwd")
+        <<cd>>LuaField("cd");
 #if 0
     Q<<stackdump>>LuaField("stackdump");
 #endif
-    Q<<cd;
-    Q>>LuaField("cd");
     // const int h2=height(Q); printf("\nstack height 2: %d\n", h2);
     return 1;
 }
