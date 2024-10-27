@@ -67,7 +67,6 @@ public:
 class LuaGlobal
 {
     friend class LuaStack;
-    friend inline LuaStack&operator<<(LuaStack&, const LuaGlobal&);
     const char*name{nullptr};
 public:
     LuaGlobal(const char s[]): name(s){}
@@ -180,13 +179,6 @@ class LuaStack
     friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
-    friend inline LuaStack&operator<<(LuaStack&S, std::string_view s){ lua_pushstring(S.L, s.data()); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, float x){ lua_pushnumber(S.L, x); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, double x){ lua_pushnumber(S.L, x); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaValue&X){ lua_pushvalue(S.L, stackindex(X)); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaGlobal&X){ lua_getglobal(S.L, X.name); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaAbsIndex&X){ lua_pushvalue(S.L, stackindex(X)); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaNil&X){ lua_pushnil(S.L); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaTable&X){ lua_createtable(S.L, X.numindex, X.numfields); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaLightUserData&X){ lua_pushlightuserdata(S.L, X.data); return S; }
     friend LuaCall operator<<(LuaStack&, lua_CFunction);
@@ -213,6 +205,13 @@ public:
     LuaStack&operator<<(int n){ lua_pushinteger(L, n); return*this; }
     LuaStack&operator<<(unsigned n){ lua_pushinteger(L, static_cast<int>(n)); return*this; }
     LuaStack&operator<<(const char s[]){ lua_pushstring(L, s); return*this; }
+    LuaStack&operator<<(std::string_view s){ lua_pushstring(L, s.data()); return*this; }
+    LuaStack&operator<<(float x){ lua_pushnumber(L, x); return*this; }
+    LuaStack&operator<<(double x){ lua_pushnumber(L, x); return*this; }
+    LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
+    LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
