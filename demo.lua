@@ -10,6 +10,8 @@ print("pwd 1", X.pwd())
 X.cd ".."
 print("pwd 2", X.pwd())
 
+-- X.stackdump();
+
 X.cd ".."
 print("pwd 3", X.pwd())
 

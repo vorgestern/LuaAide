@@ -1,5 +1,6 @@
 
 #include <LuaAide.h>
+#include <iostream>
 #include <filesystem>
 
 using namespace std;
@@ -46,6 +47,15 @@ extern "C" int cd(lua_State*L)
     else Q<<"cd requires argument (string path)">>luaerror;
     return 0;
 }
+
+#if 0
+extern "C" int stackdump(lua_State*L)
+{
+    LuaStack Q(L);
+    cout<<Q;
+    return 0;
+}
+#endif
 }
 
 extern "C" int luaopen_luaaide(lua_State*L)
@@ -56,6 +66,9 @@ extern "C" int luaopen_luaaide(lua_State*L)
     Q<<LuaTable()
         <<"1.2.3">>LuaField("version")
         <<pwd>>LuaField("pwd");
+#if 0
+    Q<<stackdump>>LuaField("stackdump");
+#endif
     Q<<cd;
     Q>>LuaField("cd");
     // const int h2=height(Q); printf("\nstack height 2: %d\n", h2);
