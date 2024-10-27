@@ -75,8 +75,9 @@ public:
 
 class LuaField
 {
+    friend class LuaStack;
+    friend class LuaCall;
     friend inline LuaStack&operator<<(LuaStack&, const LuaField&);
-    friend inline LuaStack&operator>>(LuaStack&, const LuaField&);
     const char*name{nullptr};
     bool replace_table{true}; //!< Wenn true, wird Tabelle<<LuaField("x") Tabelle auf dem Stack durch Tabelle.x ersetzen, sonst zusätzlich auf den Stack legen.
 public:
@@ -200,7 +201,6 @@ class LuaStack
     friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
     friend LuaCall operator<<(LuaStack&, const LuaCode&);
     friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
-    friend inline LuaStack&operator>>(LuaStack&S, const LuaField&F){ lua_setfield(S.L, -2, F.name); return S; }
     friend inline void operator>>(LuaStack&S, const LuaError&X){ lua_error(S.L); }
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
 
@@ -215,6 +215,8 @@ public:
     LuaStack&swap(); //!< Tausche die beiden obersten Werte auf dem Stack.
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
+
+    LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
 
