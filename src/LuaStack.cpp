@@ -223,12 +223,12 @@ LuaCall LuaStack::operator<<(LuaColonCall&C)
     return LuaCall(L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
 }
 
-LuaCall operator<<(LuaStack&S, LuaDotCall&C)
+LuaCall LuaStack::operator<<(LuaDotCall&C)
 {
     const int objectindex=-1;
-    lua_getfield(S.L, objectindex, C.name);
-    lua_remove(S.L, objectindex-1);
-    return LuaCall(S);
+    lua_getfield(L, objectindex, C.name);
+    lua_remove(L, objectindex-1);
+    return LuaCall(L);
 }
 
 LuaCall operator<<(LuaStack&S, LuaGlobalCall&C)
