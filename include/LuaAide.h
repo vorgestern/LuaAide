@@ -189,6 +189,7 @@ class LuaStack
     friend inline LuaStack&operator<<(LuaStack&S, int n){ lua_pushinteger(S.L, n); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, unsigned n){ lua_pushinteger(S.L, static_cast<int>(n)); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const char s[]){ lua_pushstring(S.L, s); return S; }
+    friend inline LuaStack&operator<<(LuaStack&S, std::string_view s){ lua_pushstring(S.L, s.data()); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, float x){ lua_pushnumber(S.L, x); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, double x){ lua_pushnumber(S.L, x); return S; }
     friend inline LuaStack&operator<<(LuaStack&S, const LuaValue&X){ lua_pushvalue(S.L, stackindex(X)); return S; }

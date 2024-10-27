@@ -27,7 +27,7 @@ extern "C" int cd(lua_State*L)
                 string meld="path does not exist: '";
                 meld.append(neu.string());
                 meld.append("'");
-                Q<<meld.c_str();
+                Q<<meld;
                 lua_error(L);
             }
             std::error_code ec;
