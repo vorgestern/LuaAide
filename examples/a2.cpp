@@ -8,7 +8,7 @@ using namespace std;
 int democlosure(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaTable(0, 0); Q.swap()<<LuaUpValue(1); Q.swap();    // Result, Map, Arg
+    Q<<LuaTable(0, 0)<<luaswap<<LuaUpValue(1)<<luaswap;      // Result, Map, Arg
     LuaAbsIndex Result(Q, -3), Map(Q, -2), Arg(Q, -1);
 //  cout<<Q;
     for (LuaIterator J(Q); next(J); ++J)
