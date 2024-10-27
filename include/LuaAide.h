@@ -28,11 +28,10 @@ public:
 
 class LuaAbsIndex
 {
+    friend class LuaStack;
     int absindex{0};
     friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
-public:
-    LuaAbsIndex(lua_State*L, int index=-1): absindex(lua_absindex(L, index)){}
-    LuaAbsIndex(LuaStack&, int index=-1);
+    LuaAbsIndex(int j): absindex(j){}
 };
 
 class LuaUpValue
@@ -201,7 +200,7 @@ public:
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
-    LuaAbsIndex index(int n){ return LuaAbsIndex(*this, n); }
+    LuaAbsIndex index(int n){ return LuaAbsIndex(lua_absindex(L, n)); }
 
     LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
     LuaStack&operator<<(LuaRotate X){

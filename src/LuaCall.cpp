@@ -1,9 +1,9 @@
 
 #include <LuaAide.h>
 
-LuaCall::LuaCall(lua_State*L): LuaStack(L), funcindex(L){}
-LuaCall::LuaCall(LuaStack&S): LuaStack(S), funcindex(L){}
-LuaCall::LuaCall(lua_State*L, unsigned start): LuaStack(L), funcindex(L, -1*(int)start){}
+LuaCall::LuaCall(lua_State*L): LuaStack(L), funcindex(index(-1)){}
+LuaCall::LuaCall(LuaStack&S): LuaStack(S), funcindex(index(-1)){}
+LuaCall::LuaCall(lua_State*L, unsigned start): LuaStack(L), funcindex(index(-1*(int)start)){}
 
 LuaCall&operator<<(LuaCall&S, const LuaUpValue&V)
 {
@@ -25,7 +25,7 @@ static int TracebackAdder(lua_State*Q)
 int LuaCall::operator>>(int numresults)
 {
     const int top0=lua_gettop(L);
-    const LuaAbsIndex now(*this);
+    const auto now=index(-1);
     const int numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
     lua_pushcfunction(L, TracebackAdder);             // [func, args[numargs], errorhandler]
     const int idx=-(numargs+2);

@@ -1,7 +1,6 @@
 
-#include <cstdio>
-#include <iostream>
 #include <LuaAide.h>
+#include <iostream>
 
 using namespace std;
 
@@ -13,7 +12,7 @@ int democlosure(lua_State*L)
 //  cout<<Q;
     for (LuaIterator J(Q); next(J); ++J)
     {
-        printf("\nRunde %u (height %u)", (unsigned)J, height(Q));
+        // printf("\nRunde %u (height %u)", (unsigned)J, height(Q));
         //                                                   // Result, Map, Arg, key, value
         Q.dup(-1);
         lua_gettable(L, stackindex(Map));                    // Result, Map, Arg, key, value, Map[value]
@@ -33,14 +32,13 @@ int main()
     if (true)
     {
         // Make Map
-        Q<<LuaTable(3, 0); LuaAbsIndex Map(Q);
+        Q<<LuaTable(3, 0); const auto Map=Q.index(-1);
         Q<<21; lua_seti(Q, stackindex(Map), 1);
         Q<<22; lua_seti(Q, stackindex(Map), 2);
         Q<<23; lua_seti(Q, stackindex(Map), 3);
-        // Make Closure with upvalue1==Map
-        Q<<LuaClosure(democlosure, 1); LuaAbsIndex Closure1(Q);
-        // Make Argument table
-        Q<<LuaTable(7, 0); auto Arg=Q.index(-1);
+        // Make Closure with upvalue==Map, Argument table
+        Q<<LuaClosure(democlosure, 1)<<LuaTable(7, 0);
+        auto Arg=Q.index(-1);
         Q<<1<<1;       lua_settable(Q, stackindex(Arg));
         Q<<2<<2;       lua_settable(Q, stackindex(Arg));
         Q<<3<<3;       lua_settable(Q, stackindex(Arg));
