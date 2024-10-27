@@ -20,6 +20,34 @@ public:
     LuaValue(int index): stackindex(index){}
 };
 
+class LuaAbsIndex
+{
+    int absindex{0};
+    friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
+public:
+    LuaAbsIndex(lua_State*L, int index=-1): absindex(lua_absindex(L, index)){}
+    LuaAbsIndex(LuaStack&, int index=-1);
+};
+
+class LuaUpValue
+{
+    //! LS<<LuaUpValue(1) legt UpValue 1 auf den Stack.
+    unsigned index{1};
+    friend LuaStack&operator<<(LuaStack&, const LuaUpValue&);
+    friend LuaCall&operator<<(LuaCall&, const LuaUpValue&);
+public:
+    LuaUpValue(unsigned n): index(n){}
+};
+
+class LuaLightUserData
+{
+    friend class LuaStack;
+    void*data{nullptr};
+    friend inline LuaCall&operator<<(LuaCall&, const LuaLightUserData&);
+public:
+    LuaLightUserData(void*p): data(p){}
+};
+
 class LuaChunk
 {
     friend class LuaStack;
@@ -34,15 +62,6 @@ public:
     bool operator!()const { return buffer==nullptr; }
 };
 
-class LuaAbsIndex
-{
-    int absindex{0};
-    friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
-public:
-    LuaAbsIndex(lua_State*L, int index=-1): absindex(lua_absindex(L, index)){}
-    LuaAbsIndex(LuaStack&, int index=-1);
-};
-
 class LuaClosure
 {
     // So legt man eine Closure auf den Stack:
@@ -52,16 +71,6 @@ class LuaClosure
     friend LuaStack&operator<<(LuaStack&, const LuaClosure&);
 public:
     LuaClosure(lua_CFunction c, unsigned numupvalues): closure(c), num_upvalues(numupvalues){}
-};
-
-//! LS<<LuaUpValue(1) legt UpValue 1 auf den Stack.
-class LuaUpValue
-{
-    unsigned index{1};
-    friend LuaStack&operator<<(LuaStack&, const LuaUpValue&);
-    friend LuaCall&operator<<(LuaCall&, const LuaUpValue&);
-public:
-    LuaUpValue(unsigned n): index(n){}
 };
 
 class LuaGlobal
@@ -149,15 +158,6 @@ class LuaArray: public LuaTable
 {
 public:
     LuaArray(unsigned numindex): LuaTable(numindex, 0){}
-};
-
-class LuaLightUserData
-{
-    friend class LuaStack;
-    void*data{nullptr};
-    friend inline LuaCall&operator<<(LuaCall&, const LuaLightUserData&);
-public:
-    LuaLightUserData(void*p): data(p){}
 };
 
 class LuaStackItem
@@ -271,9 +271,7 @@ public:
     LuaCall(lua_State*);
     LuaCall(LuaStack&);
 
-    using LuaStack::operator>>; // Damit der folgende Operator nicht alle geerbten versteckt.
-
-    // Aufruf der Funktion mit dem Operator >>
+    using LuaStack::operator>>;     // Damit der folgende Operator nicht alle geerbten versteckt.
     int operator>>(int numresults); // Führt den Aufruf aus. Gibt rc zurück.
 };
 inline LuaCall&operator<<(LuaCall&S, const LuaNil&X){ static_cast<LuaStack&>(S)<<X; return S; }
