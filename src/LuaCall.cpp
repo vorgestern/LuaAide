@@ -22,22 +22,22 @@ static int TracebackAdder(lua_State*Q)
     return 1; // Traceback is returned.
 }
 
-int operator>>(LuaCall&S, int numresults)
+int LuaCall::operator>>(int numresults)
 {
-    const int top0=lua_gettop(S.L);
-    const LuaAbsIndex now(S);
-    const int numargs=stackindex(now)>=stackindex(S.funcindex)?stackindex(now)-stackindex(S.funcindex):0;
-    lua_pushcfunction(S.L, TracebackAdder);             // [func, args[numargs], errorhandler]
+    const int top0=lua_gettop(L);
+    const LuaAbsIndex now(*this);
+    const int numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
+    lua_pushcfunction(L, TracebackAdder);             // [func, args[numargs], errorhandler]
     const int idx=-(numargs+2);
-    lua_rotate(S.L, idx, 1);                            // [errorhandler, func, args[numargs]]
-    const int rc=lua_pcall(S.L, numargs, numresults, idx);
-    const int top1=lua_gettop(S.L);
+    lua_rotate(L, idx, 1);                            // [errorhandler, func, args[numargs]]
+    const int rc=lua_pcall(L, numargs, numresults, idx);
+    const int top1=lua_gettop(L);
     switch (rc)
     {
         case LUA_OK:
         {
             const int results=top1-top0+(numargs+1)-1;
-            lua_remove(S.L, -results-1);
+            lua_remove(L, -results-1);
             break;
         }
         default:
@@ -48,7 +48,7 @@ int operator>>(LuaCall&S, int numresults)
         // Dieser Fehlercode wurde in Lua 5.4 entfernt.
         // Vgl. http://www.lua.org/manual/5.4/manual.html#8.3
         {
-            lua_remove(S.L, -2);
+            lua_remove(L, -2);
             break;
         }
     }

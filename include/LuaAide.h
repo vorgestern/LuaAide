@@ -66,8 +66,8 @@ public:
 
 class LuaGlobal
 {
+    friend class LuaStack;
     friend inline LuaStack&operator<<(LuaStack&, const LuaGlobal&);
-    friend inline LuaStack&operator>>(LuaStack&, const LuaGlobal&);
     const char*name{nullptr};
 public:
     LuaGlobal(const char s[]): name(s){}
@@ -199,7 +199,6 @@ class LuaStack
     friend LuaCall operator<<(LuaStack&, LuaDotCall&);
     friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
     friend LuaCall operator<<(LuaStack&, const LuaCode&);
-    friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
 
 protected:
@@ -215,6 +214,7 @@ public:
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
     void operator>>(const LuaError&){ lua_error(L); }
+    LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
@@ -259,9 +259,6 @@ class LuaCall: public LuaStack
 {
     friend LuaCall operator<<(LuaStack&, LuaColonCall&);
 
-    // Aufruf der Funktion mit dem Operator >>
-    friend int operator>>(LuaCall&S, int numresults); // Führt den Aufruf aus. Gibt rc zurück.
-
     //! Dieser Konstruktor ist nur für Freunde zugänglich.
     //! Diese haben u.U. bereits Informationen auf den Stack gelegt,
     //! die am Ende entfernt werden sollen.
@@ -273,6 +270,11 @@ protected:
 public:
     LuaCall(lua_State*);
     LuaCall(LuaStack&);
+
+    using LuaStack::operator>>; // Damit der folgende Operator nicht alle geerbten versteckt.
+
+    // Aufruf der Funktion mit dem Operator >>
+    int operator>>(int numresults); // Führt den Aufruf aus. Gibt rc zurück.
 };
 inline LuaCall&operator<<(LuaCall&S, const LuaNil&X){ static_cast<LuaStack&>(S)<<X; return S; }
 inline LuaCall&operator<<(LuaCall&S, const char s[]){ static_cast<LuaStack&>(S)<<s; return S; }
