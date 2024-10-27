@@ -323,6 +323,13 @@ TEST_F(StackEnv, Swap)
     ASSERT_EQ(21, Q.toint(-1));
 }
 
+TEST_F(StackEnv, SwapNeu)
+{
+    Q<<21<<22<<luaswap;
+    ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_EQ(21, Q.toint(-1));
+}
+
 TEST_F(StackEnv, Dup)
 {
     Q<<21;

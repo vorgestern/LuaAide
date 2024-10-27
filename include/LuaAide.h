@@ -11,6 +11,7 @@ class LuaCall;
 
 const class LuaNil {} nil;
 const class LuaError {} luaerror;
+const class LuaSwap {} luaswap;
 
 class LuaValue
 {
@@ -194,6 +195,8 @@ public:
     LuaStack&swap(); //!< Tausche die beiden obersten Werte auf dem Stack.
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
+
+    LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
 
     LuaStack&operator<<(bool b){ lua_pushboolean(L, b?1:0); return*this; }
     LuaStack&operator<<(int n){ lua_pushinteger(L, n); return*this; }
