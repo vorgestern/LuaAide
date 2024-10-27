@@ -179,7 +179,6 @@ class LuaStack
     friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
-    friend LuaCall operator<<(LuaStack&, lua_CFunction);
     friend LuaCall operator<<(LuaStack&, const LuaChunk&);
     friend LuaCall operator<<(LuaStack&, LuaColonCall&);
     friend LuaCall operator<<(LuaStack&, LuaDotCall&);
@@ -212,6 +211,7 @@ public:
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
     LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
+    LuaCall  operator<<(lua_CFunction);
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable

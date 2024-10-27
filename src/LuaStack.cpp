@@ -251,10 +251,10 @@ LuaCall operator<<(LuaStack&S, const LuaCode&C)
     return LuaCall(S);
 }
 
-LuaCall operator<<(LuaStack&S, lua_CFunction X)
+LuaCall LuaStack::operator<<(lua_CFunction X)
 {
-    lua_pushcfunction(S.L, X);
-    return LuaCall(S);
+    lua_pushcfunction(L, X);
+    return LuaCall(L);
 }
 
 // *******************************************************
