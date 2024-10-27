@@ -330,6 +330,21 @@ TEST_F(StackEnv, SwapNeu)
     ASSERT_EQ(21, Q.toint(-1));
 }
 
+TEST_F(StackEnv, Rot3)
+{
+    ASSERT_EQ(3, luarot3.index);
+    ASSERT_EQ(-3, luarot_3.index);
+    Q<<21<<22<<23<<luarot3;
+    ASSERT_EQ(23, Q.toint(-3))<<Q;
+    ASSERT_EQ(21, Q.toint(-2))<<Q;
+    ASSERT_EQ(22, Q.toint(-1))<<Q;
+    Q.clear();
+    Q<<21<<22<<23<<luarot_3;
+    ASSERT_EQ(22, Q.toint(-3))<<Q;
+    ASSERT_EQ(23, Q.toint(-2))<<Q;
+    ASSERT_EQ(21, Q.toint(-1))<<Q;
+}
+
 TEST_F(StackEnv, Dup)
 {
     Q<<21;

@@ -12,6 +12,11 @@ class LuaCall;
 const class LuaNil {} nil;
 const class LuaError {} luaerror;
 const class LuaSwap {} luaswap;
+struct LuaRotate { int index; };
+constexpr const LuaRotate luarot_3 {-3}; // X a b   ==> a b X
+constexpr const LuaRotate luarot_4 {-4}; // X a b c ==> a b c X
+constexpr const LuaRotate luarot3  { 3}; // a b X   ==> X a b
+constexpr const LuaRotate luarot4  { 4}; // a b c X ==> X a b c
 
 class LuaValue
 {
@@ -197,6 +202,11 @@ public:
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
     LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
+    LuaStack&operator<<(LuaRotate X){
+        if (X.index<0) lua_rotate(L, X.index, -1);
+        else if (X.index>0) lua_rotate(L, -X.index, 1);
+        return*this;
+    }
 
     LuaStack&operator<<(bool b){ lua_pushboolean(L, b?1:0); return*this; }
     LuaStack&operator<<(int n){ lua_pushinteger(L, n); return*this; }
