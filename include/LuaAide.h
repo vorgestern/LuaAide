@@ -201,6 +201,8 @@ public:
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
 
+    LuaAbsIndex index(int n){ return LuaAbsIndex(*this, n); }
+
     LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
     LuaStack&operator<<(LuaRotate X){
         if (X.index<0) lua_rotate(L, X.index, -1);

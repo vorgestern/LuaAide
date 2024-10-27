@@ -9,7 +9,7 @@ int democlosure(lua_State*L)
 {
     LuaStack Q(L);
     Q<<LuaTable(0, 0)<<LuaUpValue(1)<<luarot_3;              // Result, Map, Arg
-    LuaAbsIndex Result(Q, -3), Map(Q, -2), Arg(Q, -1);
+    auto Result=Q.index(-3), Map=Q.index(-2); // , Arg=Q.index(-1);
 //  cout<<Q;
     for (LuaIterator J(Q); next(J); ++J)
     {
@@ -40,7 +40,7 @@ int main()
         // Make Closure with upvalue1==Map
         Q<<LuaClosure(democlosure, 1); LuaAbsIndex Closure1(Q);
         // Make Argument table
-        Q<<LuaTable(7, 0); LuaAbsIndex Arg(Q);
+        Q<<LuaTable(7, 0); auto Arg=Q.index(-1);
         Q<<1<<1;       lua_settable(Q, stackindex(Arg));
         Q<<2<<2;       lua_settable(Q, stackindex(Arg));
         Q<<3<<3;       lua_settable(Q, stackindex(Arg));
