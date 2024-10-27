@@ -4,7 +4,7 @@ XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 
-all: dir libLuaAide.a LuaAideTest b/a1 luaaide.so
+all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest
 
