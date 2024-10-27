@@ -138,7 +138,7 @@ public:
 
 class LuaTable
 {
-    friend LuaStack&operator<<(LuaStack&, const LuaTable&);
+    friend class LuaStack;
     unsigned numindex{0}, numfields{0};
 public:
     LuaTable(){}
@@ -153,8 +153,8 @@ public:
 
 class LuaLightUserData
 {
+    friend class LuaStack;
     void*data{nullptr};
-    friend inline LuaStack&operator<<(LuaStack&, const LuaLightUserData&);
     friend inline LuaCall&operator<<(LuaCall&, const LuaLightUserData&);
 public:
     LuaLightUserData(void*p): data(p){}
@@ -179,8 +179,6 @@ class LuaStack
     friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaTable&X){ lua_createtable(S.L, X.numindex, X.numfields); return S; }
-    friend inline LuaStack&operator<<(LuaStack&S, const LuaLightUserData&X){ lua_pushlightuserdata(S.L, X.data); return S; }
     friend LuaCall operator<<(LuaStack&, lua_CFunction);
     friend LuaCall operator<<(LuaStack&, const LuaChunk&);
     friend LuaCall operator<<(LuaStack&, LuaColonCall&);
@@ -212,6 +210,8 @@ public:
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
+    LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
+    LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
