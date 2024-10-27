@@ -1,10 +1,17 @@
 
 local X=require "luaaide"
--- print("X", X)
--- for k,v in pairs(X or {}) do print(k,v) end
 
 print("luaaide version:", X.version)
 print("pwd", X.pwd())
 
-X.cd "src99"
+X.cd "modules/luaaide"
 print("pwd 1", X.pwd())
+
+X.cd ".."
+print("pwd 2", X.pwd())
+
+X.cd ".."
+print("pwd 3", X.pwd())
+
+X.cd "hoppla"
+print("pwd 4", X.pwd())

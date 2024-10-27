@@ -9,6 +9,8 @@
 class LuaStack;
 class LuaCall;
 
+const class LuaError {} luaerror;
+
 class LuaValue
 {
     int stackindex;
@@ -207,6 +209,7 @@ class LuaStack
     friend LuaCall operator<<(LuaStack&, const LuaCode&);
     friend inline LuaStack&operator>>(LuaStack&S, const LuaGlobal&X){ lua_setglobal(S.L, X.name); return S; } //!< Zuweisung an globale Variable
     friend inline LuaStack&operator>>(LuaStack&S, const LuaField&F){ lua_setfield(S.L, -2, F.name); return S; }
+    friend inline void operator>>(LuaStack&S, const LuaError&X){ lua_error(S.L); }
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
 
 protected:

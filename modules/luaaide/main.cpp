@@ -19,49 +19,32 @@ extern "C" int cd(lua_State*L)
     LuaStack Q(L);
     if (height(Q)==1)
     {
+        char pad[100];
         if (Q.hasstringat(-1))
         {
             const fspath neu(Q.tostring(-1));
             if (!filesystem::exists(neu))
             {
-                string meld="path does not exist: '";
-                meld.append(neu.string());
-                meld.append("'");
-                Q<<meld;
-                lua_error(L);
+                const string meld="path does not exist: '"+neu.string()+"'";
+                Q<<meld>>luaerror;
             }
             std::error_code ec;
             current_path(neu, ec);
-            if (!ec)
-            {
-                return 0;
-            }
+            if (!ec) return 0;
             else
             {
-                char pad[100];
                 sprintf(pad, "cwd: system error %d", ec.value());
-                Q<<pad;
-                lua_error(L);
-                return 0;
+                Q<<pad>>luaerror;
             }
         }
         else
         {
-            char pad[100];
-            sprintf(pad, "cd requires string argument (path), not %d", lua_type(L, -1));
-            Q<<pad;
-            lua_error(L);
-            return 0;
+            sprintf(pad, "cd requires string argument <path>, not %d", lua_type(L, -1));
+            Q<<pad>>luaerror;
         }
     }
-    else
-    {
-        char pad[100];
-        sprintf(pad, "cd requires argument (string path)");
-        Q<<pad;
-        lua_error(L);
-        return 0;
-    }
+    else Q<<"cd requires argument (string path)">>luaerror;
+    return 0;
 }
 }
 
