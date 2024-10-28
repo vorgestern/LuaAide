@@ -28,11 +28,13 @@ int main()
     if (!Q) return printf("Failed to initialise Lua\n"), 1;
     if (true)
     {
-        // Make Map, Make Closure with upvalue==Map, Argument table
-        Q   <<unordered_map<string,string> {{"Hier", "Dort"}, {"wohnen", "arbeiten"}, {"Schlümpfe", "Heinzelmännchen"}}<<LuaClosure(democlosure, 1)
-            <<vector<string> {"Hier", "wohnen", "die", "Schlümpfe"}>>1;
+        vector<string>Arg {"Hier", "wohnen", "die", "Schlümpfe"};
+        // Make Map, Make Closure with upvalue==Map, Call Closure with Argument table
+        Q   <<unordered_map<string,string> {{"Hier", "Dort"}, {"wohnen", "arbeiten"}, {"Schlümpfe", "Zwerge"}}<<LuaClosure(democlosure, 1)
+            <<Arg>>1;
+        Q   <<unordered_map<string,string> {{"Hier", "Wo"}, {"wohnen", "schlafen"}, {"Schlümpfe", "Heinzelmännchen"}}<<LuaClosure(democlosure, 1)
+            <<Arg>>1;
         cout<<"\n"<<Q<<"\n";
     }
     return 0;
 }
-
