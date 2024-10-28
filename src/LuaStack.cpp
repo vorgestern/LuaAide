@@ -231,10 +231,10 @@ LuaCall LuaStack::operator<<(const LuaDotCall&C)
     return LuaCall(L);
 }
 
-LuaCall operator<<(LuaStack&S, LuaGlobalCall&C)
+LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 {
-    S<<LuaGlobal(C.name);
-    return LuaCall(S);
+    *this<<LuaGlobal(C.name);
+    return LuaCall(L);
 }
 
 LuaCall LuaStack::operator<<(const LuaChunk&X)

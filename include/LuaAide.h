@@ -136,7 +136,7 @@ public:
 
 class LuaGlobalCall
 {
-    friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
+    friend class LuaStack;
     const char*name{nullptr};
 public:
     LuaGlobalCall(const char s[]): name(s){}
@@ -184,7 +184,6 @@ class LuaStack
     friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
-    friend LuaCall operator<<(LuaStack&, LuaGlobalCall&);
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
 
 protected:
@@ -226,6 +225,7 @@ public:
     LuaCall  operator<<(const LuaChunk&);
     LuaCall  operator<<(const LuaColonCall&);
     LuaCall  operator<<(const LuaDotCall&);
+    LuaCall  operator<<(const LuaGlobalCall&);
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
