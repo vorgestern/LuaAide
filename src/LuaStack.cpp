@@ -614,4 +614,19 @@ TEST_F(StackEnv, ColonCallNotAMethod)
     ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
 }
 
+// Noch zu testen:
+// ===============
+// LuaValue
+// LuaAbsIndex
+// LuaUpValue
+// LuaLightUserData
+// LuaChunk
+// LuaClosure
+// LuaField
+// LuaGlobalCall
+// LuaTable
+// LuaArray
+// LuaCall (?)
+// LuaIterator
+
 #endif
