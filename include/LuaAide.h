@@ -267,6 +267,8 @@ public:
             L=nullptr;
         }
     }
+
+    std::string stringrepr(int index)const;
 };
 
 class LuaCall: public LuaStack
@@ -274,9 +276,8 @@ class LuaCall: public LuaStack
     friend class LuaStack;
 
     //! Dieser Konstruktor ist nur für Freunde zugänglich.
-    //! Diese haben u.U. bereits Informationen auf den Stack gelegt,
-    //! die am Ende entfernt werden sollen.
-    LuaCall(lua_State*, unsigned start);
+    //! Diese haben u.U. bereits Informationen auf den Stack gelegt, die am Ende entfernt werden sollen.
+    LuaCall(lua_State*, LuaAbsIndex);
 
 protected:
     LuaAbsIndex funcindex; // Stackindex der Funktion auf dem Stack. Wird benutzt, um beim Aufruf der Funktion die Anzahl der Argumente zu ermitteln.

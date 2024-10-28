@@ -3,14 +3,7 @@
 
 LuaCall::LuaCall(lua_State*L): LuaStack(L), funcindex(index(-1)){}
 LuaCall::LuaCall(LuaStack&S): LuaStack(S), funcindex(index(-1)){}
-LuaCall::LuaCall(lua_State*L, unsigned start): LuaStack(L), funcindex(index(-1*(int)start)){}
-
-// LuaCall&LuaCall::operator<<(const LuaUpValue&V)
-// {
-//     const int stackindex=lua_upvalueindex(V.index);
-//     lua_pushvalue(S, stackindex);
-//     return S;
-// }
+LuaCall::LuaCall(lua_State*L, LuaAbsIndex func): LuaStack(L), funcindex(func){}
 
 static int TracebackAdder(lua_State*Q)
 {

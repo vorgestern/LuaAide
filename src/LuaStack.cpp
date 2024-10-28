@@ -2,6 +2,8 @@
 #include <LuaAide.h>
 #include <iostream>
 
+using namespace std;
+
 static void printval(lua_State*Q, int a, unsigned level=0)
 {
     switch (lua_type(Q, a))
@@ -200,27 +202,38 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 // **********************************************************************
 
+static int errfunction(lua_State*L)
+{
+    LuaStack Q(L);
+    Q<<LuaUpValue(1)>>luaerror;
+    return 0;
+}
+
 LuaCall LuaStack::operator<<(const LuaColonCall&C)
 {
     // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgeführt werden.
     //           C.name="Funktion"
     //           C.numargs=3
     // Auf dem Stack liegt zu Beginn: [X, a, b, c]
-    const int objectindex=-1-C.numargs;     // -4 zeigt auf X
+    const auto object=index(-1-C.numargs);     // -4 zeigt auf X
     // Ermittle die Elementfunktion X[name].
-    lua_getfield(L, objectindex, C.name); // [X, a, b, c, Funktion]
-    if (!lua_isnil(L, -1))
+    lua_getfield(L, stackindex(object), C.name); // [X, a, b, c, Funktion]
+    if (hasfunctionat(-1))
     {
-        lua_insert(L, -1+objectindex); // [Funktion, X, a, b, c]
+        lua_insert(L, stackindex(object)); // [Funktion, X, a, b, c]
+        // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
+        // Am Index object liegt inzwischen die Funktion.
+        return LuaCall(L, object);
     }
     else
     {
-        // Dies führt trotzdem zum Absturz, weil der Operator>> nichts davon erfährt.
-        // TODO: Behebe dies.
-        printf("ColonCall: Object has no field '%s' (function required).\n", C.name);
-        lua_pop(L, 1);
+        char pad[100];
+        sprintf(pad, "%s is not a method but ", C.name);
+        const auto str=pad+stringrepr(-1);
+        drop(1);
+        *this<<str<<LuaClosure(errfunction, 1);
+        return LuaCall(L, index(-1));
     }
-    return LuaCall(L, 1+C.numargs); // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
 }
 
 LuaCall LuaStack::operator<<(const LuaDotCall&C)
@@ -255,6 +268,58 @@ LuaCall LuaStack::operator<<(lua_CFunction X)
 {
     lua_pushcfunction(L, X);
     return LuaCall(L);
+}
+
+string LuaStack::stringrepr(int index)const
+{
+    const auto t=lua_type(L, index);
+    switch (t)
+    {
+        case LUA_TNIL: return "nil";
+        case LUA_TBOOLEAN:{ const bool f=0!=lua_toboolean(L, index); return f?"true":"false"; }
+        case LUA_TNUMBER:
+        {
+            const double x=lua_tonumber(L, index);
+            char pad[100];
+            sprintf(pad, "%g", x);
+            return pad;
+        }
+        case LUA_TSTRING:
+        {
+            const char*s=(char*)lua_tostring(L, index);
+            return s;
+        }
+        case LUA_TLIGHTUSERDATA:
+        {
+            const char*s=(char*)lua_touserdata(L, index);
+            char pad[100];
+            sprintf(pad, "lightuserdata(%p)", s);
+            return pad;
+        }
+        case LUA_TUSERDATA:
+        {
+            const char*s=(char*)lua_touserdata(L, index);
+            char pad[100];
+            sprintf(pad, "userdata(%p)", s);
+            return pad;
+        }
+        case LUA_TTABLE:
+        {
+            return "table {...}";
+        }
+        case LUA_TFUNCTION:
+        {
+            if (lua_iscfunction(L, index)) return "cfunction";
+            else if (lua_isfunction(L, index)) return "lua function";
+            else return "function(neither c nor lua)";
+        }
+        default:
+        {
+            char pad[100];
+            sprintf(pad, "<other type %d>", t);
+            return pad;
+        }
+    }
 }
 
 // ============================================================================
@@ -518,6 +583,37 @@ TEST_F(StackEnv, DotCall)
     Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
     ASSERT_TRUE(Q.hasstringat(-1));
     ASSERT_STREQ("x=alpha", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, ColonCall)
+{
+    Q<<LuaCode(R"xxx(
+        local mt={
+            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
+        }
+        mt.__index=mt
+        A=setmetatable({x="alpha"}, mt)
+    )xxx")>>0;
+    Q.clear();
+    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo", 1)>>1;
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_STREQ("x=alpha, a=beta", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, ColonCallNotAMethod)
+{
+    Q<<LuaCode(R"xxx(
+        local mt={
+            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
+        }
+        mt.__index=mt
+        A=setmetatable({x="alpha"}, mt)
+    )xxx")>>0;
+    Q.clear();
+    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo_nixda", 1)>>1;
+    ASSERT_TRUE(Q.hasstringat(-1));
+    const string errmsg=Q.tostring(-1);
+    ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
 }
 
 #endif
