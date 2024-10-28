@@ -90,7 +90,6 @@ class LuaField
 {
     friend class LuaStack;
     friend class LuaCall;
-    friend inline LuaStack&operator<<(LuaStack&, const LuaField&);
     const char*name{nullptr};
     bool replace_table{true}; //!< Wenn true, wird Tabelle<<LuaField("x") Tabelle auf dem Stack durch Tabelle.x ersetzen, sonst zusätzlich auf den Stack legen.
 public:
