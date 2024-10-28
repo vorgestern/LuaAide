@@ -305,16 +305,6 @@ public:
     LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
 };
 
-class LuaDotCall2: public LuaCall
-{
-public:
-    LuaDotCall2(lua_State*L, const char functionname[], int objectindex=-1): LuaCall(L)
-    {
-        lua_getfield(L, objectindex, functionname);
-        lua_remove(L, objectindex-1);
-    }
-};
-
 /*
     LuaIterator realisiert eine Schleife über die Elemente des obersten Objekts auf dem Stack.
     Das Äquivalent in Lua ist
