@@ -270,6 +270,12 @@ LuaCall LuaStack::operator<<(lua_CFunction X)
     return LuaCall(L);
 }
 
+LuaCall LuaStack::operator<<(const LuaClosure&C)
+{
+    lua_pushcclosure(L, C.closure, C.num_upvalues);
+    return LuaCall(L);
+}
+
 LuaStack&LuaStack::operator<<(const vector<string>&X)
 {
     *this<<LuaArray(X.size());

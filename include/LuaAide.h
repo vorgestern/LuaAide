@@ -219,7 +219,6 @@ public:
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
     LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
-    LuaStack&operator<<(const LuaClosure&C){ lua_pushcclosure(L, C.closure, C.num_upvalues); return*this; }
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(lua_CFunction);
@@ -227,6 +226,7 @@ public:
     LuaCall  operator<<(const LuaColonCall&);
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);
+    LuaCall  operator<<(const LuaClosure&);
 
     void operator>>(const LuaError&){ lua_error(L); }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
@@ -296,6 +296,7 @@ public:
     LuaCall&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const std::vector<std::string>&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(*this); return*this; }
 //  LuaCall&operator<<(const LuaClosure&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(int n){ LuaStack::operator<<(n); return*this; }
