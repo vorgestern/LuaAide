@@ -28,26 +28,11 @@ int main()
     if (!Q) return printf("Failed to initialise Lua\n"), 1;
     if (true)
     {
-        // Make Map
-        Q<<LuaTable(3, 0); const auto Map=Q.index(-1);
-        Q<<21; lua_seti(Q, stackindex(Map), 1);
-        Q<<22; lua_seti(Q, stackindex(Map), 2);
-        Q<<23; lua_seti(Q, stackindex(Map), 3);
-        // Make Closure with upvalue==Map, Argument table
-        Q<<LuaClosure(democlosure, 1)<<LuaTable(7, 0);
-        auto Arg=Q.index(-1);
-        Q<<1<<1;       lua_settable(Q, stackindex(Arg));
-        Q<<2<<2;       lua_settable(Q, stackindex(Arg));
-        Q<<3<<3;       lua_settable(Q, stackindex(Arg));
-        Q<<4<<"Hier";  lua_settable(Q, stackindex(Arg));
-        Q<<5<<"Dort";  lua_settable(Q, stackindex(Arg));
-        Q<<6<<"Woher"; lua_settable(Q, stackindex(Arg));
-        Q<<7<<"Wohin"; lua_settable(Q, stackindex(Arg));
-        Q<<8<<"Wann";  lua_settable(Q, stackindex(Arg));
-        Q<<9<<"Wie";   lua_settable(Q, stackindex(Arg));
-        Q<<10<<"Wozu"; lua_settable(Q, stackindex(Arg));
-        lua_call(Q, 1, 1);
+        // Make Map, Make Closure with upvalue==Map, Argument table
+        Q   <<unordered_map<string,string> {{"Hier", "Dort"}, {"wohnen", "arbeiten"}, {"Schlümpfe", "Heinzelmännchen"}}<<LuaClosure(democlosure, 1)
+            <<vector<string> {"Hier", "wohnen", "die", "Schlümpfe"}>>1;
         cout<<"\n"<<Q<<"\n";
     }
     return 0;
 }
+

@@ -4,6 +4,8 @@
 
 #include <functional>
 #include <string_view>
+#include <string>
+#include <unordered_map>
 #include <lua.hpp>
 
 class LuaStack;
@@ -220,6 +222,7 @@ public:
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
     LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
     LuaStack&operator<<(const std::vector<std::string>&);
+    LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(lua_CFunction);
     LuaCall  operator<<(const LuaChunk&);

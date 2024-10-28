@@ -288,6 +288,18 @@ LuaStack&LuaStack::operator<<(const vector<string>&X)
     return*this;
 }
 
+LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
+{
+    *this<<LuaArray(X.size());
+    for (auto&e: X)
+    {
+        const auto [k,v]=e;
+        lua_pushlstring(L, v.c_str(), v.size());
+        lua_setfield(L, -2, k.c_str());
+    }
+    return*this;
+}
+
 string LuaStack::stringrepr(int index)const
 {
     const auto t=lua_type(L, index);
