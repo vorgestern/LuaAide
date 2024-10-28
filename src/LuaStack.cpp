@@ -270,6 +270,18 @@ LuaCall LuaStack::operator<<(lua_CFunction X)
     return LuaCall(L);
 }
 
+LuaStack&LuaStack::operator<<(const vector<string>&X)
+{
+    *this<<LuaArray(X.size());
+    long n=0;
+    for (auto&e: X)
+    {
+        lua_pushlstring(L, e.c_str(), e.size());
+        lua_seti(L, -2, ++n);
+    }
+    return*this;
+}
+
 string LuaStack::stringrepr(int index)const
 {
     const auto t=lua_type(L, index);
@@ -393,6 +405,32 @@ TEST_F(StackEnv, Rot3)
     ASSERT_EQ(22, Q.toint(-3))<<Q;
     ASSERT_EQ(23, Q.toint(-2))<<Q;
     ASSERT_EQ(21, Q.toint(-1))<<Q;
+}
+
+TEST_F(StackEnv, VectorString)
+{
+    string s4 {"String 5 enthält ein Nullbyte hier: \0 (hat geklappt)", 53}; // Die 53 schließt das abschließende Nullbyte.
+    const vector<string>X={
+        "Dies ist der erste String",
+        "Dies ist der zweite String",
+        "Dies ist der dritte String",
+        "Ab vier sparsamer",
+        s4,
+        "String 6",
+        "String 7"
+    };
+    // ASSERT_EQ(53, X[4].size());
+    Q<<X;
+    ASSERT_EQ(1, height(Q)); ASSERT_TRUE(Q.hastableat(-1));
+    lua_geti(Q, -1, 5);
+    ASSERT_EQ(2, height(Q)); ASSERT_TRUE(Q.hasstringat(-1));
+    size_t len;
+    const char*s=lua_tolstring(Q, -1, &len);
+    ASSERT_NE(nullptr, s);
+    ASSERT_EQ(53, len);
+    ASSERT_STREQ("String 5 enthält ein Nullbyte hier: ", s);
+    s=strchr(s, 0)+1;
+    ASSERT_STREQ(" (hat geklappt)", s);
 }
 
 TEST_F(StackEnv, Dup)
@@ -632,6 +670,7 @@ TEST_F(StackEnv, LuaColonCallNotAMethod)
 // - <<const char[]
 // - <<float
 // - <<double
+// - <<vector<string>
 // - <<LuaValue
 // - <<LuaUpValue
 // + <<LuaGlobal
