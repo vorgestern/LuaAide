@@ -36,10 +36,9 @@ class LuaAbsIndex
 
 class LuaUpValue
 {
+    friend class LuaStack;
     //! LS<<LuaUpValue(1) legt UpValue 1 auf den Stack.
     unsigned index{1};
-    friend LuaStack&operator<<(LuaStack&, const LuaUpValue&);
-    friend LuaCall&operator<<(LuaCall&, const LuaUpValue&);
 public:
     LuaUpValue(unsigned n): index(n){}
 };
@@ -48,7 +47,6 @@ class LuaLightUserData
 {
     friend class LuaStack;
     void*data{nullptr};
-    friend inline LuaCall&operator<<(LuaCall&, const LuaLightUserData&);
 public:
     LuaLightUserData(void*p): data(p){}
 };
@@ -69,11 +67,11 @@ public:
 
 class LuaClosure
 {
+    friend class LuaStack;
     // So legt man eine Closure auf den Stack:
     // LS<<upvalue1<<upvalue2<<LuaClosure(funcion, 2)>>LuaGlobal("closurename");
     lua_CFunction closure{nullptr};
     unsigned num_upvalues{0};
-    friend LuaStack&operator<<(LuaStack&, const LuaClosure&);
 public:
     LuaClosure(lua_CFunction c, unsigned numupvalues): closure(c), num_upvalues(numupvalues){}
 };
@@ -215,11 +213,13 @@ public:
     LuaStack&operator<<(float x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(double x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.index)); return*this; }
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
     LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
+//  LuaStack&operator<<(const LuaClosure&C){ lua_pushcclosure(L, C.closure, C.num_upvalues); return*this; }
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(lua_CFunction);
     LuaCall  operator<<(const LuaChunk&);
@@ -287,20 +287,22 @@ public:
 
     using LuaStack::operator>>;     // Damit der folgende Operator nicht alle geerbten versteckt.
     int operator>>(int numresults); // Führt den Aufruf aus. Gibt rc zurück.
+
+    // Überschreibe die Ausgabefunktionen mit Varianten, die LuaCall statt LuaStack zurückgeben.
+    LuaCall&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const char s[]){ LuaStack::operator<<(s); return*this; }
+    LuaCall&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(*this); return*this; }
+//  LuaCall&operator<<(const LuaClosure&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(int n){ LuaStack::operator<<(n); return*this; }
+    LuaCall&operator<<(unsigned n){ LuaStack::operator<<(n); return*this; }
+    LuaCall&operator<<(bool f){ LuaStack::operator<<(f); return*this; }
+    LuaCall&operator<<(float x){ LuaStack::operator<<(x); return*this; }
+    LuaCall&operator<<(double x){ LuaStack::operator<<(x); return*this; }
+    LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
 };
-inline LuaCall&operator<<(LuaCall&S, const LuaNil&X){ static_cast<LuaStack&>(S)<<X; return S; }
-inline LuaCall&operator<<(LuaCall&S, const char s[]){ static_cast<LuaStack&>(S)<<s; return S; }
-inline LuaCall&operator<<(LuaCall&S, const LuaAbsIndex&X){ static_cast<LuaStack&>(S)<<X; return S; }
-inline LuaCall&operator<<(LuaCall&S, lua_CFunction X){ static_cast<LuaStack&>(S)<<X; return S; }
-inline LuaCall&operator<<(LuaCall&S, const LuaTable&X){ static_cast<LuaStack&>(S)<<X; return S; }
-inline LuaCall&operator<<(LuaCall&S, std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(S); return S; }
-inline LuaCall&operator<<(LuaCall&S, const LuaClosure&X){ static_cast<LuaStack&>(S)<<X; return S; }
-inline LuaCall&operator<<(LuaCall&S, int n){ static_cast<LuaStack&>(S)<<n; return S; }
-inline LuaCall&operator<<(LuaCall&S, unsigned n){ static_cast<LuaStack&>(S)<<n; return S; }
-inline LuaCall&operator<<(LuaCall&S, bool f){ static_cast<LuaStack&>(S)<<f; return S; }
-inline LuaCall&operator<<(LuaCall&S, float x){ static_cast<LuaStack&>(S)<<x; return S; }
-inline LuaCall&operator<<(LuaCall&S, double x){ static_cast<LuaStack&>(S)<<x; return S; }
-LuaCall&operator<<(LuaCall&, const LuaUpValue&);
 
 class LuaDotCall2: public LuaCall
 {

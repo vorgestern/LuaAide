@@ -257,21 +257,6 @@ LuaCall LuaStack::operator<<(lua_CFunction X)
     return LuaCall(L);
 }
 
-// *******************************************************
-
-LuaStack&operator<<(LuaStack&S, const LuaClosure&C)
-{
-    lua_pushcclosure(S, C.closure, C.num_upvalues);
-    return S;
-}
-
-LuaStack&operator<<(LuaStack&S, const LuaUpValue&V)
-{
-    const int stackindex=lua_upvalueindex(V.index);
-    lua_pushvalue(S, stackindex);
-    return S;
-}
-
 // ============================================================================
 
 #ifdef UNITTEST
