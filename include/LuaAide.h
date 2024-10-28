@@ -238,7 +238,7 @@ public:
     bool hasboolat(int pos){ return posvalid(pos) && lua_isboolean(L, pos)!=0; }
     bool hasintat(int pos){ return lua_isnumber(L, pos)!=0; }
     bool hastableat(int pos){ return lua_istable(L, pos)!=0; }
-    bool hasfunctionat(int pos){ return lua_isfunction(L, pos)!=0; }
+    bool hasfunctionat(int pos){ return posvalid(pos) && lua_isfunction(L, pos)!=0; }
     bool hasthreadat(int pos){ return lua_isthread(L, pos)!=0; }
     bool hasuserdataat(int pos){ return lua_isuserdata(L, pos)!=0; }
 

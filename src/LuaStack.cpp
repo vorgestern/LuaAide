@@ -519,7 +519,6 @@ TEST_F(StackEnv, HasTableAt)
     EXPECT_FALSE(Q.hastableat( 5));
 }
 
-#if 0
 static int dummyfunc(lua_State*){ return 0; }
 
 TEST_F(StackEnv, HasFunctionAt)
@@ -538,7 +537,6 @@ TEST_F(StackEnv, HasFunctionAt)
     EXPECT_FALSE(Q.hasfunctionat( 4));
     EXPECT_FALSE(Q.hasfunctionat( 5));
 }
-#endif
 
 TEST_F(StackEnv, AbsIndex)
 {
