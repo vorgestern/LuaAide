@@ -340,7 +340,7 @@ TEST_F(StackEnv, Version)
     ASSERT_EQ(504, version(Q));
 }
 
-TEST_F(StackEnv, InitialHeight)
+TEST_F(StackEnv, HeightInitial)
 {
     ASSERT_EQ(0, height(Q));
 }
@@ -538,7 +538,7 @@ TEST_F(StackEnv, HasFunctionAt)
     EXPECT_FALSE(Q.hasfunctionat( 5));
 }
 
-TEST_F(StackEnv, AbsIndex)
+TEST_F(StackEnv, LuaAbsIndex)
 {
     Q<<21<<22<<23<<"hoppla";
     const auto Hoppla=Q.index(-1);
@@ -550,7 +550,7 @@ TEST_F(StackEnv, AbsIndex)
     ASSERT_TRUE(Q.hasboolat(stackindex(Hoppla)));
 }
 
-TEST_F(StackEnv, Code)
+TEST_F(StackEnv, LuaCode)
 {
     Q<<LuaCode("return 21");
     ASSERT_TRUE(Q.hasfunctionat(-1));
@@ -559,7 +559,7 @@ TEST_F(StackEnv, Code)
     ASSERT_EQ(21, Q.toint(-1));
 }
 
-TEST_F(StackEnv, Global)
+TEST_F(StackEnv, LuaGlobal)
 {
     Q<<LuaCode(R"xxx(a=21 b="hoppla")xxx")>>0;
     Q.clear();
@@ -570,7 +570,7 @@ TEST_F(StackEnv, Global)
     ASSERT_STREQ("hoppla", Q.tostring(-2));
 }
 
-TEST_F(StackEnv, DotCall)
+TEST_F(StackEnv, LuaDotCall)
 {
     Q<<LuaCode(R"xxx(
         A={
@@ -583,7 +583,7 @@ TEST_F(StackEnv, DotCall)
     ASSERT_STREQ("x=alpha", Q.tostring(-1));
 }
 
-TEST_F(StackEnv, ColonCall)
+TEST_F(StackEnv, LuaColonCall)
 {
     Q<<LuaCode(R"xxx(
         local mt={
@@ -598,7 +598,7 @@ TEST_F(StackEnv, ColonCall)
     ASSERT_STREQ("x=alpha, a=beta", Q.tostring(-1));
 }
 
-TEST_F(StackEnv, ColonCallNotAMethod)
+TEST_F(StackEnv, LuaColonCallNotAMethod)
 {
     Q<<LuaCode(R"xxx(
         local mt={
@@ -614,19 +614,71 @@ TEST_F(StackEnv, ColonCallNotAMethod)
     ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
 }
 
-// Noch zu testen:
-// ===============
-// LuaValue
-// LuaAbsIndex
-// LuaUpValue
-// LuaLightUserData
-// LuaChunk
-// LuaClosure
-// LuaField
-// LuaGlobalCall
-// LuaTable
-// LuaArray
-// LuaCall (?)
-// LuaIterator
+// Teststatus LuaStack:
+// ====================
+// + version
+// + height
+// - <<(ostream)
+// + clear
+// + swap
+// + drop
+// + dup
+// + index (LuaAbsIndex)
+// - <<LuaSwap
+// + <<LuaRotate
+// - <<bool
+// - <<int
+// - <<unsigned
+// - <<const char[]
+// - <<float
+// - <<double
+// - <<LuaValue
+// - <<LuaUpValue
+// + <<LuaGlobal
+// - <<LuaNil
+// - <<LuaTable
+// - <<LuaLightUserData
+// - <<LuaClosure
+// + <<LuaCode
+// - <<lua_CFunction
+// - <<LuaChunk
+// + <<LuaColonCall
+// + <<LuaDotCall
+// - <<LuaGlobalCall
+// - <<LuaArray
+//
+// - >>LuaField
+// - >>LuaGlobal
+// - >>LuaError
+//
+// + posvalid
+// + hasnilat
+// + hasstringat
+// + hasboolat
+// + hasintat
+// + hastableat
+// + hasfunctionat
+// - hasthreadat
+// - hasuserdataat
+//
+// - tostring
+// - tobool
+// - toint
+// - todouble
+//
+// - dofile
+// - dostring
+//
+// - New
+// - Close
+// - stringrepr
+
+// Teststatus LuaCall:
+// ===================
+// -
+
+// Teststatus Sonstige:
+// ====================
+// - LuaIterator
 
 #endif
