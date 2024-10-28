@@ -143,8 +143,9 @@ LuaStack&LuaStack::clear()
 {
     const int ns=lua_gettop(L);
     if (ns>0) lua_pop(L, ns);
-    return *this;
+    return*this;
 }
+
 LuaStack&LuaStack::drop(unsigned num)
 {
     const int nd=(int)num;
@@ -157,7 +158,7 @@ LuaStack&LuaStack::swap()
 {
     lua_pushvalue(L, -2);
     lua_remove(L, -3);
-    return *this;
+    return*this;
 }
 
 bool LuaStack::dofile(const char filename[], int argc, char*argv[])
@@ -215,8 +216,7 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
     //           C.name="Funktion"
     //           C.numargs=3
     // Auf dem Stack liegt zu Beginn: [X, a, b, c]
-    const auto object=index(-1-C.numargs);     // -4 zeigt auf X
-    // Ermittle die Elementfunktion X[name].
+    const auto object=index(-1-C.numargs);
     lua_getfield(L, stackindex(object), C.name); // [X, a, b, c, Funktion]
     if (hasfunctionat(-1))
     {
@@ -228,7 +228,7 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
     else
     {
         char pad[100];
-        sprintf(pad, "%s is not a method but ", C.name);
+        snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
         const auto str=pad+stringrepr(-1);
         drop(1);
         *this<<str<<LuaClosure(errfunction, 1);
@@ -281,7 +281,7 @@ string LuaStack::stringrepr(int index)const
         {
             const double x=lua_tonumber(L, index);
             char pad[100];
-            sprintf(pad, "%g", x);
+            snprintf(pad, sizeof(pad), "%g", x);
             return pad;
         }
         case LUA_TSTRING:
@@ -293,14 +293,14 @@ string LuaStack::stringrepr(int index)const
         {
             const char*s=(char*)lua_touserdata(L, index);
             char pad[100];
-            sprintf(pad, "lightuserdata(%p)", s);
+            snprintf(pad, sizeof(pad), "lightuserdata(%p)", s);
             return pad;
         }
         case LUA_TUSERDATA:
         {
             const char*s=(char*)lua_touserdata(L, index);
             char pad[100];
-            sprintf(pad, "userdata(%p)", s);
+            snprintf(pad, sizeof(pad), "userdata(%p)", s);
             return pad;
         }
         case LUA_TTABLE:
@@ -316,7 +316,7 @@ string LuaStack::stringrepr(int index)const
         default:
         {
             char pad[100];
-            sprintf(pad, "<other type %d>", t);
+            snprintf(pad, sizeof(pad), "<undocumented type %d>", t);
             return pad;
         }
     }
