@@ -475,4 +475,49 @@ TEST_F(StackEnv, HasFunctionAt)
 }
 #endif
 
+TEST_F(StackEnv, AbsIndex)
+{
+    Q<<21<<22<<23<<"hoppla";
+    const auto Hoppla=Q.index(-1);
+    Q<<101<<102<<103;
+    ASSERT_TRUE(Q.hasstringat(stackindex(Hoppla)));
+    Q.drop(3);
+    ASSERT_TRUE(Q.hasstringat(stackindex(Hoppla)));
+    Q.drop(1)<<true<<"hoppla woanders";
+    ASSERT_TRUE(Q.hasboolat(stackindex(Hoppla)));
+}
+
+TEST_F(StackEnv, Code)
+{
+    Q<<LuaCode("return 21");
+    ASSERT_TRUE(Q.hasfunctionat(-1));
+    LuaCall(Q)>>1;
+    ASSERT_TRUE(Q.hasintat(-1));
+    ASSERT_EQ(21, Q.toint(-1));
+}
+
+TEST_F(StackEnv, Global)
+{
+    Q<<LuaCode(R"xxx(a=21 b="hoppla")xxx")>>0;
+    Q.clear();
+    Q<<LuaGlobal("b")<<LuaGlobal("a");
+    ASSERT_TRUE(Q.hasintat(-1));
+    ASSERT_EQ(21, Q.toint(-1));
+    ASSERT_TRUE(Q.hasstringat(-2));
+    ASSERT_STREQ("hoppla", Q.tostring(-2));
+}
+
+TEST_F(StackEnv, DotCall)
+{
+    Q<<LuaCode(R"xxx(
+        A={
+            demo=function(x) return string.format("x=%s", x) end
+        }
+    )xxx")>>0;
+    Q.clear();
+    Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_STREQ("x=alpha", Q.tostring(-1));
+}
+
 #endif
