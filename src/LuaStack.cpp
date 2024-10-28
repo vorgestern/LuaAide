@@ -244,11 +244,11 @@ LuaCall LuaStack::operator<<(const LuaChunk&X)
     return LuaCall(L);
 }
 
-LuaCall operator<<(LuaStack&S, const LuaCode&C)
+LuaCall LuaStack::operator<<(const LuaCode&C)
 {
-    const int rc=luaL_loadstring(S, C.text);
-    if (rc!=LUA_OK) lua_error(S);
-    return LuaCall(S);
+    const int rc=luaL_loadstring(L, C.text);
+    if (rc!=LUA_OK) lua_error(L);
+    return LuaCall(L);
 }
 
 LuaCall LuaStack::operator<<(lua_CFunction X)
