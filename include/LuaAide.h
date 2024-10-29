@@ -289,8 +289,20 @@ public:
     LuaCall(lua_State*);
     LuaCall(LuaStack&);
 
-    using LuaStack::operator>>;     // Damit der folgende Operator nicht alle geerbten versteckt.
+    using LuaStack::operator>>;     // Damit der folgende Operator nicht alle geerbten verdeckt.
     int operator>>(int numresults); // Führt den Aufruf aus. Gibt rc zurück.
+
+    int operator>>(std::pair<int,int>);
+        // Führt den Aufruf mit numresults='second' aus,
+        // entfernt 'first' Elemente, die vor dem LuaCall auf dem Stack gelegen haben.
+        // Dies vereinfacht die Wiederverwendung von Stackelementen für einen LuaCall.
+        // Beispiel:
+        // Q<<a;
+        // Q<<function<<LuaValue(-2)>>make_pair(1,1);
+        // Dabei hat a aufgrund vorausgegangener Aktionen bereits auf dem Stack gelegen.
+        // Jetzt soll es mit 'function' weiterverarbeitet werden.
+        // Man darf es aber nicht mit Q<<function<<rotate(-2)>>1 hervorholen, weil man dabei
+        // die Buchhaltung von LuaCall durcheinanderbringt.
 
     // Überschreibe die Ausgabefunktionen mit Varianten, die LuaCall statt LuaStack zurückgeben.
     LuaCall&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return*this; }

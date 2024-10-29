@@ -50,14 +50,12 @@ int main()
             }
         )xxx")>>0;
         Q<<LuaGlobal("Closures")<<LuaDotCall("fleissig")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1;
-        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>1;
-        Q<<luaswap; Q.drop(1);
-        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>0;
+        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
+        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
 
         Q<<LuaGlobal("Closures")<<LuaDotCall("faul")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1;
-        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>1;
-        Q<<luaswap; Q.drop(1);
-        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>0;
+        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
+        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
     }
     return 0;
 }
