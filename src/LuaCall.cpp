@@ -109,7 +109,7 @@ int demofunc(lua_State*L) // [n] ==> [n+1, "hoppla"]
         const int arg=Q.toint(-1);
         Q<<arg+1;
     }
-    else Q<<nil;
+    else Q<<luanil;
     Q<<"hoppla";
     return 2;
 }
@@ -122,7 +122,7 @@ int demoerror(lua_State*L) // [n] ==> [n+1, "hoppla", e]
         const int arg=Q.toint(-1);
         Q<<arg+1;
     }
-    else Q<<nil;
+    else Q<<luanil;
     Q<<"hoppla";
     Q<<"demoerror">>luaerror;
     return 0;

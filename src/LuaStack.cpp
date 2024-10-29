@@ -550,7 +550,7 @@ TEST_F(StackEnv, HasStringAt)
 
 TEST_F(StackEnv, HasBoolAt)
 {
-    Q<<-21.2<<false<<"abc"<<true<<nil;
+    Q<<-21.2<<false<<"abc"<<true<<luanil;
     ASSERT_EQ(5, height(Q));
     EXPECT_FALSE(Q.hasboolat(-6));
     EXPECT_FALSE(Q.hasboolat(-5));
