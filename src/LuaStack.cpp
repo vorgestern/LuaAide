@@ -1,6 +1,7 @@
 
 #include <LuaAide.h>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -260,6 +261,31 @@ LuaCall LuaStack::operator<<(const LuaChunk&X)
 LuaCall LuaStack::operator<<(const LuaCode&C)
 {
     const int rc=luaL_loadstring(L, C.text);
+    if (rc!=LUA_OK) lua_error(L);
+    return LuaCall(L);
+}
+
+namespace {
+    struct singlechunkreader_context
+    {
+        const char*chunk {nullptr};
+        size_t chunklen {0};
+        bool gelesen {false};
+    };
+    const char*singlechunkreader(lua_State*L, void*context, size_t*size)
+    {
+        auto cx=reinterpret_cast<singlechunkreader_context*>(context);
+        if (cx->gelesen) return *size=0,nullptr;
+        *size=cx->chunklen;
+        cx->gelesen=true;
+        return cx->chunk;
+    }
+}
+LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
+{
+    auto [tag,C]=X;
+    singlechunkreader_context cx {C.text, strlen(C.text), false};
+    const int rc=lua_load(L, singlechunkreader, &cx, tag.data(), nullptr);
     if (rc!=LUA_OK) lua_error(L);
     return LuaCall(L);
 }

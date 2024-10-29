@@ -223,6 +223,7 @@ public:
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaCall  operator<<(const LuaCode&);
+    LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
     LuaCall  operator<<(const LuaChunk&);
     LuaCall  operator<<(const LuaColonCall&);
