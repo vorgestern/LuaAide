@@ -11,9 +11,9 @@
 class LuaStack;
 class LuaCall;
 
-const class LuaNil {} nil;
-const class LuaError {} luaerror;
-const class LuaSwap {} luaswap;
+const enum class LuaNil {a} nil=LuaNil::a;
+const enum class LuaError {a} luaerror=LuaError::a;
+const enum class LuaSwap {a} luaswap=LuaSwap::a;
 struct LuaRotate { int index; };
 constexpr const LuaRotate luarot_3 {-3}; // X a b   ==> a b X
 constexpr const LuaRotate luarot_4 {-4}; // X a b c ==> a b c X
