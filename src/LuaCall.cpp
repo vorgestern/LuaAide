@@ -154,6 +154,21 @@ TEST_F(CallEnv, CallIntError)
     ASSERT_STREQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
+TEST_F(CallEnv, CallIntError2)
+{
+                                                    ASSERT_EQ(0, height(Q));
+    Q<<demoerror>>LuaGlobal("demoerror");
+    Q<<LuaCode(R"xxx(function gehtnicht(x) return demoerror(x+100) end)xxx")>>0;
+    Q<<21<<22<<23;                                                  ASSERT_EQ(3, height(Q));
+    const auto rc=Q<<LuaGlobalCall("gehtnicht")<<LuaValue(-2)>>2;   ASSERT_EQ(LUA_ERRRUN, rc);
+                                                                    ASSERT_EQ(4, height(Q));
+    ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==21);
+    ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
+    ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==23);
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_STREQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
+}
+
 TEST_F(CallEnv, CallPair)
 {
     ASSERT_EQ(0, height(Q));
