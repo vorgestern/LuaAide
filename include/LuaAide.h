@@ -294,6 +294,7 @@ public:
 
     // Überschreibe die Ausgabefunktionen mit Varianten, die LuaCall statt LuaStack zurückgeben.
     LuaCall&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const LuaValue&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(const char s[]){ LuaStack::operator<<(s); return*this; }
     LuaCall&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return*this; }
