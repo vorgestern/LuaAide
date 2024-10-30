@@ -3,7 +3,7 @@
 
 using namespace std;
 
-tuple<int, int, int>keynum(lua_State*L)
+static tuple<int, int, int>keynum(lua_State*L)
 {
     LuaStack Q(L);
     int num_index=0, num_key=0, max_index=-1;
@@ -27,6 +27,12 @@ const auto brklen=120u;
 static void format1(lua_State*L, vector<string>&result, int level)
 {
     LuaStack Q(L);
+    if (!lua_checkstack(L, 5))
+    {
+        string memo="--[[Recursion stopped (Lua is out of stack space).]]";
+        if (result.size()>0) result.back().append(memo);
+        else result.push_back(memo);
+    }
     string indent(4*level, ' ');
     const auto t=lua_type(Q, -1);
     switch (t)
@@ -85,18 +91,17 @@ static void format1(lua_State*L, vector<string>&result, int level)
         case LUA_TTABLE:
         {
             const auto [num_key, num_index, max_index]=keynum(Q);
-            char pad[100];
-            sprintf(pad, " --[[%d %d %d]]", num_key, num_index, max_index);
-            // result.back().append(pad);
             // Hier beginnt die Rekursion in die Tabelle.
             const string indent1(4*(level+1), ' ');
             if (num_key==0 && num_index==0)
             {
+                // Leere Tabelle
                 if (result.size()>0) result.back().append("{}");
                 else result.push_back("{}");
             }
             else if (num_key==0 && num_index>0 && max_index==num_index)
             {
+                // Vektor
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
                 const string indent_cont(4*(level+1), ' ');
@@ -119,6 +124,7 @@ static void format1(lua_State*L, vector<string>&result, int level)
             }
             else
             {
+                // Allgemeine Tabelle
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
                 for (LuaIterator I(Q); next(I); ++I)
