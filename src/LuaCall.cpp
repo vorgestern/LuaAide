@@ -22,18 +22,20 @@ int LuaCall::operator>>(int numresults)
     const int top0=lua_gettop(L);
     const auto now=index(-1);
     const int numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
-    lua_pushcfunction(L, TracebackAdder);             // [func, args[numargs], errorhandler]
+    lua_pushcfunction(L, TracebackAdder);                   // [func, args[numargs], errorhandler]
     const int idx=-(numargs+2);
-    lua_rotate(L, idx, 1);                            // [errorhandler, func, args[numargs]]
-    const int rc=lua_pcall(L, numargs, numresults, idx);
+    lua_rotate(L, idx, 1);                                  // [errorhandler, func, args[numargs]]
+    const int rc=lua_pcall(L, numargs, numresults, idx);    // [errorhandler, results[numresults]] | [errorhandler, errorobject]
     const int top1=lua_gettop(L);
     switch (rc)
     {
-        case LUA_OK:
+        case LUA_OK:                                        // [errorhandler, results[numresults]]
         {
-            const int results=top1-top0+(numargs+1)-1;
+            // Das hier scheint unsinnig: Die Anzahl der Rückgabewerte ist in jedem Fall numresults,
+            // wozu wird hier gerechnet?
+            const int results=top1-top0+(numargs+1)-1;      // [results[numresults]]
             lua_remove(L, -results-1);
-            break;
+            return rc;
         }
         default:
         case LUA_ERRRUN:
@@ -43,11 +45,11 @@ int LuaCall::operator>>(int numresults)
         // Dieser Fehlercode wurde in Lua 5.4 entfernt.
         // Vgl. http://www.lua.org/manual/5.4/manual.html#8.3
         {
-            lua_remove(L, -2);
-            break;
+                                                            // [errorhandler, errorobject]
+            lua_remove(L, -2);                              // [errorobject]
+            return rc;
         }
     }
-    return rc;
 }
 
 int LuaCall::operator>>(std::pair<int,int>X)
