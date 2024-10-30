@@ -8,6 +8,19 @@ using fspath=filesystem::path;
 
 int formatany(lua_State*);
 
+int demofail(lua_State*L)
+{
+    LuaStack Q(L);
+    // Dieses Skript lässt sich nicht kompilieren (fehlende Klammer).
+    Q<<make_pair("Failing Demo", LuaCode(R"xxx(
+        function translate(A,
+            return 1
+        end
+    )xxx"))>>0;
+    Q<<1;
+    return 1;
+}
+
 namespace {
 extern "C" int pwd(lua_State*L)
 {
@@ -58,6 +71,8 @@ extern "C" int luaopen_luaaide(lua_State*L)
         <<"0.1">>LuaField("version")
         <<pwd>>LuaField("pwd")
         <<cd>>LuaField("cd")
-        <<formatany>>LuaField("formatany");
+        <<formatany>>LuaField("formatany")
+        <<demofail>>LuaField("demofail") // Produziert eine Fehlermeldung aus einem Aufruf von LuaAide.
+    ;
     return 1;
 }
