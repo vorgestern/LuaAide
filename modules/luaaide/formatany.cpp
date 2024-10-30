@@ -24,8 +24,24 @@ static tuple<int, int, int>keynum(lua_State*L)
 const string quot="\"";
 const auto brklen=120u;
 
-static void format1(lua_State*L, vector<string>&result, int level)
+static void format1(lua_State*L, vector<string>&result, int level, int usedlevel)
 {
+    //  Zum Unterschied zwischen level und usedlevel:
+    //  'Level' ist exakt der Hierarchielevel.
+    //  'Usedlevel' wird nur inkrementiert, wenn tatächlich Ausgaben in neue Zeilen gemacht werden:
+    //  {                                 inkrementiert usedlevel bei jedem Rekursionsschritt
+    //      a={
+    //          aa={
+    //          }
+    //      },
+    //  }
+    //  -----------------------
+    //  {1, 2, 3,                         inkrementiert usedlevel nur einmal
+    //      {11, 12, 13,
+    //          {
+    //          }
+    //      }
+    //  }
     LuaStack Q(L);
     if (!lua_checkstack(L, 5))
     {
@@ -101,11 +117,11 @@ static void format1(lua_State*L, vector<string>&result, int level)
             }
             else if (num_key==0 && num_index>0 && max_index==num_index)
             {
-                // Vektor
+                // Vektor, Liste
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
-                const string indent_cont(4*(level+1), ' ');
                 enum {cont, brk} contstate=cont;
+                string indent_cont(4*(usedlevel+1), ' ');
                 for (LuaIterator I(Q); next(I); ++I)
                 {
                     if ((unsigned)I>1)
@@ -117,7 +133,7 @@ static void format1(lua_State*L, vector<string>&result, int level)
                             result.push_back(indent_cont);
                         }
                     }
-                    format1(L, result, level+1);
+                    format1(L, result, level+1, usedlevel);
                     contstate=(result.back().size()>brklen)?brk:cont;
                 }
                 result.back().append("}");
@@ -145,7 +161,7 @@ static void format1(lua_State*L, vector<string>&result, int level)
                     {
                         result.push_back(indent1+"[???]=");
                     }
-                    format1(L, result, level+1);
+                    format1(L, result, level+1, usedlevel+1);
                 }
                 result.push_back(indent+"}");
             }
@@ -166,7 +182,7 @@ int formatany(lua_State*L)
 {
     LuaStack Q(L);
     vector<string>result;
-    format1(L, result, 0);
+    format1(L, result, 0, 0);
     Q.drop(1)<<"return "<<LuaGlobal("table")<<LuaDotCall("concat")<<result<<"\n">>1;
     lua_concat(Q, 2);
     return 1;
