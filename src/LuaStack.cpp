@@ -251,13 +251,6 @@ LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
     return LuaCall(L);
 }
 
-LuaCall LuaStack::operator<<(const LuaChunk&X)
-{
-    const int rc=luaL_loadbufferx(L, X.buffer, X.bufferlength, X.buffername, "bt");
-    if (rc!=LUA_OK) lua_error(L);
-    return LuaCall(L);
-}
-
 LuaCall LuaStack::operator<<(const LuaCode&C)
 {
     const int rc=luaL_loadstring(L, C.text);
@@ -716,7 +709,6 @@ TEST_F(StackEnv, LuaColonCallNotAMethod)
 // - <<LuaClosure
 // + <<LuaCode
 // - <<lua_CFunction
-// - <<LuaChunk
 // + <<LuaColonCall
 // + <<LuaDotCall
 // - <<LuaGlobalCall
