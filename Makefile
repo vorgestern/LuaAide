@@ -47,11 +47,14 @@ b/%: examples/%.cpp libLuaAide.a $(XHEADER)
 
 # ============================================================
 
-luaaide.so: b/luaaide/main.o b/luaaide/formatany.o libLuaAide.a
+luaaide.so: b/luaaide/main.o b/luaaide/formatany.o b/luaaide/keyescape.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
 b/luaaide/main.o: modules/luaaide/main.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
 b/luaaide/formatany.o: modules/luaaide/formatany.cpp $(XHEADER)
+	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
+
+b/luaaide/keyescape.o: modules/luaaide/keyescape.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
