@@ -19,22 +19,17 @@ static int TracebackAdder(lua_State*Q)
 
 int LuaCall::operator>>(int numresults)
 {
-    const int top0=lua_gettop(L);
     const auto now=index(-1);
-    const int numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
+    const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
     lua_pushcfunction(L, TracebackAdder);                   // [func, args[numargs], errorhandler]
     const int idx=-(numargs+2);
     lua_rotate(L, idx, 1);                                  // [errorhandler, func, args[numargs]]
     const int rc=lua_pcall(L, numargs, numresults, idx);    // [errorhandler, results[numresults]] | [errorhandler, errorobject]
-    const int top1=lua_gettop(L);
     switch (rc)
     {
         case LUA_OK:                                        // [errorhandler, results[numresults]]
         {
-            // Das hier scheint unsinnig: Die Anzahl der Rückgabewerte ist in jedem Fall numresults,
-            // wozu wird hier gerechnet?
-            const int results=top1-top0+(numargs+1)-1;      // [results[numresults]]
-            lua_remove(L, -results-1);
+            lua_remove(L, -1-numresults);                   // [results[numresults]]
             return rc;
         }
         default:
@@ -156,7 +151,7 @@ TEST_F(CallEnv, CallIntError)
     ASSERT_STREQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
-TEST_F(CallEnv, CallIntError2)
+TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
 {
                                                     ASSERT_EQ(0, height(Q));
     Q<<demoerror>>LuaGlobal("demoerror");
@@ -171,7 +166,7 @@ TEST_F(CallEnv, CallIntError2)
     ASSERT_STREQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
 }
 
-TEST_F(CallEnv, CallIntError2a)
+TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
 {
                                                             ASSERT_EQ(0, height(Q));
     Q<<demoerror>>LuaGlobal("demoerror");                   ASSERT_EQ(0, height(Q));
