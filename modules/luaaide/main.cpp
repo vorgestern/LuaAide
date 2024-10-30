@@ -7,6 +7,7 @@ using namespace std;
 using fspath=filesystem::path;
 
 int formatany(lua_State*);
+int keyescape(lua_State*);
 
 int demofail(lua_State*L)
 {
@@ -72,6 +73,7 @@ extern "C" int luaopen_luaaide(lua_State*L)
         <<pwd>>LuaField("pwd")
         <<cd>>LuaField("cd")
         <<formatany>>LuaField("formatany")
+        <<keyescape>>LuaField("keyescape")
         <<demofail>>LuaField("demofail") // Produziert eine Fehlermeldung aus einem Aufruf von LuaAide.
     ;
     return 1;
