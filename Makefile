@@ -1,4 +1,10 @@
 
+# 1 Schaffe LuaChunk ab.
+# 2 Lege vor lua_error eine Stringdarstellung des Stacks global ab.
+# 3 Benutze luaL_loadbufferx statt lua_load.
+# 4 Bearbeite alle Vorkommen von lua_error() und >>luaerror.
+# 5 Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
+
 XFILES   := LuaAide LuaCall LuaChunk LuaStack stringformat
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
