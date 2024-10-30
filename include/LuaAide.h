@@ -274,6 +274,7 @@ public:
     }
 
     std::string stringrepr(int index)const;
+    std::string errormessage();
 };
 
 class LuaCall: public LuaStack

@@ -378,6 +378,15 @@ string LuaStack::stringrepr(int index)const
     }
 }
 
+string LuaStack::errormessage()
+{
+    if (height(*this)<1) return "No error message available (stack empty)";
+    else if (!hasstringat(-1)) return "No error message available (not a string)";
+    auto msg=tostring(-1);
+    lua_pop(L, 1);
+    return msg;
+}
+
 // ============================================================================
 
 #ifdef UNITTEST
