@@ -50,39 +50,32 @@ int LuaCall::operator>>(int numresults)
 int LuaCall::operator>>(std::pair<int,int>X)
 {
     const int numtodrop=X.first, numresults=X.second;
-    const int top0=height(*this);
     const auto now=index(-1);
-    const int numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
-    lua_pushcfunction(L, TracebackAdder);                           // [other[numtodrop], func, args[numargs], errorhandler]
-    const int idx=-(numargs+2);
-    lua_rotate(L, idx, 1);                                          // [other[numtodrop], errorhandler, func, args[numargs]]
-    const int rc=lua_pcall(L, numargs, numresults, idx);
-    const int top1=height(*this);
+    const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
+    const int msgh=-(numargs+2);
+    lua_pushcfunction(L, TracebackAdder);                           // [other[numtodrop], func, args[numargs], messagehandler]
+    lua_rotate(L, msgh, 1);                                         // [other[numtodrop], messagehandler, func, args[numargs]]
+    const int rc=lua_pcall(L, numargs, numresults, msgh);
     switch (rc)
     {
-        case LUA_OK:                                                // [other[numtodrop], errorhandler, results[numresuls]]
+        case LUA_OK:                                                // [other[numtodrop], messagehandler, results[numresuls]]
         {
-            const auto results=top1-top0+(numargs+1)-1;
-            lua_remove(L, -results-1);                              // [other[numtodrop], results[numresults]]
+            lua_remove(L, -1-numresults);                           // [other[numtodrop], results[numresults]]
             lua_rotate(L, -(numresults+numtodrop), numresults);     // [results[numresults], other[numtodrop]]
             lua_pop(L, numtodrop);                                  // [results[numresults]]
-            break;
+            return rc;
         }
         default:
-        case LUA_ERRRUN:
-        case LUA_ERRMEM:  // memory allocation error. For such errors, Lua does not call the message handler
-        case LUA_ERRERR:  // error while running the message handler
-        // case LUA_ERRGCMM: // error while running garbage collection metamethod (__gc)
-        // Dieser Fehlercode wurde in Lua 5.4 entfernt.
-        // Vgl. http://www.lua.org/manual/5.4/manual.html#8.3
+        case LUA_ERRRUN: // Laufzeitfehler
+        case LUA_ERRMEM: // OutOfMemory
+        case LUA_ERRERR: // Fehler im Messagehandler
         {
-                                                // [other[numtodrop], errorhandler, errorobject]
-            lua_rotate(L, -(numtodrop+2), 1);   // [errorobject, other[numtodrop], errorhandler]
+                                                // [other[numtodrop], messagehandler, errorobject]
+            lua_rotate(L, -(numtodrop+2), 1);   // [errorobject, other[numtodrop], messagehandler]
             lua_pop(L, numtodrop+1);            // [errorobject]
-            break;
+            return rc;
         }
     }
-    return rc;
 }
 
 // ============================================================================
@@ -153,7 +146,7 @@ TEST_F(CallEnv, CallIntError)
 
 TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
 {
-                                                    ASSERT_EQ(0, height(Q));
+                                                                    ASSERT_EQ(0, height(Q));
     Q<<demoerror>>LuaGlobal("demoerror");
     Q<<LuaCode(R"xxx(function gehtnicht(x) return demoerror(x+100) end)xxx")>>0;
     Q<<21<<22<<23;                                                  ASSERT_EQ(3, height(Q));
