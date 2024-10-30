@@ -4,6 +4,14 @@
 
 using namespace std;
 
+int panichandler(lua_State*L)
+{
+    LuaStack Q(L);
+    // printf("Lua panics, %d items on Stack\n", height(Q));
+    throw runtime_error(Q.errormessage());
+    return 0;
+}
+
 int democlosure(lua_State*L)
 {
     LuaStack Q(L);
@@ -21,11 +29,11 @@ int democlosure(lua_State*L)
     return 1;
 }
 
-int main()
+int main_throwing(lua_State*L)
 {
-    LuaStack Q=LuaStack::New(true, nullptr);
+    LuaStack Q=L;
     if (!Q) return printf("Failed to initialise Lua\n"), 1;
-    if (true)
+    if (false)
     {
         vector<string>Arg {"Hier", "wohnen", "die", "Schlümpfe"};
         Q<<Arg;
@@ -38,24 +46,45 @@ int main()
     }
     if (true)
     {
-        Q<<LuaCode(R"xxx(
-            function translate(A, M)
+        Q<<21<<22<<23;
+        Q<<make_pair("Closuredemo", LuaCode(R"xxx(
+            function translate(A, M
                 local R={}
                 for _,e in ipairs(A) do table.insert(R, M[e] or e) end
                 return R
             end
             Closures={
                 fleissig=function(A) return translate(A, {Hier="Dort", wohnen="arbeiten", ["Schlümpfe"]="Zwerge"}) end,
-                faul=    function(A) return translate(A, {Hier="Wo", wohnen="schlafen", ["Schlümpfe"]="Heinzelmännchen"}) end
+                faul=function(A)
+                    error "faul!"
+                    return translate(A, {Hier="Wo", wohnen="schlafen", ["Schlümpfe"]="Heinzelmännchen"})
+                end
             }
-        )xxx")>>0;
-        Q<<LuaGlobal("Closures")<<LuaDotCall("fleissig")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1;
-        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
-        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
-
-        Q<<LuaGlobal("Closures")<<LuaDotCall("faul")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1;
-        Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
-        Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
+        )xxx"))>>0;
+        if (const auto rc=Q<<LuaGlobal("Closures")<<LuaDotCall("fleissig")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1; rc==0)
+        {
+            Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
+            Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
+        }
+        else return printf("%s\n", Q.errormessage().c_str()), 1;
+        if (const auto rc=Q<<LuaGlobal("Closures")<<LuaDotCall("faul")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1; rc==0)
+        {
+            Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);
+            Q<<LuaGlobalCall("print")<<LuaValue(-2)>>make_pair(1, 0);
+        }
+        else return printf("%s\n", Q.errormessage().c_str()), 1;
     }
     return 0;
+}
+
+int main()
+{
+    LuaStack Q=LuaStack::New(true, panichandler);
+    try { return main_throwing(Q); }
+    catch (const runtime_error&E)
+    {
+        printf("Runtime error:\n%s\n", E.what());
+        cout<<Q<<"\n";
+        return 0;
+    }
 }
