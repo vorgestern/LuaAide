@@ -3,7 +3,26 @@
 
 using namespace std;
 
+tuple<int, int, int>keynum(lua_State*L)
+{
+    LuaStack Q(L);
+    int num_index=0, num_key=0, max_index=-1;
+    for (LuaIterator J(Q); next(J); ++J)
+    {
+        // [key, value]
+        if (Q.hasintat(-2))
+        {
+            ++num_index;
+            const int index=Q.toint(-2);
+            if (index>max_index) max_index=index;
+        }
+        else ++num_key;
+    }
+    return {num_key, num_index, max_index};
+}
+
 const string quot="\"";
+const auto brklen=120u;
 
 static void format1(lua_State*L, vector<string>&result, int level)
 {
@@ -65,31 +84,65 @@ static void format1(lua_State*L, vector<string>&result, int level)
         }
         case LUA_TTABLE:
         {
-            if (result.size()>0) result.back().append("{");
-            else result.push_back("{");
+            const auto [num_key, num_index, max_index]=keynum(Q);
+            char pad[100];
+            sprintf(pad, " --[[%d %d %d]]", num_key, num_index, max_index);
+            // result.back().append(pad);
             // Hier beginnt die Rekursion in die Tabelle.
             const string indent1(4*(level+1), ' ');
-            for (LuaIterator I(Q); next(I); ++I)
+            if (num_key==0 && num_index==0)
             {
-                if ((unsigned)I>1) result.back().append(",");
-                const auto jkey=Q.index(-2); // , jvalue=Q.index(-1);
-                if (Q.hasintat(-2))
-                {
-                    char pad[100];
-                    snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
-                    result.push_back(indent1+"["+pad+"]=");
-                }
-                else if (Q.hasstringat(-2))
-                {
-                    result.push_back(indent1+Q.tostring(stackindex(jkey))+"=");
-                }
-                else
-                {
-                    result.push_back(indent1+"[???]=");
-                }
-                format1(L, result, level+1);
+                if (result.size()>0) result.back().append("{}");
+                else result.push_back("{}");
             }
-            result.push_back(indent+"}");
+            else if (num_key==0 && num_index>0 && max_index==num_index)
+            {
+                if (result.size()>0) result.back().append("{");
+                else result.push_back("{");
+                const string indent_cont(4*(level+1), ' ');
+                enum {cont, brk} contstate=cont;
+                for (LuaIterator I(Q); next(I); ++I)
+                {
+                    if ((unsigned)I>1)
+                    {
+                        if (contstate==cont) result.back().append(", ");
+                        else
+                        {
+                            result.back().append(",");
+                            result.push_back(indent_cont);
+                        }
+                    }
+                    format1(L, result, level+1);
+                    contstate=(result.back().size()>brklen)?brk:cont;
+                }
+                result.back().append("}");
+            }
+            else
+            {
+                if (result.size()>0) result.back().append("{");
+                else result.push_back("{");
+                for (LuaIterator I(Q); next(I); ++I)
+                {
+                    if ((unsigned)I>1) result.back().append(",");
+                    const auto jkey=Q.index(-2); // , jvalue=Q.index(-1);
+                    if (Q.hasintat(-2))
+                    {
+                        char pad[100];
+                        snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
+                        result.push_back(indent1+"["+pad+"]=");
+                    }
+                    else if (Q.hasstringat(-2))
+                    {
+                        result.push_back(indent1+Q.tostring(stackindex(jkey))+"=");
+                    }
+                    else
+                    {
+                        result.push_back(indent1+"[???]=");
+                    }
+                    format1(L, result, level+1);
+                }
+                result.push_back(indent+"}");
+            }
             return;
         }
         default:

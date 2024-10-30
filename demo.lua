@@ -44,7 +44,7 @@ print(X.formatany {
             abb="Hier ist abb"
         }
     },
-    b={21, 22, 23, 24, 25, 26, 27, 28, 29, 30},
+    b={21, 22, 23, 24, 25, 26, 27, 28, 29, 30, "abcdefg", "hijklmnop", "qrstuvw", "mehr", "und", "noch", "mehr", "und", "immer", "noch", "mehr", "bis", "es", "reicht"},
     c=21,
     d=function(x) return x end
 })
