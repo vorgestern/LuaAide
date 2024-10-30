@@ -14,11 +14,11 @@ class LuaCall;
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
 const enum class LuaSwap {a} luaswap=LuaSwap::a;
-struct LuaRotate { int index; };
-constexpr const LuaRotate luarot_3 {-3}; // X a b   ==> a b X
-constexpr const LuaRotate luarot_4 {-4}; // X a b c ==> a b c X
-constexpr const LuaRotate luarot3  { 3}; // a b X   ==> X a b
-constexpr const LuaRotate luarot4  { 4}; // a b c X ==> X a b c
+const enum class LuaRotate:int {up4=-4, up3=-3, down3=3, down4=4}
+    luarot_4=LuaRotate::up4,
+    luarot_3=LuaRotate::up3,
+    luarot3=LuaRotate::down3,
+    luarot4=LuaRotate::down4;
 
 class LuaValue
 {
@@ -201,8 +201,9 @@ public:
 
     LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
     LuaStack&operator<<(LuaRotate X){
-        if (X.index<0) lua_rotate(L, X.index, -1);
-        else if (X.index>0) lua_rotate(L, -X.index, 1);
+        auto index=static_cast<int>(X);
+        if (index<0) lua_rotate(L, index, -1);
+        else if (index>0) lua_rotate(L, -index, 1);
         return*this;
     }
 

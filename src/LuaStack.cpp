@@ -438,8 +438,8 @@ TEST_F(StackEnv, SwapNeu)
 
 TEST_F(StackEnv, Rot3)
 {
-    ASSERT_EQ(3, luarot3.index);
-    ASSERT_EQ(-3, luarot_3.index);
+    ASSERT_EQ(3, static_cast<int>(luarot3));
+    ASSERT_EQ(-3, static_cast<int>(luarot_3));
     Q<<21<<22<<23<<luarot3;
     ASSERT_EQ(23, Q.toint(-3))<<Q;
     ASSERT_EQ(21, Q.toint(-2))<<Q;
