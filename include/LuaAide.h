@@ -241,7 +241,8 @@ public:
     bool hasnilat(int pos){ return posvalid(pos) && lua_isnil(L, pos)!=0; }
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
     bool hasboolat(int pos){ return posvalid(pos) && lua_isboolean(L, pos)!=0; }
-    bool hasintat(int pos){ return lua_isnumber(L, pos)!=0; }
+    bool hasintat(int pos){ return lua_isinteger(L, pos)!=0; }
+    bool hasnumberat(int pos){ return lua_isnumber(L, pos)!=0; }
     bool hastableat(int pos){ return lua_istable(L, pos)!=0; }
     bool hasfunctionat(int pos){ return posvalid(pos) && lua_isfunction(L, pos)!=0; }
     bool hasthreadat(int pos){ return lua_isthread(L, pos)!=0; }
