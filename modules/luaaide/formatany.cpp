@@ -38,8 +38,8 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     //      },
     //  }
     //  -----------------------
-    //  {1, 2, 3,                         inkrementiert usedlevel nur einmal
-    //      {11, 12, 13,
+    //  {1, 2, {}, 3,                     inkrementiert usedlevel nur einmal
+    //      {11, {}, 12, 13,
     //          {
     //          }
     //      }
