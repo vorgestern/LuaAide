@@ -10,14 +10,14 @@ XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 
-all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ModuleTest
+all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so ModuleTest
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest ModuleTest
 
 # ============================================================
 
 dir:
-	@mkdir -p b/luaaide bt
+	@mkdir -p b/luaaide b/ulutest bt
 
 # ============================================================
 
@@ -64,3 +64,17 @@ b/luaaide/keyescape.o: modules/luaaide/keyescape.cpp $(XHEADER)
 ModuleTest: modules/luaaide/testmain.cpp
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
+
+# ============================================================
+
+ulutest.so: b/ulutest/main.o b/ulutest/ltest.o libLuaAide.a
+	g++ -shared -fpic -o $@ $^
+
+b/ulutest/main.o: modules/ulutest/main.cpp
+	g++ -o $@ -c $< -fpic $(CPPFLAGS)
+
+b/ulutest/ltest.o: b/ulutest/ltest.luac
+	objcopy -I binary -O elf64-x86-64 --redefine-syms=modules/ulutest/syminfo $< $@
+
+b/ulutest/ltest.luac: modules/ulutest/ltest.lua
+	luac -o $@ $<
