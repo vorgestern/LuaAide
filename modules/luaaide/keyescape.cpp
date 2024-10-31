@@ -117,9 +117,9 @@ int keyescape1(lua_State*L)
         else
         {
             issymbol=false;
-            if (isprint(c))                 required++;
-            else if (c==0 || repr2.find(c)) required+=2;
-            else                            required+=4;
+            if (isprint(c))                             required++;
+            else if (c==0 || repr2.find(c)!=repr2.npos) required+=2;
+            else                                        required+=4;
         }
     }
     if (issymbol)
