@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int keyescape1(lua_State*L)
+int keyescape(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)<1)

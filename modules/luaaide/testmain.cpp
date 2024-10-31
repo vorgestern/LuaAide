@@ -23,7 +23,7 @@ TEST_F(luaaide, Version)
     ASSERT_EQ("0.1", Q.stringrepr(-1));
 }
 
-TEST_F(luaaide, Keyescape)
+TEST_F(luaaide, keyescape)
 {
     const auto rc=Q<<LuaCode(R"xxx(
         local X=require "luaaide"
@@ -62,6 +62,30 @@ TEST_F(luaaide, Keyescape)
     ASSERT_TRUE(Q.hasnumberat(-2)); const auto numcases=Q.toint(-2);
     ASSERT_TRUE(Q.hasnumberat(-1)); const auto numsuccess=Q.toint(-1);
     ASSERT_EQ(numcases, numsuccess);
+}
+
+TEST_F(luaaide, formatany)
+{
+    const auto rc=Q<<LuaCode(R"xxx(
+        local X=require "luaaide"
+        return X.formatany {21,     22,
+23}
+    )xxx")>>1;
+    if (rc!=0)
+    {
+        cout<<"Scriptausfuehrung abgeschlossen mit rc="<<rc<<"\n";
+        if (height(Q)>0 && Q.hasstringat(-1))
+        {
+            const string err=Q.tostring(-1);
+            cout<<err<<"\n";
+        }
+    }
+    ASSERT_EQ(0, rc);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasstringat(-1));
+    const string result=Q.tostring(-1);
+    const string R=R"xxx(return {21, 22, 23})xxx";
+    ASSERT_EQ(R, result);
 }
 
 int main(int argc, char*argv[])
