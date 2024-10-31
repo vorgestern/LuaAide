@@ -5,6 +5,9 @@
 
 using namespace std;
 
+// Die Adressen dieser Symbole liegen in ltest.o,
+// wo sie von objcopy erzeugt wurden (beim Bauen unter Linux).
+// Beachte die Anpassung der Namen in syminfo (opjcopy --redefine-syms=modules/ulutest/syminfo)
 extern "C" char ltest_start;
 extern "C" char ltest_end;
 
@@ -28,41 +31,6 @@ static int mkloader(lua_State*Q, const char name[], const string_view impl)
         return lua_error(Q),0;
     }
 }
-
-static int mkloader(lua_State*Q, lua_CFunction impl)
-{
-    return lua_pushcfunction(Q, impl),1;
-}
-
-#if 0
-static int searcher(lua_State*Q)
-{
-    if (!lua_isstring(Q, -1))
-    {
-        lua_pushliteral(Q, "Module-searcher for 'LuaToXML' requires string argument.");
-        return lua_error(Q),0;
-    }
-    const char*name=lua_tostring(Q, -1);
-    printf("searcher %s\n", name);
-    if (0!=strncmp(name, "LuaToXML", 8))
-    {
-        // Diese Fehlermeldung ist an die der generischen Searcher angelehnt.
-        lua_pushfstring(Q, "no module '%s' in module 'LuaToXML'.", name);
-        return 1;
-    }
-    if (0==strcmp(name, "ulutest.init")) return mkloader(Q, name, ulutest.init);
-    return 0;
-}
-
-static void install_searcher(lua_State*Q, lua_CFunction s)
-{
-    if (const int typ=lua_getglobal(Q, "package"); typ!=LUA_TTABLE) { lua_remove(Q, -1); return; }
-    if (const int typ=lua_getfield(Q, -1, "searchers"); typ!=LUA_TTABLE) { lua_remove(Q, -1); return; }
-    const auto neuindex=lua_rawlen(Q, -1)+1;
-    lua_pushcfunction(Q, s);
-    lua_seti(Q, -2, neuindex);
-}
-#endif
 
 #ifdef WIN32
 #define EXTERN __declspec(dllexport)
