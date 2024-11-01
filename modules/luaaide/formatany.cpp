@@ -52,7 +52,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         else result.push_back(memo);
     }
     string indent(4*level, ' ');
-    const auto t=Q.type(-1);
+    const auto t=Q.typeat(-1);
     switch (t)
     {
         case LUA_TNIL:
