@@ -10,10 +10,13 @@ XFILES   := LuaAide LuaCall LuaStack stringformat
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
+.PHONY: prerequisites
 
-all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
+prerequisites:
+	@which objcopy || echo "objcopy not installed (required to build ulutest)" &&  false
 
 # ============================================================
 
@@ -51,13 +54,7 @@ b/%: examples/%.cpp libLuaAide.a $(XHEADER)
 luaaide.so: b/luaaide/main.o b/luaaide/formatany.o b/luaaide/keyescape.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
-b/luaaide/main.o: modules/luaaide/main.cpp $(XHEADER)
-	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
-
-b/luaaide/formatany.o: modules/luaaide/formatany.cpp $(XHEADER)
-	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
-
-b/luaaide/keyescape.o: modules/luaaide/keyescape.cpp $(XHEADER)
+b/luaaide/%.o: modules/luaaide/%.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
 # ============================================================
