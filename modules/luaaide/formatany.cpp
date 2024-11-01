@@ -45,14 +45,14 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     //      }
     //  }
     LuaStack Q(L);
-    if (!lua_checkstack(L, 5))
+    if (!Q.check(5))
     {
         string memo="--[[Recursion stopped (Lua is out of stack space).]]";
         if (result.size()>0) result.back().append(memo);
         else result.push_back(memo);
     }
     string indent(4*level, ' ');
-    const auto t=lua_type(Q, -1);
+    const auto t=Q.type(-1);
     switch (t)
     {
         case LUA_TNIL:
