@@ -16,7 +16,7 @@ all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 prerequisites:
-	@which objcopy || echo "objcopy not installed (required to build ulutest)" &&  false
+	@which objcopy || echo "objcopy not installed (required to build ulutest)" || false
 
 # ============================================================
 
