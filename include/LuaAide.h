@@ -237,6 +237,7 @@ public:
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
+    int typeat(int pos){ return lua_type(L, pos); }
 
     bool hasnilat(int pos){ return posvalid(pos) && lua_isnil(L, pos)!=0; }
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
