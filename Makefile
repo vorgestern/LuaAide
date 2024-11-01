@@ -69,7 +69,11 @@ b/ulutest/main.o: modules/ulutest/main.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
 
 b/ulutest/ltest.o: b/ulutest/ltest.luac
-	objcopy -I binary -O elf64-x86-64 --redefine-syms=modules/ulutest/syminfo $< $@
+	# objcopy -I binary -O elf64-x86-64 --redefine-syms=modules/ulutest/syminfo $< $@
+	objcopy -I binary -O elf64-x86-64\
+		--redefine-sym _binary_b_ulutest_ltest_luac_start=ltest_start\
+		--redefine-sym _binary_b_ulutest_ltest_luac_end=ltest_end $< $@
+	nm $@ > $(@:.o=.symbols)
 
 b/ulutest/ltest.luac: modules/ulutest/ltest.lua
 	luac -o $@ $<
