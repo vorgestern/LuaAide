@@ -13,7 +13,7 @@ CXXFLAGS := --std=c++20 -Wall -Werror
 
 all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so ModuleTest
 clean:
-	@rm -rf b/* bt/* libLuaAide.a LuaAideTest ModuleTest
+	@rm -rf b/* bt/* libLuaAide.a LuaAideTest ModuleTest luaaide.so ulutest.so
 
 # ============================================================
 
