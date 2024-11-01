@@ -5,6 +5,7 @@
 # 4   Bearbeite alle Vorkommen von lua_error() und >>luaerror.
 # 5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
 # 6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
+# 7   luaaide.formatany sollte genau  ein Argument akzeptieren.
 
 XFILES   := LuaAide LuaCall LuaStack stringformat
 XHEADER  := include/LuaAide.h
@@ -12,7 +13,7 @@ CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 .PHONY: prerequisites
 
-all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 prerequisites:
