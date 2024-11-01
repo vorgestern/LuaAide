@@ -11,9 +11,9 @@ XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 
-all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so ModuleTest
+all: dir libLuaAide.a LuaAideTest b/a1 b/a2 luaaide.so ulutest.so
 clean:
-	@rm -rf b/* bt/* libLuaAide.a LuaAideTest ModuleTest luaaide.so ulutest.so
+	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 
 # ============================================================
 
@@ -59,12 +59,6 @@ b/luaaide/formatany.o: modules/luaaide/formatany.cpp $(XHEADER)
 
 b/luaaide/keyescape.o: modules/luaaide/keyescape.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
-
-# ============================================================
-
-ModuleTest: modules/luaaide/testmain.cpp
-	@echo $<
-	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
 # ============================================================
 
