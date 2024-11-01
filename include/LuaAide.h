@@ -274,6 +274,8 @@ public:
         }
     }
 
+    bool check(int numpos){ return lua_checkstack(L, numpos); }
+
     std::string stringrepr(int index)const;
     std::string errormessage();
 };
