@@ -13,7 +13,7 @@ CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 .PHONY: prerequisites
 
-all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 luaaide.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 prerequisites:
