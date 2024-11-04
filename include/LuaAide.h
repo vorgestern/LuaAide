@@ -20,6 +20,19 @@ const enum class LuaRotate:int {up4=-4, up3=-3, down3=3, down4=4}
     luarot3=LuaRotate::down3,
     luarot4=LuaRotate::down4;
 
+enum class LuaType:int {
+    TNONE=-1,
+    TNIL=0,
+    TBOOLEAN,
+    TLIGHTUSERDATA,
+    TNUMBER,
+    TSTRING,
+    TTABLE,
+    TFUNCTION,
+    TUSERDATA,
+    TTHREAD
+};
+
 class LuaValue
 {
     int stackindex;
