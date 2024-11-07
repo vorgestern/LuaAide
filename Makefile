@@ -5,24 +5,23 @@
 # 4   Bearbeite alle Vorkommen von lua_error() und >>luaerror.
 # 5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
 # 6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
-# 7   luaaide.formatany sollte genau  ein Argument akzeptieren.
+# 7   luaaide.formatany sollte genau ein Argument akzeptieren.
 
 XFILES   := LuaAide LuaCall LuaStack stringformat
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
-.PHONY: prerequisites
+.PHONY: clean dir prerequisites test
 
 all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 prerequisites:
-	@which objcopy || echo "objcopy not installed (required to build ulutest)" || false
-
-# ============================================================
-
+	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
 	@mkdir -p b/luaaide b/ulutest bt
+test:
+	./LuaAideTest && lua modules/luaaide/test.lua
 
 # ============================================================
 
