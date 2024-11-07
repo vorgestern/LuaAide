@@ -27,7 +27,7 @@ static bool mypcall(LuaStack&LS, int argc, char*argv[], const char tag[])
     return flag;
 }
 
-void myhandleload(LuaStack&LS, int rc1, const char tag[])
+static void myhandleload(LuaStack&LS, int rc1, const char tag[])
 {
     if (rc1==LUA_OK)
     {
@@ -79,42 +79,14 @@ LuaStack&LuaStack::swap()
 
 bool LuaStack::dofile(const char filename[], int argc, char*argv[])
 {
-    bool flag=false;
-    const int rc1=luaL_loadfile(L, filename);
-    switch (rc1)
-    {
-        case LUA_OK:
-        {
-            flag=mypcall(*this, argc, argv, filename);
-            break;
-        }
-        default:
-        {
-            myhandleload(*this, rc1, filename);
-            break;
-        }
-    }
-    return flag;
+    if (const int rc=luaL_loadfile(L, filename); rc==LUA_OK) return mypcall(*this, argc, argv, filename);
+    else return myhandleload(*this, rc, filename), false;
 }
 
 bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag[])
 {
-    bool flag=false;
-    const int rc1=luaL_loadstring(L, code);
-    switch (rc1)
-    {
-        case LUA_OK:
-        {
-            flag=mypcall(*this, argc, argv, tag);
-            break;
-        }
-        default:
-        {
-            myhandleload(*this, rc1, tag);
-            break;
-        }
-    }
-    return flag;
+    if (const int rc=luaL_loadstring(L, code); rc==LUA_OK) return mypcall(*this, argc, argv, tag);
+    else return myhandleload(*this, rc, tag), false;
 }
 
 // **********************************************************************
