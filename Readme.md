@@ -11,8 +11,10 @@ Substitute Lua's C-API with a C++ API that is more expressive and easier to use.
 # Usecases
 + **Embedding** Lua in a program, e.g. for configuration or as a plugin
 + **Extending** Scripts by loading binary Lua-modules
++ **Exposing** C++ Types and functions to Lua scripts
 
 # Examples
+
 ## Embedding Lua
 ```
     include <LuaAide.h>
@@ -24,6 +26,7 @@ Substitute Lua's C-API with a C++ API that is more expressive and easier to use.
     Q<<LuaCode(R"xx(return table.concat(..., "\n"))xx")<<A>>1;
     const std::string Aconcat(Q.tostring(-1));
 ```
+
 ## Extending scripts
 demomodule.cpp: compile/link to demomodule.so or demomodule.dll
 
@@ -48,9 +51,9 @@ demomodule.cpp: compile/link to demomodule.so or demomodule.dll
 demo.lua: use as ```lua demo.lua```
 
 ```
-local X=require "demomodule"
-print("demomodule version", X.version)
-..
+    local X=require "demomodule"
+    print("demomodule version", X.version)
+    ..
 ```
 
 # Requirements
@@ -152,5 +155,13 @@ Throw a conventional Lua-Error, let Lua handle it:
         .....
     }
 ```
+
+## Debugtool: Print the Stack
+```
+    LuaStack Q=...;
+    cout<<Q;
+```
+
+[comment]: # # Sandbox to handle configuration files
 
 [comment]: # # Similar projects

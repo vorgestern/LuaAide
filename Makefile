@@ -13,7 +13,7 @@ CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 .PHONY: clean dir prerequisites test
 
-all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 luaaide.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so luaaide.so ulutest.so
 clean:
 	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
 prerequisites:
@@ -45,9 +45,12 @@ bt/%.o: src/%.cpp $(XHEADER)
 
 # ============================================================
 
-b/%: examples/%.cpp libLuaAide.a $(XHEADER)
+b/a%: examples/a%.cpp libLuaAide.a $(XHEADER)
 	@echo $<
 	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
+
+b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
+	g++ -shared -fpic -o $@ $^ $(CPPFLAGS) $(CXXFLAGS)
 
 # ============================================================
 
