@@ -1,6 +1,8 @@
 
 package.cpath=package.cpath..";b/?.so"
 
+print "\n******** m1test ********"
+
 local ok,vec3=pcall(require, "m1")
 
 if not ok then

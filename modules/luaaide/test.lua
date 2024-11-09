@@ -1,4 +1,6 @@
 
+print "\n******** test luaaide ********"
+
 local ok,luaaide=pcall(require, "luaaide")
 
 if not ok then

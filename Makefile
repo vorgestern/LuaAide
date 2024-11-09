@@ -21,7 +21,7 @@ prerequisites:
 dir:
 	@mkdir -p b/luaaide b/ulutest bt
 test:
-	./LuaAideTest && lua modules/luaaide/test.lua
+	./LuaAideTest && lua modules/luaaide/test.lua && lua examples/m1test.lua
 
 # ============================================================
 
