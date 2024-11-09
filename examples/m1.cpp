@@ -2,32 +2,88 @@
 #include <LuaAide.h>
 #include <iostream>
 
+// Handlungsbedarf:
+// - Verbirg mtvec3
+// - wrap lua_newuserdatauv
+// - wrap lua_setmetatable
+// - wrap indizierten Zugriff auf Listenelemente
+// - wrap lua_touserdata
+// - Konzept für die Identifikation des Datentyps, der in userdata gekapselt ist.
+
 using namespace std;
 
 namespace { namespace Vec3 {
 
 struct V { double x, y, z; };
 
+static double getelement(LuaStack&Q, int index, int e, const char name[])
+{
+    // Argument at index
+    if (const auto t=lua_geti(Q, index, e); t==LUA_TNUMBER)
+    {
+        auto value=lua_tonumber(Q, -1);
+        Q.drop(1);
+        return value;
+    }
+    else Q.drop(1);
+    if (const auto t=lua_getfield(Q, index, name); t==LUA_TNUMBER)
+    {
+        auto value=lua_tonumber(Q, -1);
+        Q.drop(1);
+        return value;
+    }
+    else Q.drop(1);
+    return 0;
+}
+
+static V argvector(lua_State*L, int index)
+{
+    LuaStack  Q(L);
+    if (lua_isuserdata(L, index) && !lua_islightuserdata(L, index))
+    {
+        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, index));
+        return**P;
+    }
+    if (Q.hastableat(index))
+    {
+        const auto x=getelement(Q, index, 1, "x"),
+                   y=getelement(Q, index, 2, "y"),
+                   z=getelement(Q, index, 3, "z");
+        return {x, y, z};
+    }
+    throw runtime_error("Argument is not a vector");
+}
+
+static int mydemo(lua_State*L)
+{
+    LuaStack Q(L);
+    const auto A=argvector(Q, -1);
+    auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
+    *P=new V {A};
+    Q<<LuaGlobal("mtvec3");
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+static int myconstructor(LuaStack&Q, const V&arg)
+{
+    auto P=reinterpret_cast<V**>(lua_newuserdatauv(Q, sizeof(V*), 0));
+    Q<<LuaGlobal("mtvec3");
+    lua_setmetatable(Q, -2);
+    *P=new V(arg);
+    return 1;
+}
+
 static int mynew(lua_State*L)
 {
     LuaStack Q(L);
-    auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
-    Q<<LuaGlobal("mtvec3");
-    lua_setmetatable(L, -2);
-    if (Q.hastableat(-2))
+    if (height(Q)==1) return myconstructor(Q, argvector(Q, -1));
+    else if (height(Q)>=3)
     {
-        const auto a=lua_geti(L, -2, 1)==LUA_TNUMBER?lua_tonumber(L, -1):101; lua_pop(L, 1);
-        const auto b=lua_geti(L, -2, 2)==LUA_TNUMBER?lua_tonumber(L, -1):102; lua_pop(L, 1);
-        const auto c=lua_geti(L, -2, 3)==LUA_TNUMBER?lua_tonumber(L, -1):103; lua_pop(L, 1);
-        *P=new V {a, b, c};
+        const auto x=lua_tonumber(L, 1), y=lua_tonumber(L, 2), z=lua_tonumber(L, 3);
+        return myconstructor(Q, {x,y,z});
     }
-    else if (height(Q)>=4)
-    {
-        const auto a=lua_tonumber(L, 0), b=lua_tonumber(L, 1), c=lua_tonumber(L, 2);
-        *P=new V {a, b, c};
-    }
-    else *P=new V {0, 0, 0};
-    return 1;
+    else return myconstructor(Q, {0,0,0});
 }
 
 static int myfinaliser(lua_State*L)
@@ -44,7 +100,7 @@ static int myfinaliser(lua_State*L)
     return 0;
 }
 
-int mytostring(lua_State*L)
+static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
@@ -52,7 +108,7 @@ int mytostring(lua_State*L)
         auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -1));
         auto*X=*P;
         char pad[100];
-        snprintf(pad, sizeof(pad), "{%lf, %lf, %lf}", X->x, X->y, X->z);
+        snprintf(pad, sizeof(pad), "{%g, %g, %g}", X->x, X->y, X->z);
         Q<<pad;
         return 1;
     }
@@ -63,78 +119,34 @@ int mytostring(lua_State*L)
     }
 }
 
-int myadd(lua_State*L)
+static int myadd(lua_State*L)
 {
     LuaStack Q(L);
-    if (height(Q)<2)
-    {
-        Q<<"mtvec3.__add: Expect two arguments at least.">>luaerror;
-    }
-//  cout<<"myadd: "<<Q;
-    const V*A=nullptr, *B=nullptr;
-    if (lua_isuserdata(L, -2) && !lua_islightuserdata(L, -2))
-    {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -2));
-        A=*P;
-    }
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
-    {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -1));
-        B=*P;
-    }
-//  printf("A, B %p, %p\n", A, B);
-    if (A!=nullptr && B!=nullptr)
-    {
+    if (height(Q)<2) return Q<<"mtvec3.__add: Expect two arguments at least.">>luaerror;
+    try {
+        const V A=argvector(Q, -2), B=argvector(Q, -1);
         auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
         Q<<LuaGlobal("mtvec3");
         lua_setmetatable(L, -2);
-        *P=new V {A->x+B->x, A->y+B->y, A->z+B->z};
-//      auto*p=*P;
-//      printf("P=%lf, %lf, %lf\n", p->x, p->y, p->z);
+        *P=new V {A.x+B.x, A.y+B.y, A.z+B.z};
         return 1;
     }
-    else
-    {
-        Q<<"mtvec3.__add: internal error, arg is not a 'Vec3'\n">>luaerror;
-        return 0;
-    }
+    catch (const runtime_error&E) { return Q>>luaerror; }
 }
 
-int mysubtract(lua_State*L)
+static int mysubtract(lua_State*L)
 {
     LuaStack Q(L);
-    if (height(Q)<2)
-    {
-        Q<<"mtvec3.__sub: Expect two arguments at least.">>luaerror;
-    }
-//  cout<<"myadd: "<<Q;
-    const V*A=nullptr, *B=nullptr;
-    if (lua_isuserdata(L, -2) && !lua_islightuserdata(L, -2))
-    {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -2));
-        A=*P;
-    }
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
-    {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -1));
-        B=*P;
-    }
-//  printf("A, B %p, %p\n", A, B);
-    if (A!=nullptr && B!=nullptr)
-    {
+    if (height(Q)<2) return Q<<"mtvec3.__sub: Expect two arguments at least.">>luaerror;
+    try {
+        const V A=argvector(Q, -2), B=argvector(Q, -1);
         auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
         Q<<LuaGlobal("mtvec3");
         lua_setmetatable(L, -2);
-        *P=new V {A->x-B->x, A->y-B->y, A->z-B->z};
-//      auto*p=*P;
-//      printf("P=%lf, %lf, %lf\n", p->x, p->y, p->z);
+        *P=new V {A.x-B.x, A.y-B.y, A.z-B.z};
         return 1;
     }
-    else
-    {
-        Q<<"mtvec3.__sub: internal error, arg is not a 'Vec3'\n">>luaerror;
-        return 0;
-    }
+    catch (const runtime_error&E) { return Q>>luaerror; }
 }
 
 }}
@@ -152,6 +164,7 @@ extern "C" int luaopen_m1(lua_State*L)
         >>LuaGlobal("mtvec3");
     Q  <<LuaTable()
         <<"0.1">>LuaField("version")
+        <<mydemo>>LuaField("Demo")
         <<mynew>>LuaField("New");
     return 1;
 }

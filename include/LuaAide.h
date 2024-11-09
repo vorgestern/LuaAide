@@ -245,7 +245,7 @@ public:
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);
 
-    void operator>>(const LuaError&){ lua_error(L); }
+    int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
 
