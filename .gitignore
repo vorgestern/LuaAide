@@ -3,4 +3,5 @@ b/*
 bt/*
 *.a
 *.so
+*.gch
 LuaAideTest
