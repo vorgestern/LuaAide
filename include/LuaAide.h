@@ -75,20 +75,6 @@ public:
     LuaRegValue(const char str[]): data(str){}
 };
 
-class LuaChunk
-{
-    friend class LuaStack;
-    const char*buffer{nullptr};
-    unsigned bufferlength{0};
-    const char*buffername{nullptr};
-public:
-    LuaChunk(const std::string_view&, const char name[]=nullptr);
-    LuaChunk(const char a[], const char name[]=nullptr);
-    LuaChunk(const char b[], unsigned len, const char name[]=nullptr): buffer(b), bufferlength(len), buffername(name){}
-    operator bool()const { return buffer!=nullptr; }
-    bool operator!()const { return buffer==nullptr; }
-};
-
 class LuaClosure
 {
     friend class LuaStack;
@@ -250,7 +236,6 @@ public:
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
-    LuaCall  operator<<(const LuaChunk&);
     LuaCall  operator<<(const LuaColonCall&);
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);
