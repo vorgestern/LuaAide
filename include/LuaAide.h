@@ -61,9 +61,18 @@ public:
 class LuaLightUserData
 {
     friend class LuaStack;
-    void*data{nullptr};
+    const void*data{nullptr};
 public:
-    LuaLightUserData(void*p): data(p){}
+    LuaLightUserData(const void*p): data(p){}
+};
+
+class LuaRegValue
+{
+    friend class LuaStack;
+    const void*data{nullptr};
+public:
+    LuaRegValue(const void*p): data(p){}
+    LuaRegValue(const char str[]): data(str){}
 };
 
 class LuaChunk
@@ -233,9 +242,11 @@ public:
     LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
-    LuaStack&operator<<(const LuaLightUserData&X){ lua_pushlightuserdata(L, X.data); return*this; }
+    LuaStack&operator<<(const LuaLightUserData&);
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
+    LuaStack&operator<<(const LuaRegValue&);
+
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
@@ -248,6 +259,7 @@ public:
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
+    LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
     int typeat(int pos){ return lua_type(L, pos); }

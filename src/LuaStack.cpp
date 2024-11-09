@@ -250,6 +250,31 @@ string LuaStack::errormessage()
     return msg;
 }
 
+LuaStack&LuaStack::operator<<(const LuaLightUserData&X)
+{
+    lua_pushlightuserdata(L, const_cast<void*>(X.data));
+    return*this;
+}
+
+LuaStack&LuaStack::operator<<(const LuaRegValue&X)
+{
+    *this<<LuaValue(LUA_REGISTRYINDEX)<<LuaLightUserData(X.data); // [Registry, key]
+    lua_gettable(L, -2);                            // [Registry, [Registry[key]]
+    lua_remove(L, -2);                              // [[Registry[key]]
+    return*this;
+}
+
+LuaStack&LuaStack::operator>>(const LuaRegValue&X)
+{
+                                                    // [value]
+    *this<<LuaValue(LUA_REGISTRYINDEX)
+        <<LuaLightUserData(X.data)                  // [value, Registry, key]
+        <<luarot_3;                                 // [Registry, key, value]
+    lua_settable(L, -3);                            // [Registry]
+    lua_remove(L, -1);                              // []
+    return*this;
+}
+
 // ============================================================================
 
 #ifdef UNITTEST
@@ -568,6 +593,18 @@ TEST_F(StackEnv, LuaColonCallNotAMethod)
     ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
 }
 
+TEST_F(StackEnv, LuaRegValue)
+{
+    static const char modname[]="demo";
+    ASSERT_EQ(0, height(Q));
+    Q<<212223>>LuaRegValue(modname);
+    ASSERT_EQ(0, height(Q));
+    Q<<LuaRegValue(modname);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasintat(-1));
+    ASSERT_EQ(212223, Q.toint(-1));
+}
+
 // Teststatus LuaStack:
 // ====================
 // + version
@@ -600,6 +637,7 @@ TEST_F(StackEnv, LuaColonCallNotAMethod)
 // + <<LuaDotCall
 // - <<LuaGlobalCall
 // - <<LuaArray
+// + <<LuaRegValue
 //
 // - >>LuaField
 // - >>LuaGlobal
