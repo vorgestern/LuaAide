@@ -159,14 +159,14 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                     else if (Q.hasnumberat(-2))
                     {
                         Q<<LuaValue(stackindex(jkey));
-                        const string a=lua_tostring(Q, -1);
+                        const string a=Q.tostring(-1);
                         Q.drop(1);
                         result.push_back(indent1+"["+a+"]=");
                     }
                     else if (Q.hasstringat(-2))
                     {
                         Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
-                        const string a=lua_tostring(Q, -1);
+                        const string a=Q.tostring(-1);
                         Q.drop(1);
                         result.push_back(indent1+a+"=");
                     }

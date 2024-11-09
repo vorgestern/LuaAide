@@ -205,7 +205,7 @@ string LuaStack::stringrepr(int index)const
         }
         case LUA_TSTRING:
         {
-            const char*s=(char*)lua_tostring(L, index);
+            const char*s=tostring(index);
             return s;
         }
         case LUA_TLIGHTUSERDATA:
