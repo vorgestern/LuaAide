@@ -92,8 +92,8 @@ public:
 class LuaClosure
 {
     friend class LuaStack;
-    // So legt man eine Closure auf den Stack:
-    // LS<<upvalue1<<upvalue2<<LuaClosure(funcion, 2)>>LuaGlobal("closurename");
+    // So erzeugt man eine Closure:
+    // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename");
     lua_CFunction closure{nullptr};
     unsigned num_upvalues{0};
 public:
@@ -345,7 +345,6 @@ public:
     LuaCall&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(const std::vector<std::string>&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(*this); return*this; }
-//  LuaCall&operator<<(const LuaClosure&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(int n){ LuaStack::operator<<(n); return*this; }
     LuaCall&operator<<(unsigned n){ LuaStack::operator<<(n); return*this; }
     LuaCall&operator<<(bool f){ LuaStack::operator<<(f); return*this; }
