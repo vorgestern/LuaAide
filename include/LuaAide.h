@@ -10,6 +10,7 @@
 
 class LuaStack;
 class LuaCall;
+class LuaList;
 
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
@@ -252,6 +253,8 @@ public:
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);
 
+    LuaList list();
+
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
@@ -350,6 +353,27 @@ public:
     LuaCall&operator<<(float x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(double x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
+};
+
+class LuaList: LuaStack
+{
+    friend class LuaStack;
+    unsigned index {0};
+    LuaList&append(){ lua_seti(L, -2, ++index); return*this; }
+    LuaList(lua_State*L): LuaStack(L){}
+public:
+    LuaList&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(const LuaValue&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(const char s[]){ LuaStack::operator<<(s); return append(); }
+    LuaList&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(const std::vector<std::string>&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(int n){ LuaStack::operator<<(n); return append(); }
+    LuaList&operator<<(unsigned n){ LuaStack::operator<<(n); return append(); }
+    LuaList&operator<<(bool f){ LuaStack::operator<<(f); return append(); }
+    LuaList&operator<<(float x){ LuaStack::operator<<(x); return append(); }
+    LuaList&operator<<(double x){ LuaStack::operator<<(x); return append(); }
 };
 
 /*

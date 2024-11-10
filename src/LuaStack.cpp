@@ -90,6 +90,8 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
     else return myhandleload(*this, rc, tag), false;
 }
 
+LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
+
 // **********************************************************************
 
 static int errfunction(lua_State*L)
@@ -661,6 +663,19 @@ TEST_F(StackEnv, LuaElementSet)
     ASSERT_EQ(1, height(Q));
 }
 
+TEST_F(StackEnv, LuaList)
+{
+    ASSERT_EQ(0, height(Q));
+    Q.list()<<21<<22<<23;
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+
+    Q<<LuaElement(-1, 2);
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
+    ASSERT_EQ(22, Q.toint(-1));
+}
+
 TEST_F(StackEnv, LuaIterator)
 {
     Q<<LuaArray(10);
@@ -742,6 +757,11 @@ TEST_F(StackEnv, LuaIterator)
 // Teststatus LuaCall:
 // ===================
 // -
+
+// Teststatus LuaList:
+// ===================
+// + Konstrktor
+// + push int
 
 // Teststatus Sonstige:
 // ====================

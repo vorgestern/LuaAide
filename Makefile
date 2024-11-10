@@ -1,13 +1,14 @@
 
-# 1 + Schaffe LuaChunk ab.
-# 2   Lege vor lua_error eine Stringdarstellung des Stacks global ab.
-# 3 + Benutze luaL_loadbufferx statt lua_load.
-# 4   Bearbeite alle Vorkommen von lua_error() und >>luaerror.
-# 5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
-# 6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
-# 7   luaaide.formatany sollte genau ein Argument akzeptieren.
-# 8   Fehlendes Konzept: Metatable
-# 9   Fehlendes Konzept: Userdata
+#  1 + Schaffe LuaChunk ab.
+#  2   Lege vor lua_error eine Stringdarstellung des Stacks global ab.
+#  3 + Benutze luaL_loadbufferx statt lua_load.
+#  4   Bearbeite alle Vorkommen von lua_error() und >>luaerror.
+#  5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
+#  6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
+#  7   luaaide.formatany sollte genau ein Argument akzeptieren.
+#  8   Fehlendes Konzept: Metatable
+#  9   Fehlendes Konzept: Userdata
+# 10 + LuaStack<<LuaList gibt einen Iterator zurück: LuaStack<<LuaList<<21<<22<<23; erzeugt eine Liste.
 
 XFILES   := LuaAide LuaCall LuaStack stringformat
 XHEADER  := include/LuaAide.h
