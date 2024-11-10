@@ -257,6 +257,8 @@ public:
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
+    LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.tableindex, X.elementindex)); }
+
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
     int typeat(int pos){ return lua_type(L, pos); }
 
