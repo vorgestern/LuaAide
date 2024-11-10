@@ -678,8 +678,8 @@ TEST_F(StackEnv, LuaList)
 
 TEST_F(StackEnv, LuaIterator)
 {
-    Q<<LuaArray(10);
-    for (auto j=1; j<=10; ++j) Q<<(120+j)>>LuaElement(-2, j);
+    Q.list()<<121<<122<<123<<124<<125;
+
     for (LuaIterator J(Q); next(J); ++J)
     {
         auto j=(unsigned)J;
@@ -690,7 +690,7 @@ TEST_F(StackEnv, LuaIterator)
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
     Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_STREQ("121,122,123,124,125,126,127,128,129,130", Q.tostring(-1));
+    ASSERT_STREQ("121,122,123,124,125", Q.tostring(-1));
 }
 
 // Teststatus LuaStack:
