@@ -12,3 +12,4 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 #  95 /lua_remove (Rest 1)
 #  92 /lua_error (Rest 2)
 #  90 /lua_pushlstring
+#  89 /lua_isnumber
