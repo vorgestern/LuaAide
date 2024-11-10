@@ -6,6 +6,8 @@
 # 5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
 # 6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
 # 7   luaaide.formatany sollte genau ein Argument akzeptieren.
+# 8   Fehlendes Konzept: Metatable
+# 9   Fehlendes Konzept: Userdata
 
 XFILES   := LuaAide LuaCall LuaStack stringformat
 XHEADER  := include/LuaAide.h
