@@ -255,6 +255,7 @@ public:
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
+    LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.tableindex, E.elementindex); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.tableindex, X.elementindex)); }
@@ -354,15 +355,14 @@ public:
 /*
     LuaIterator realisiert eine Schleife über die Elemente des obersten Objekts auf dem Stack.
     Das Äquivalent in Lua ist
-        for name,value in pairs(X) do
-        end
+        for key,value in pairs(X) do end
     So benutzt man LuaIterator
         LuaStack LS(...);
         for (LuaIterator K(LS); next(K); ++K)
         {
-          (unsigned)K ist der einsbasierte Index.
-          Bei Stack[-2] liegt der name.
-          Bei Stack[-1] liegt der value.
+            (unsigned)K ist der einsbasierte Index.
+            Bei Stack[-2] liegt key.
+            Bei Stack[-1] liegt value.
         }
 */
 class LuaIterator

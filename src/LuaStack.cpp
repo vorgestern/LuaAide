@@ -2,6 +2,7 @@
 #include <LuaAide.h>
 #include <iostream>
 #include <cstring>
+#include <iostream>
 
 using namespace std;
 
@@ -629,6 +630,54 @@ TEST_F(StackEnv, LuaElement)
     Q.drop(1);
 }
 
+TEST_F(StackEnv, LuaElementSet)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<LuaArray(10);
+    ASSERT_EQ(1, height(Q));
+    Q   <<"hoppla">>LuaElement(-2, 5)
+        <<21>>LuaElement(-2, 1)
+        <<22>>LuaElement(-2, 2)
+        <<23>>LuaElement(-2, 3);
+    // [21,22,23,nil,"hoppla"]
+    ASSERT_EQ(1, height(Q));
+
+    lua_len(Q, -1);
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(5, Q.toint(-1));
+    Q.drop(1);
+
+    Q<<LuaElement(-1, 3);
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
+    ASSERT_EQ(23, Q.toint(-1));
+    Q.drop(1);
+
+    Q<<LuaElement(-1, 5);
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_STREQ("hoppla", Q.tostring(-1));
+    Q.drop(1);
+    ASSERT_EQ(1, height(Q));
+}
+
+TEST_F(StackEnv, LuaIterator)
+{
+    Q<<LuaArray(10);
+    for (auto j=1; j<=10; ++j) Q<<(120+j)>>LuaElement(-2, j);
+    for (LuaIterator J(Q); next(J); ++J)
+    {
+        auto j=(unsigned)J;
+        ASSERT_EQ(120+j, Q.toint(-1));
+    }
+
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+    Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_STREQ("121,122,123,124,125,126,127,128,129,130", Q.tostring(-1));
+}
+
 // Teststatus LuaStack:
 // ====================
 // + version
@@ -662,7 +711,7 @@ TEST_F(StackEnv, LuaElement)
 // - <<LuaGlobalCall
 // - <<LuaArray
 // + <<LuaRegValue
-// - <<LuaElement
+// + <<LuaElement
 //
 // - >>LuaField
 // - >>LuaGlobal
@@ -696,7 +745,7 @@ TEST_F(StackEnv, LuaElement)
 
 // Teststatus Sonstige:
 // ====================
-// - LuaIterator
+// + LuaIterator
 
 #endif
 
