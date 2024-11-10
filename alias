@@ -15,3 +15,4 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 #  89 /lua_isnumber
 #  85 /lua_rotate
 #  84 /lua_isinteger
+#  79 /lua_geti

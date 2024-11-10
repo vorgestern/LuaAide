@@ -19,7 +19,7 @@ struct V { double x, y, z; };
 static double getelement(LuaStack&Q, int index, int e, const char name[])
 {
     // Argument at index
-    if (const auto t=lua_geti(Q, index, e); t==LUA_TNUMBER)
+    if (const auto t=Q(LuaElement(index, e)); t==LuaType::TNUMBER)
     {
         auto value=Q.todouble(-1);
         Q.drop(1);
