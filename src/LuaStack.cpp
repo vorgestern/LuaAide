@@ -171,7 +171,7 @@ LuaStack&LuaStack::operator<<(const vector<string>&X)
     long n=0;
     for (auto&e: X)
     {
-        lua_pushlstring(L, e.c_str(), e.size());
+        *this<<e;
         lua_seti(L, -2, ++n);
     }
     return*this;
@@ -183,7 +183,7 @@ LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
     for (auto&e: X)
     {
         const auto [k,v]=e;
-        lua_pushlstring(L, v.c_str(), v.size());
+        *this<<v;
         lua_setfield(L, -2, k.c_str());
     }
     return*this;
