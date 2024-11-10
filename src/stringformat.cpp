@@ -79,7 +79,7 @@ namespace {
                 out<<"{";
                 // Hier beginnt die Rekursion in die Tabelle.
                 const int T=index<0?index-1:index;
-                lua_pushnil(Q);  // first key
+                Q<<luanil;  // first key
                 unsigned num=0;
                 for (; lua_next(Q, T)!=0; ++num)
                 {
