@@ -57,7 +57,7 @@ unsigned version(const LuaStack&S)
 
 LuaStack&LuaStack::clear()
 {
-    const int ns=lua_gettop(L);
+    const int ns=height(*this);
     if (ns>0) drop(ns);
     return*this;
 }
@@ -65,7 +65,7 @@ LuaStack&LuaStack::clear()
 LuaStack&LuaStack::drop(unsigned num)
 {
     const int nd=(int)num;
-    const int ns=lua_gettop(L);
+    const int ns=height(*this);
     lua_pop(L, nd>ns?ns:nd);
     return*this;
 }

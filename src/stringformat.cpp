@@ -51,7 +51,7 @@ namespace {
         LuaStack Q=State(X);
         const auto index=Index(X);
         const Indent I(X.level);
-        if (lua_gettop(Q)<1) return out<<I<<"<empty>";
+        if (height(Q)<1) return out<<I<<"<empty>";
         else switch (lua_type(Q, index))
         {
             case LUA_TNIL: return out<<"nil";
