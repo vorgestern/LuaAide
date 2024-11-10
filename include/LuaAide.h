@@ -166,6 +166,14 @@ public:
     LuaTable(unsigned nindex, unsigned nfields): numindex(nindex), numfields(nfields){}
 };
 
+class LuaElement
+{
+    friend class LuaStack;
+    int tableindex, elementindex;
+public:
+    LuaElement(int t, int e): tableindex(t), elementindex(e){}
+};
+
 class LuaArray: public LuaTable
 {
 public:
@@ -228,6 +236,7 @@ public:
     LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.index)); return*this; }
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.tableindex, X.elementindex); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
     LuaStack&operator<<(const LuaLightUserData&);

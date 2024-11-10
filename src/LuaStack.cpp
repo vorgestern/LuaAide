@@ -605,6 +605,26 @@ TEST_F(StackEnv, LuaRegValue)
     ASSERT_EQ(212223, Q.toint(-1));
 }
 
+TEST_F(StackEnv, LuaElement)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<vector<string> {"A", "B", "C", "D"};
+    ASSERT_EQ(1, height(Q));
+    Q<<LuaElement(-1, 2);
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_STREQ("B", Q.tostring(-1));
+    Q.drop(1);
+    Q<<LuaElement(-1, 4);
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_STREQ("D", Q.tostring(-1));
+    Q.drop(1);
+    Q<<LuaElement(-1, 5);
+    ASSERT_TRUE(Q.hasnilat(-1));
+    Q.drop(1);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hastableat(-1));
+}
+
 // Teststatus LuaStack:
 // ====================
 // + version
@@ -638,6 +658,7 @@ TEST_F(StackEnv, LuaRegValue)
 // - <<LuaGlobalCall
 // - <<LuaArray
 // + <<LuaRegValue
+// - <<LuaElement
 //
 // - >>LuaField
 // - >>LuaGlobal
