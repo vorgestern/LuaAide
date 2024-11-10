@@ -220,7 +220,7 @@ public:
     LuaStack&operator<<(int n){ lua_pushinteger(L, n); return*this; }
     LuaStack&operator<<(unsigned n){ lua_pushinteger(L, static_cast<int>(n)); return*this; }
     LuaStack&operator<<(const char s[]){ lua_pushstring(L, s); return*this; }
-    LuaStack&operator<<(std::string_view s){ lua_pushstring(L, s.data()); return*this; }
+    LuaStack&operator<<(std::string_view s){ lua_pushlstring(L, s.data(), s.size()); return*this; }
     LuaStack&operator<<(float x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(double x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, stackindex(X)); return*this; }
