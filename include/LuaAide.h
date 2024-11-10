@@ -203,6 +203,7 @@ public:
     LuaStack&clear();
     LuaStack&swap(); //!< Tausche die beiden obersten Werte auf dem Stack.
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
+    LuaStack&rotate(int wo, int num){ lua_rotate(L, wo, num); return*this; }
     LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
     LuaStack&remove(int was){ lua_remove(L, was); return*this; }
 

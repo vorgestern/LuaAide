@@ -23,7 +23,7 @@ int LuaCall::operator>>(int numresults)
     const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
     lua_pushcfunction(L, TracebackAdder);                   // [func, args[numargs], errorhandler]
     const int idx=-(numargs+2);
-    lua_rotate(L, idx, 1);                                  // [errorhandler, func, args[numargs]]
+    rotate(idx, 1);                                         // [errorhandler, func, args[numargs]]
     const int rc=lua_pcall(L, numargs, numresults, idx);    // [errorhandler, results[numresults]] | [errorhandler, errorobject]
     switch (rc)
     {
@@ -54,14 +54,14 @@ int LuaCall::operator>>(std::pair<int,int>X)
     const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
     const int msgh=-(numargs+2);
     lua_pushcfunction(L, TracebackAdder);                           // [other[numtodrop], func, args[numargs], messagehandler]
-    lua_rotate(L, msgh, 1);                                         // [other[numtodrop], messagehandler, func, args[numargs]]
+    rotate(msgh, 1);                                                // [other[numtodrop], messagehandler, func, args[numargs]]
     const int rc=lua_pcall(L, numargs, numresults, msgh);
     switch (rc)
     {
         case LUA_OK:                                                // [other[numtodrop], messagehandler, results[numresuls]]
         {
             remove(-1-numresults);                                  // [other[numtodrop], results[numresults]]
-            lua_rotate(L, -(numresults+numtodrop), numresults);     // [results[numresults], other[numtodrop]]
+            rotate(-(numresults+numtodrop), numresults);            // [results[numresults], other[numtodrop]]
             drop(numtodrop);                                        // [results[numresults]]
             return rc;
         }
@@ -71,7 +71,7 @@ int LuaCall::operator>>(std::pair<int,int>X)
         case LUA_ERRERR: // Fehler im Messagehandler
         {
                                                 // [other[numtodrop], messagehandler, errorobject]
-            lua_rotate(L, -(numtodrop+2), 1);   // [errorobject, other[numtodrop], messagehandler]
+            rotate(-(numtodrop+2), 1);          // [errorobject, other[numtodrop], messagehandler]
             drop(numtodrop+1);                  // [errorobject]
             return rc;
         }
