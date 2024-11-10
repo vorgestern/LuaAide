@@ -11,7 +11,7 @@ int keyescape(lua_State*L)
         Q<<"keyescape: Argument (string) expected">>luaerror;
         return 0;
     }
-    if (Q.typeat(-1)!=LUA_TSTRING)
+    if (Q.typeat(-1)!=LuaType::TSTRING)
     {
         Q<<"keyescape: string expected">>luaerror;
         return 0;

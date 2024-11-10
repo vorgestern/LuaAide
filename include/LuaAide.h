@@ -260,7 +260,7 @@ public:
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.tableindex, X.elementindex)); }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
-    int typeat(int pos){ return lua_type(L, pos); }
+    LuaType typeat(int pos){ return static_cast<LuaType>(lua_type(L, pos)); }
 
     bool hasnilat(int pos){ return posvalid(pos) && lua_isnil(L, pos)!=0; }
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }

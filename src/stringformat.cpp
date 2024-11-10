@@ -52,15 +52,15 @@ namespace {
         const auto index=Index(X);
         const Indent I(X.level);
         if (height(Q)<1) return out<<I<<"<empty>";
-        else switch (lua_type(Q, index))
+        else switch (Q.typeat(index))
         {
-            case LUA_TNIL: return out<<"nil";
-            case LUA_TBOOLEAN: return out<<(static_cast<bool>(X)?"true":"false");
-            case LUA_TNUMBER: return out<<static_cast<double>(X);
-            case LUA_TSTRING: return out<<'"'<<Str(static_cast<const char*>(X))<<'"';
-            case LUA_TLIGHTUSERDATA: return out<<"lightuserdata("<<lua_touserdata(Q, index)<<")";
-            case LUA_TUSERDATA: return out<<"userdata("<<lua_touserdata(Q, index)<<")";
-            case LUA_TFUNCTION:
+            case LuaType::TNIL: return out<<"nil";
+            case LuaType::TBOOLEAN: return out<<(static_cast<bool>(X)?"true":"false");
+            case LuaType::TNUMBER: return out<<static_cast<double>(X);
+            case LuaType::TSTRING: return out<<'"'<<Str(static_cast<const char*>(X))<<'"';
+            case LuaType::TLIGHTUSERDATA: return out<<"lightuserdata("<<lua_touserdata(Q, index)<<")";
+            case LuaType::TUSERDATA: return out<<"userdata("<<lua_touserdata(Q, index)<<")";
+            case LuaType::TFUNCTION:
             {
                 if (lua_iscfunction(Q, index))
                 {
@@ -71,7 +71,7 @@ namespace {
                 else if (lua_isfunction(Q, index)) return out<<"luafunction";
                 else return out<<"function(unknown type)";
             }
-            case LUA_TTABLE:
+            case LuaType::TTABLE:
             {
 #if LIMIT_DUMP_DEPTH>0
                 if (X.level>LIMIT_DUMP_DEPTH) return out<<"{} output stopped at level "<<X.level;
@@ -103,7 +103,7 @@ namespace {
             }
             default:
             {
-                return out<<"unexpected_type("<<lua_type(Q, index)<<")";
+                return out<<"unexpected_type("<<static_cast<int>(Q.typeat(index))<<")";
             }
         }
     }

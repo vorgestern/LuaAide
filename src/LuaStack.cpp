@@ -191,42 +191,42 @@ LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
 
 string LuaStack::stringrepr(int index)
 {
-    const auto t=lua_type(L, index);
+    const auto t=typeat(index);
     switch (t)
     {
-        case LUA_TNIL: return "nil";
-        case LUA_TBOOLEAN:{ const bool f=0!=lua_toboolean(L, index); return f?"true":"false"; }
-        case LUA_TNUMBER:
+        case LuaType::TNIL: return "nil";
+        case LuaType::TBOOLEAN:{ const bool f=0!=lua_toboolean(L, index); return f?"true":"false"; }
+        case LuaType::TNUMBER:
         {
             const auto x=todouble(index);
             char pad[100];
             snprintf(pad, sizeof(pad), "%g", x);
             return pad;
         }
-        case LUA_TSTRING:
+        case LuaType::TSTRING:
         {
             const char*s=tostring(index);
             return s;
         }
-        case LUA_TLIGHTUSERDATA:
+        case LuaType::TLIGHTUSERDATA:
         {
             const char*s=(char*)lua_touserdata(L, index);
             char pad[100];
             snprintf(pad, sizeof(pad), "lightuserdata(%p)", s);
             return pad;
         }
-        case LUA_TUSERDATA:
+        case LuaType::TUSERDATA:
         {
             const char*s=(char*)lua_touserdata(L, index);
             char pad[100];
             snprintf(pad, sizeof(pad), "userdata(%p)", s);
             return pad;
         }
-        case LUA_TTABLE:
+        case LuaType::TTABLE:
         {
             return "table {...}";
         }
-        case LUA_TFUNCTION:
+        case LuaType::TFUNCTION:
         {
             if (lua_iscfunction(L, index)) return "cfunction";
             else if (lua_isfunction(L, index)) return "lua function";
@@ -235,7 +235,7 @@ string LuaStack::stringrepr(int index)
         default:
         {
             char pad[100];
-            snprintf(pad, sizeof(pad), "<undocumented type %d>", t);
+            snprintf(pad, sizeof(pad), "<undocumented type %d>", static_cast<int>(t));
             return pad;
         }
     }

@@ -56,7 +56,7 @@ extern "C" int cd(lua_State*L)
         }
         else
         {
-            sprintf(pad, "cd requires string argument <path>, not %d", lua_type(L, -1));
+            sprintf(pad, "cd requires string argument <path>, not %d", static_cast<int>(Q.typeat(-1)));
             Q<<pad>>luaerror;
         }
     }

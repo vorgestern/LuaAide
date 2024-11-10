@@ -55,13 +55,13 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     const auto t=Q.typeat(-1);
     switch (t)
     {
-        case LUA_TNIL:
+        case LuaType::TNIL:
         {
             if (result.size()>0) result.back().append("nil");
             else result.push_back("nil");
             return;
         }
-        case LUA_TBOOLEAN:
+        case LuaType::TBOOLEAN:
         {
             const auto f=Q.tobool(-1);
             const char*str=f?"true":"false";
@@ -69,7 +69,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             else result.push_back(str);
             return;
         }
-        case LUA_TNUMBER:
+        case LuaType::TNUMBER:
         {
             char pad[100];
             if (Q.hasintat(-1)) snprintf(pad, sizeof(pad), "%lld", Q.toint(-1));
@@ -78,13 +78,13 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             else result.push_back(pad);
             return;
         }
-        case LUA_TSTRING:
+        case LuaType::TSTRING:
         {
             if (result.size()>0) result.back().append(quot+Q.tostring(-1)+quot);
             else result.push_back(quot+Q.tostring(-1)+quot);
             return;
         }
-        case LUA_TLIGHTUSERDATA:
+        case LuaType::TLIGHTUSERDATA:
         {
             char pad[100];
             sprintf(pad, "lightuserdata(%p)", lua_touserdata(Q, -1));
@@ -92,7 +92,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             else result.push_back(pad);
             return;
         }
-        case LUA_TUSERDATA:
+        case LuaType::TUSERDATA:
         {
             char pad[100];
             sprintf(pad, "userdata(0x%p)", lua_touserdata(Q, -1));
@@ -100,14 +100,14 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             else result.push_back(pad);
             return;
         }
-        case LUA_TFUNCTION:
+        case LuaType::TFUNCTION:
         {
             const auto repr=lua_iscfunction(Q, -1)?"cfunction":lua_isfunction(Q, -1)?"luafunction":"function(unknown type)";
             if (result.size()>0) result.back().append(repr);
             else result.push_back(repr);
             return;
         }
-        case LUA_TTABLE:
+        case LuaType::TTABLE:
         {
             const auto [num_key, num_index, max_index]=keynum(Q);
             // Hier beginnt die Rekursion in die Tabelle.
@@ -186,7 +186,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         default:
         {
             char pad[100];
-            sprintf(pad, "unexpected_type(%d)", t);
+            sprintf(pad, "unexpected_type(%d)", static_cast<int>(t));
             if (result.size()>0) result.back().append(pad);
             else result.push_back(pad);
             return;
