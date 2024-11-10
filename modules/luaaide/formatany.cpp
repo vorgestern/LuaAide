@@ -72,7 +72,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         case LUA_TNUMBER:
         {
             char pad[100];
-            if (lua_isinteger(L, -1)) snprintf(pad, sizeof(pad), "%lld", Q.toint(-1));
+            if (Q.hasintat(-1)) snprintf(pad, sizeof(pad), "%lld", Q.toint(-1));
             else snprintf(pad, sizeof(pad), "%g", Q.todouble(-1));
             if (result.size()>0) result.back().append(pad);
             else result.push_back(pad);
