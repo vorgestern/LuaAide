@@ -141,7 +141,7 @@ LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 LuaCall LuaStack::operator<<(const LuaCode&C)
 {
     const int rc=luaL_loadstring(L, C.text);
-    if (rc!=LUA_OK) lua_error(L);
+    if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
 
@@ -149,7 +149,7 @@ LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
 {
     auto [tag,C]=X;
     const int rc=luaL_loadbufferx(L, C.text, strlen(C.text), tag.data(), "t");
-    if (rc!=LUA_OK) lua_error(L);
+    if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
 
@@ -697,7 +697,7 @@ LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
     auto [tag,C]=X;
     singlechunkreader_context cx {C.text, strlen(C.text), false};
     const int rc=lua_load(L, singlechunkreader, &cx, tag.data(), nullptr);
-    if (rc!=LUA_OK) lua_error(L);
+    if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
 #endif
