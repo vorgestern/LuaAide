@@ -21,14 +21,14 @@ static double getelement(LuaStack&Q, int index, int e, const char name[])
     // Argument at index
     if (const auto t=lua_geti(Q, index, e); t==LUA_TNUMBER)
     {
-        auto value=lua_tonumber(Q, -1);
+        auto value=Q.todouble(-1);
         Q.drop(1);
         return value;
     }
     else Q.drop(1);
     if (const auto t=lua_getfield(Q, index, name); t==LUA_TNUMBER)
     {
-        auto value=lua_tonumber(Q, -1);
+        auto value=Q.todouble(-1);
         Q.drop(1);
         return value;
     }
@@ -80,7 +80,7 @@ static int mynew(lua_State*L)
     if (height(Q)==1) return myconstructor(Q, argvector(Q, -1));
     else if (height(Q)>=3)
     {
-        const auto x=lua_tonumber(L, 1), y=lua_tonumber(L, 2), z=lua_tonumber(L, 3);
+        const auto x=Q.todouble(1), y=Q.todouble(2), z=Q.todouble(3);
         return myconstructor(Q, {x,y,z});
     }
     else return myconstructor(Q, {0,0,0});

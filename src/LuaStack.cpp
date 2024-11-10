@@ -189,7 +189,7 @@ LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
     return*this;
 }
 
-string LuaStack::stringrepr(int index)const
+string LuaStack::stringrepr(int index)
 {
     const auto t=lua_type(L, index);
     switch (t)
@@ -198,7 +198,7 @@ string LuaStack::stringrepr(int index)const
         case LUA_TBOOLEAN:{ const bool f=0!=lua_toboolean(L, index); return f?"true":"false"; }
         case LUA_TNUMBER:
         {
-            const double x=lua_tonumber(L, index);
+            const auto x=todouble(index);
             char pad[100];
             snprintf(pad, sizeof(pad), "%g", x);
             return pad;

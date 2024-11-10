@@ -1,7 +1,8 @@
 
 alias aa="clear && make -j && make test"
-alias cc="clear && grep -rn lua_ src modules examples"
+alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 
-# 159
-# 156 /lua_string (Rest 1)
-
+# cc
+# 115
+# 115 /lua_string (Rest 1)
+# 111 /lua_tonumber
