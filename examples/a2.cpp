@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// a2: Closures
+
 int panichandler(lua_State*L)
 {
     LuaStack Q(L);

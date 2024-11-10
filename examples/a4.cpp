@@ -2,7 +2,7 @@
 #include <LuaAide.h>
 #include <iostream>
 
-// Demo LuaUserData
+// a4: LuaUserData
 
 using namespace std;
 

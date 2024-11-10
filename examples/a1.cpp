@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <LuaAide.h>
 
+// a1: Inline scripting with LuaCode
+
 int main()
 {
     LuaStack Q=LuaStack::New(true, nullptr);
@@ -55,9 +57,11 @@ int main()
             return a+b, a-b
         )xxx");
         C<<23<<21   >>2;
+
         // Index stack from bottom (stack is 'private')
         const auto sum=C.toint(1), diff=C.toint(2);
         printf("Call script with 23, 21; Return values are sum=%lld, diff=%lld\n", sum, diff);
+
         // Index stack from top: -1 indexes top element, -2 second from top, ...
         const auto sum1=C.toint(-2), diff1=C.toint(-1);
         printf("Call script with 23, 21; Return values are sum=%lld, diff=%lld\n", sum1, diff1);
@@ -73,7 +77,7 @@ int main()
             for k=1,num do table.insert(X, "item_"..tostring(k)) end
             return table.unpack(X)
         )xxx");
-        C<<11   >>-1; // -1: keep all results
+        C<<11   >>-1; // -1 (==LUA_MULTRET): keep all results
         const auto h=height(C);
         for (unsigned n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n).c_str());
     }
