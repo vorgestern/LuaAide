@@ -48,7 +48,7 @@ namespace {
 
     std::ostream&operator<<(std::ostream&out, const IndentedLuaStackItem&X)
     {
-        const auto Q=State(X);
+        LuaStack Q=State(X);
         const auto index=Index(X);
         const Indent I(X.level);
         if (lua_gettop(Q)<1) return out<<I<<"<empty>";
@@ -87,7 +87,7 @@ namespace {
                     // uses 'key' (at index -2) and 'value' (at index -1)
                     if (lua_isnumber(Q, -2))
                     {
-                        const auto key=lua_tointeger(Q, -2);
+                        const auto key=Q.toint(-2);
                         out<<"\n\t"<<I<<"["<<key<<"]=";
                     }
                     else if (lua_isstring(Q, -2))

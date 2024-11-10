@@ -4,5 +4,6 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 
 # cc
 # 115
-# 115 /lua_string (Rest 1)
+# 115 /lua_tostring (Rest 1)
 # 111 /lua_tonumber
+# 110 /lua_tointeger
