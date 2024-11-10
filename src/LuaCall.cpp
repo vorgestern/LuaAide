@@ -62,7 +62,7 @@ int LuaCall::operator>>(std::pair<int,int>X)
         {
             lua_remove(L, -1-numresults);                           // [other[numtodrop], results[numresults]]
             lua_rotate(L, -(numresults+numtodrop), numresults);     // [results[numresults], other[numtodrop]]
-            lua_pop(L, numtodrop);                                  // [results[numresults]]
+            drop(numtodrop);                                        // [results[numresults]]
             return rc;
         }
         default:
@@ -72,7 +72,7 @@ int LuaCall::operator>>(std::pair<int,int>X)
         {
                                                 // [other[numtodrop], messagehandler, errorobject]
             lua_rotate(L, -(numtodrop+2), 1);   // [errorobject, other[numtodrop], messagehandler]
-            lua_pop(L, numtodrop+1);            // [errorobject]
+            drop(numtodrop+1);                  // [errorobject]
             return rc;
         }
     }

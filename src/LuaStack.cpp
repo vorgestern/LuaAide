@@ -58,7 +58,7 @@ unsigned version(const LuaStack&S)
 LuaStack&LuaStack::clear()
 {
     const int ns=lua_gettop(L);
-    if (ns>0) lua_pop(L, ns);
+    if (ns>0) drop(ns);
     return*this;
 }
 
@@ -246,7 +246,7 @@ string LuaStack::errormessage()
     if (height(*this)<1) return "No error message available (stack empty)";
     else if (!hasstringat(-1)) return "No error message available (not a string)";
     auto msg=tostring(-1);
-    lua_pop(L, 1);
+    drop(1);
     return msg;
 }
 
