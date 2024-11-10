@@ -128,7 +128,7 @@ TEST_F(CallEnv, CallInt)
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==23);
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==24);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("hoppla", Q.tostring(-1));
+    ASSERT_EQ("hoppla", Q.tostring(-1));
 }
 
 TEST_F(CallEnv, CallIntError)
@@ -141,7 +141,7 @@ TEST_F(CallEnv, CallIntError)
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==23);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("demoerror\nstack traceback:", Q.tostring(-1));
+    ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
 TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
@@ -156,7 +156,7 @@ TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==23);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
+    ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
 }
 
 TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
@@ -171,7 +171,7 @@ TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
     const auto rc=Q<<LuaGlobalCall("gehtnicht")<<21>>2;     ASSERT_EQ(LUA_ERRRUN, rc);
                                                             ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("demoerror\nstack traceback:\n\t[string \"myscript\"]:3: in function 'gehtnicht'", Q.tostring(-1));
+    ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"myscript\"]:3: in function 'gehtnicht'", Q.tostring(-1));
 }
 
 TEST_F(CallEnv, CallPair)
@@ -181,7 +181,7 @@ TEST_F(CallEnv, CallPair)
     Q<<demofunc<<LuaValue(-2)>>make_pair(3, 2); ASSERT_EQ(2, height(Q));
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==24);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("hoppla", Q.tostring(-1));
+    ASSERT_EQ("hoppla", Q.tostring(-1));
 }
 
 TEST_F(CallEnv, CallPairError)
@@ -191,7 +191,7 @@ TEST_F(CallEnv, CallPairError)
     const auto rc=Q<<demoerror<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
                                                                 ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("demoerror\nstack traceback:", Q.tostring(-1));
+    ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
 #endif

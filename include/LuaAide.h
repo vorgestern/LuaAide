@@ -276,7 +276,7 @@ public:
     bool hasthreadat(int pos){ return lua_isthread(L, pos)!=0; }
     bool hasuserdataat(int pos){ return lua_isuserdata(L, pos)!=0; }
 
-    const char*tostring(int pos){ return lua_tostring(L, pos); }
+    std::string tostring(int pos);
     bool tobool(int pos){ return lua_toboolean(L, pos)!=0; }
     long long toint(int pos){ return lua_tointeger(L, pos); }
     double todouble(int pos){ return lua_tonumber(L, pos); }

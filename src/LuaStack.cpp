@@ -92,6 +92,8 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
 
+string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
+
 // **********************************************************************
 
 static int errfunction(lua_State*L)
@@ -208,8 +210,7 @@ string LuaStack::stringrepr(int index)
         }
         case LuaType::TSTRING:
         {
-            const char*s=tostring(index);
-            return s;
+            return tostring(index);
         }
         case LuaType::TLIGHTUSERDATA:
         {
@@ -549,7 +550,7 @@ TEST_F(StackEnv, LuaGlobal)
     ASSERT_TRUE(Q.hasintat(-1));
     ASSERT_EQ(21, Q.toint(-1));
     ASSERT_TRUE(Q.hasstringat(-2));
-    ASSERT_STREQ("hoppla", Q.tostring(-2));
+    ASSERT_EQ("hoppla", Q.tostring(-2));
 }
 
 TEST_F(StackEnv, LuaDotCall)
@@ -562,7 +563,7 @@ TEST_F(StackEnv, LuaDotCall)
     Q.clear();
     Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("x=alpha", Q.tostring(-1));
+    ASSERT_EQ("x=alpha", Q.tostring(-1));
 }
 
 TEST_F(StackEnv, LuaColonCall)
@@ -577,7 +578,7 @@ TEST_F(StackEnv, LuaColonCall)
     Q.clear();
     Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo", 1)>>1;
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("x=alpha, a=beta", Q.tostring(-1));
+    ASSERT_EQ("x=alpha, a=beta", Q.tostring(-1));
 }
 
 TEST_F(StackEnv, LuaColonCallNotAMethod)
@@ -615,11 +616,11 @@ TEST_F(StackEnv, LuaElement)
     ASSERT_EQ(1, height(Q));
     Q<<LuaElement(-1, 2);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("B", Q.tostring(-1));
+    ASSERT_EQ("B", Q.tostring(-1));
     Q.drop(1);
     Q<<LuaElement(-1, 4);
     ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_STREQ("D", Q.tostring(-1));
+    ASSERT_EQ("D", Q.tostring(-1));
     Q.drop(1);
     Q<<LuaElement(-1, 5);
     ASSERT_TRUE(Q.hasnilat(-1));
@@ -658,7 +659,7 @@ TEST_F(StackEnv, LuaElementSet)
     Q<<LuaElement(-1, 5);
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_STREQ("hoppla", Q.tostring(-1));
+    ASSERT_EQ("hoppla", Q.tostring(-1));
     Q.drop(1);
     ASSERT_EQ(1, height(Q));
 }
@@ -690,7 +691,7 @@ TEST_F(StackEnv, LuaIterator)
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
     Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_STREQ("121,122,123,124,125", Q.tostring(-1));
+    ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
 }
 
 // Teststatus LuaStack:

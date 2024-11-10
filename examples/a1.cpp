@@ -75,7 +75,7 @@ int main()
         )xxx");
         C<<11   >>-1; // -1: keep all results
         const auto h=height(C);
-        for (unsigned n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n));
+        for (unsigned n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n).c_str());
     }
 
     if (true)
@@ -91,9 +91,9 @@ int main()
         C<<11>>1;
         for (LuaIterator I(C); next(I); ++I)
         {
-            const char*value=C.tostring(-1);
-            const char*key=C.dup(-2).tostring(-1);
-            printf("[%u]: '%s' '%s'\n", (unsigned)I, key, value);
+            auto value=C.tostring(-1);
+            auto key=C.dup(-2).tostring(-1);
+            printf("[%u]: '%s' '%s'\n", (unsigned)I, key.c_str(), value.c_str());
             C.drop(1);
         }
     }
@@ -114,9 +114,9 @@ int main()
         C<<11>>1;
         for (LuaIterator I(C); next(I); ++I)
         {
-            const char*value=C.tostring(-1);
-            const char*key=C.dup(-2).tostring(-1);
-            printf("[%u]: %s '%s'\n", (unsigned)I, key, value);
+            auto value=C.tostring(-1);
+            auto key=C.dup(-2).tostring(-1);
+            printf("[%u]: %s '%s'\n", (unsigned)I, key.c_str(), value.c_str());
             C.drop(1);
         }
     }
