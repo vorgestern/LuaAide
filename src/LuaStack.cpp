@@ -73,7 +73,7 @@ LuaStack&LuaStack::drop(unsigned num)
 LuaStack&LuaStack::swap()
 {
     lua_pushvalue(L, -2);
-    lua_remove(L, -3);
+    remove(-3);
     return*this;
 }
 
@@ -128,7 +128,7 @@ LuaCall LuaStack::operator<<(const LuaDotCall&C)
 {
     const int objectindex=-1;
     lua_getfield(L, objectindex, C.name);
-    lua_remove(L, objectindex-1);
+    remove(objectindex-1);
     return LuaCall(L);
 }
 
@@ -260,7 +260,7 @@ LuaStack&LuaStack::operator<<(const LuaRegValue&X)
 {
     *this<<LuaValue(LUA_REGISTRYINDEX)<<LuaLightUserData(X.data); // [Registry, key]
     lua_gettable(L, -2);                            // [Registry, [Registry[key]]
-    lua_remove(L, -2);                              // [[Registry[key]]
+    remove(-2);                                     // [[Registry[key]]
     return*this;
 }
 
@@ -271,7 +271,7 @@ LuaStack&LuaStack::operator>>(const LuaRegValue&X)
         <<LuaLightUserData(X.data)                  // [value, Registry, key]
         <<luarot_3;                                 // [Registry, key, value]
     lua_settable(L, -3);                            // [Registry]
-    lua_remove(L, -1);                              // []
+    drop(1);                                        // []
     return*this;
 }
 

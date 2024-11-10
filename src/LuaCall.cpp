@@ -29,7 +29,7 @@ int LuaCall::operator>>(int numresults)
     {
         case LUA_OK:                                        // [errorhandler, results[numresults]]
         {
-            lua_remove(L, -1-numresults);                   // [results[numresults]]
+            remove(-1-numresults);                          // [results[numresults]]
             return rc;
         }
         default:
@@ -41,7 +41,7 @@ int LuaCall::operator>>(int numresults)
         // Vgl. http://www.lua.org/manual/5.4/manual.html#8.3
         {
                                                             // [errorhandler, errorobject]
-            lua_remove(L, -2);                              // [errorobject]
+            remove(-2);                                     // [errorobject]
             return rc;
         }
     }
@@ -60,7 +60,7 @@ int LuaCall::operator>>(std::pair<int,int>X)
     {
         case LUA_OK:                                                // [other[numtodrop], messagehandler, results[numresuls]]
         {
-            lua_remove(L, -1-numresults);                           // [other[numtodrop], results[numresults]]
+            remove(-1-numresults);                                  // [other[numtodrop], results[numresults]]
             lua_rotate(L, -(numresults+numtodrop), numresults);     // [results[numresults], other[numtodrop]]
             drop(numtodrop);                                        // [results[numresults]]
             return rc;
