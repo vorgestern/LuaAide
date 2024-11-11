@@ -94,6 +94,60 @@ LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
 
 string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
 
+string LuaStack::asstring(int pos)
+{
+    switch (typeat(pos))
+    {
+        case LuaType::TBOOLEAN: return lua_toboolean(L, pos)?"true":"false";
+        case LuaType::TFUNCTION:
+        {
+            const bool native=lua_iscfunction(L, pos);
+            char pad[100];
+            const size_t len=snprintf(pad, sizeof(pad), "%sfunction(%p)", native?"c":"", lua_topointer(L, pos));
+            return {pad, len};
+        }
+        case LuaType::TLIGHTUSERDATA:
+        {
+            char pad[100];
+            const size_t len=snprintf(pad, sizeof(pad), "lightuserdata(%p)", lua_topointer(L, pos));
+            return {pad, len};
+        }
+        case LuaType::TNIL: return "nil";
+        case LuaType::TNUMBER:
+        {
+            char pad[100];
+            snprintf(pad, sizeof(pad), "%g", lua_tonumber(L, pos));
+            return pad;
+        }
+        case LuaType::TSTRING:
+        {
+            size_t len;
+            const char*str=lua_tolstring(L, pos, &len);
+            return {str, len};
+        }
+        case LuaType::TTABLE:
+        {
+            char pad[100];
+            const size_t len=snprintf(pad, sizeof(pad), "table(%p)", lua_topointer(L, pos));
+            return {pad, len};
+        }
+        case LuaType::TTHREAD:
+        {
+            char pad[100];
+            const size_t len=snprintf(pad, sizeof(pad), "thread(%p)", lua_topointer(L, pos));
+            return {pad, len};
+        }
+        case LuaType::TUSERDATA:
+        {
+            char pad[100];
+            const size_t len=snprintf(pad, sizeof(pad), "userdata(%p)", lua_topointer(L, pos));
+            return {pad, len};
+        }
+        default:
+        case LuaType::TNONE: return "";
+    }
+}
+
 // **********************************************************************
 
 static int errfunction(lua_State*L)
@@ -692,6 +746,56 @@ TEST_F(StackEnv, LuaIterator)
     Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
     ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, AsString)
+{
+    Q<<true;
+    ASSERT_EQ(LuaType::TBOOLEAN, Q.typeat(-1));
+    ASSERT_EQ("true", Q.asstring(-1));
+    Q.drop(1);
+
+    void*p=nullptr;
+
+    Q<<lua_error;
+    ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(0x%p)", &p));
+    Q.drop(1);
+
+    Q<<LuaLightUserData((void*)lua_error);
+    ASSERT_EQ(LuaType::TLIGHTUSERDATA, Q.typeat(-1));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(0x%p)", &p));
+    Q.drop(1);
+
+    Q<<luanil;
+    ASSERT_EQ(LuaType::TNIL, Q.typeat(-1));
+    ASSERT_EQ("nil", Q.asstring(-1));
+    Q.drop(1);
+
+    Q<<3.1415926;
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
+    ASSERT_EQ("3.14159", Q.asstring(-1));
+    Q.drop(1);
+
+    Q<<"hoppla";
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_EQ("hoppla", Q.asstring(-1));
+    Q.drop(1);
+
+    Q<<LuaTable(0,0);
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(0x%p)", &p));
+    Q.drop(1);
+
+    lua_pushthread(Q);
+    ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(0x%p)", &p));
+    Q.drop(1);
+
+    lua_newuserdatauv(Q, sizeof(void*), 0);
+    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(0x%p)", &p));
+    Q.drop(1);
 }
 
 // Teststatus LuaStack:

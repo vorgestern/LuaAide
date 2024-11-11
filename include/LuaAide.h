@@ -281,6 +281,8 @@ public:
     long long toint(int pos){ return lua_tointeger(L, pos); }
     double todouble(int pos){ return lua_tonumber(L, pos); }
 
+    std::string asstring(int pos); // Stack element not converted!
+
     //! dofile() und dostring() erlauben jeweils die Übergabe von Argumenten im Stil (argc, argv).
     //! Sie werden auf den Stack gelegt und sind dann mit args={...} abrufbar!
     bool dofile(const char filename[], int argc, char*argv[]);
