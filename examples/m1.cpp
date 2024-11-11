@@ -39,7 +39,7 @@ static double getelement(LuaStack&Q, int index, int e, const char name[])
 static V argvector(lua_State*L, int index)
 {
     LuaStack  Q(L);
-    if (lua_isuserdata(L, index) && !lua_islightuserdata(L, index))
+    if (Q.hasheavyuserdataat(index))
     {
         auto*P=reinterpret_cast<V**>(lua_touserdata(Q, index));
         return**P;
@@ -89,7 +89,7 @@ static int mynew(lua_State*L)
 static int myfinaliser(lua_State*L)
 {
     LuaStack Q(L);
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
+    if (Q.hasheavyuserdataat(-1))
     {
         auto*P=reinterpret_cast<V**>(lua_touserdata(L, -1));
         auto*X=*P;
@@ -103,7 +103,7 @@ static int myfinaliser(lua_State*L)
 static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
+    if (Q.hasheavyuserdataat(-1))
     {
         auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -1));
         auto*X=*P;

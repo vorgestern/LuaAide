@@ -274,6 +274,8 @@ public:
     bool hasfunctionat(int pos){ return posvalid(pos) && lua_isfunction(L, pos)!=0; }
     bool hasthreadat(int pos){ return lua_isthread(L, pos)!=0; }
     bool hasuserdataat(int pos){ return lua_isuserdata(L, pos)!=0; }
+    bool haslightuserdataat(int pos){ return lua_islightuserdata(L, pos)!=0; }
+    bool hasheavyuserdataat(int pos){ return lua_isuserdata(L, pos) && !lua_islightuserdata(L, pos); }
 
     std::string tostring(int pos);
     bool tobool(int pos){ return lua_toboolean(L, pos)!=0; }

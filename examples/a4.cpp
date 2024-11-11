@@ -39,7 +39,7 @@ static int mynew(lua_State*L)
 static int myfinaliser(lua_State*L)
 {
     LuaStack Q(L);
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
+    if (Q.hasheavyuserdataat(-1))
     {
         auto*P=reinterpret_cast<DemoClass**>(lua_touserdata(L, -1));
         auto*X=*P;
@@ -53,7 +53,7 @@ static int myfinaliser(lua_State*L)
 static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
-    if (lua_isuserdata(L, -1) && !lua_islightuserdata(L, -1))
+    if (Q.hasheavyuserdataat(-1))
     {
         auto*P=reinterpret_cast<DemoClass**>(lua_touserdata(Q, -1));
         auto*X=*P;
