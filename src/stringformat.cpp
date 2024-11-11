@@ -9,17 +9,6 @@ using namespace std;
 
 namespace {
 
-    struct Indent
-    {
-        unsigned level{0};
-        Indent(unsigned lev): level(lev){}
-        friend ostream&operator<<(ostream&out, const Indent&X)
-        {
-            for (unsigned n=0; n<X.level; ++n) out<<'\t';
-            return out;
-        }
-    };
-
     struct Str
     {
         const char*str{nullptr};
@@ -52,8 +41,8 @@ namespace {
     {
         LuaStack Q=State(X);
         const auto index=Index(X);
-        const Indent I(X.level);
-        if (height(Q)<1) return out<<I<<"<empty>";
+        const string Indent('\t', X.level);
+        if (height(Q)<1) return out<<Indent<<"<empty>";
         else switch (Q.typeat(index))
         {
             case LuaType::TNIL: return out<<"nil";
@@ -90,18 +79,18 @@ namespace {
                     if (Q.hasnumberat(-2))
                     {
                         const auto key=Q.toint(-2);
-                        out<<"\n\t"<<I<<"["<<key<<"]=";
+                        out<<"\n\t"<<Indent<<"["<<key<<"]=";
                     }
                     else if (lua_isstring(Q, -2))
                     {
                         const char*key=(const char*)lua_tolstring(Q, -2, nullptr);
-                        out<<"\n\t"<<I<<key<<"=";
+                        out<<"\n\t"<<Indent<<key<<"=";
                     }
                     out<<IndentedLuaStackItem(Q, -1, X.level+1);
                     // removes 'value'; keeps 'key' for next iteration
                     Q.drop(1);
                 }
-                return (num>0?out<<"\n"<<I:out)<<'}';
+                return (num>0?out<<"\n"<<Indent:out)<<'}';
             }
             default:
             {
