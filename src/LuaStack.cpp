@@ -575,6 +575,27 @@ TEST_F(StackEnv, HasFunctionAt)
     EXPECT_FALSE(Q.hasfunctionat( 5));
 }
 
+TEST_F(StackEnv, HasThreadAt)
+{
+    lua_pushthread(Q);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasthreadat(-1));
+}
+
+TEST_F(StackEnv, HasUserdataAt1)
+{
+    Q<<LuaLightUserData(0);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasuserdataat(-1));
+}
+
+TEST_F(StackEnv, HasUserdataAt2)
+{
+    lua_newuserdatauv(Q, sizeof(void*), 0);
+    ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasuserdataat(-1));
+}
+
 TEST_F(StackEnv, LuaAbsIndex)
 {
     Q<<21<<22<<23<<"hoppla";
@@ -844,13 +865,15 @@ TEST_F(StackEnv, AsString)
 // + hasintat
 // + hastableat
 // + hasfunctionat
-// - hasthreadat
-// - hasuserdataat
+// + hasthreadat
+// + hasuserdataat
 //
 // - tostring
 // - tobool
 // - toint
 // - todouble
+//
+// + asstring
 //
 // - dofile
 // - dostring
