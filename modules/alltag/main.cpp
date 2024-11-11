@@ -65,7 +65,7 @@ extern "C" int cd(lua_State*L)
 }
 }
 
-extern "C" int luaopen_luaaide(lua_State*L)
+extern "C" int luaopen_alltag(lua_State*L)
 {
     LuaStack Q(L);
     Q<<LuaTable()

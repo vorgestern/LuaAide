@@ -17,15 +17,15 @@ CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 .PHONY: clean dir prerequisites test
 
-all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so luaaide.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so alltag.so ulutest.so
 clean:
-	@rm -rf b/* bt/* libLuaAide.a LuaAideTest luaaide.so ulutest.so
+	@rm -rf b/* bt/* libLuaAide.a LuaAideTest alltag.so ulutest.so
 prerequisites:
 	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
-	@mkdir -p b/luaaide b/ulutest bt
+	@mkdir -p b/alltag b/ulutest bt
 test:
-	./LuaAideTest && lua modules/luaaide/test.lua && lua examples/m1test.lua
+	./LuaAideTest && lua modules/alltag/test.lua && lua examples/m1test.lua
 
 # ============================================================
 
@@ -58,10 +58,10 @@ b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
 
 # ============================================================
 
-luaaide.so: b/luaaide/main.o b/luaaide/formatany.o b/luaaide/keyescape.o libLuaAide.a
+alltag.so: b/alltag/main.o b/alltag/formatany.o b/alltag/keyescape.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
-b/luaaide/%.o: modules/luaaide/%.cpp $(XHEADER)
+b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
 # ============================================================
