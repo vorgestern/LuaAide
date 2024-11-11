@@ -5,12 +5,12 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 # cc
 # 115
 # 115 /lua_tostring (Rest 1)
-# 111 /lua_tonumber
+# 111 /lua_tonumber (Rest 1)
 # 110 /lua_tointeger
-# 105 /lua_pop
+# 105 /lua_pop (Rest 1)
 # 102 /lua_gettop
 #  95 /lua_remove (Rest 1)
-#  92 /lua_error (Rest 2)
+#  92 /lua_error (Rest 4)
 #  90 /lua_pushlstring
 #  89 /lua_isnumber
 #  85 /lua_rotate
@@ -19,3 +19,4 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 #  78 /lua_pushnil
 #  74 /lua_type
 #  76          nach Erweiterungen
+#  86          nach Erweiterungen und Unittests

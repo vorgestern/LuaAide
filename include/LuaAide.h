@@ -100,9 +100,8 @@ class LuaField
     friend class LuaStack;
     friend class LuaCall;
     const char*name{nullptr};
-    bool replace_table{true}; //!< Wenn true, wird Tabelle<<LuaField("x") Tabelle auf dem Stack durch Tabelle.x ersetzen, sonst zusätzlich auf den Stack legen.
 public:
-    LuaField(const char s[], bool replace=false): name(s), replace_table(replace){}
+    LuaField(const char s[]): name(s){}
 };
 
 //! Diese Klasse erleichtert den Aufruf einer Elementfunktion
@@ -257,7 +256,7 @@ public:
 
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
-    LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); if (F.replace_table) lua_remove(L, -2); return*this; }
+    LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
     LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.tableindex, E.elementindex); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
