@@ -41,8 +41,8 @@ static V argvector(lua_State*L, int index)
     LuaStack  Q(L);
     if (Q.hasheavyuserdataat(index))
     {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, index));
-        return**P;
+        auto X=Q.touserpointer<V>(index);
+        return*X;
     }
     if (Q.hastableat(index))
     {
@@ -91,11 +91,10 @@ static int myfinaliser(lua_State*L)
     LuaStack Q(L);
     if (Q.hasheavyuserdataat(-1))
     {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(L, -1));
-        auto*X=*P;
+        auto X=Q.touserpointer<V**>(-1);
         // printf("finaliser deletes %p\n", X);
-        *P=nullptr;
-        delete X;
+        *X=nullptr;
+        delete *X;
     }
     return 0;
 }
@@ -105,8 +104,7 @@ static int mytostring(lua_State*L)
     LuaStack Q(L);
     if (Q.hasheavyuserdataat(-1))
     {
-        auto*P=reinterpret_cast<V**>(lua_touserdata(Q, -1));
-        auto*X=*P;
+        auto*X=Q.touserpointer<V>(-1);
         char pad[100];
         snprintf(pad, sizeof(pad), "{%g, %g, %g}", X->x, X->y, X->z);
         Q<<pad;

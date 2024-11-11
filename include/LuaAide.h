@@ -281,6 +281,8 @@ public:
     bool tobool(int pos){ return lua_toboolean(L, pos)!=0; }
     long long toint(int pos){ return lua_tointeger(L, pos); }
     double todouble(int pos){ return lua_tonumber(L, pos); }
+    template<typename X>X touserdata(int pos){ return reinterpret_cast<X>(lua_touserdata(L, pos)); }
+    template<typename X>X*touserpointer(int pos){ auto P=reinterpret_cast<X**>(lua_touserdata(L, pos)); return P!=nullptr?*P:nullptr; }
 
     std::string asstring(int pos); // Stack element not converted!
 

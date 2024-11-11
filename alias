@@ -20,3 +20,4 @@ alias cc="clear && grep -rn lua_ src modules examples | grep -vw lua_State"
 #  74 /lua_type
 #  76          nach Erweiterungen
 #  86          nach Erweiterungen und Unittests
+#  76 /luatouserdata
