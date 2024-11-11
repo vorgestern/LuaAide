@@ -11,7 +11,7 @@
 # 10 + LuaStack<<LuaList gibt einen Iterator zurück: LuaStack<<LuaList<<21<<22<<23; erzeugt eine Liste.
 # 11 + LuaStack.tostrint(index) ==> std::string
 
-XFILES   := LuaAide LuaCall LuaStack stringformat
+XFILES   := LuaCall LuaStack streamout
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
