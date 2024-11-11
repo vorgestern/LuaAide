@@ -176,7 +176,7 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
     {
         char pad[100];
         snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
-        const auto str=pad+stringrepr(-1);
+        const auto str=pad+asstring(-1);
         drop(1);
         *this<<str<<LuaClosure(errfunction, 1);
         return LuaCall(L, index(-1));
@@ -246,57 +246,6 @@ LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
         lua_setfield(L, -2, k.c_str());
     }
     return*this;
-}
-
-string LuaStack::stringrepr(int index)
-{
-    const auto t=typeat(index);
-    switch (t)
-    {
-        case LuaType::TNIL: return "nil";
-        case LuaType::TBOOLEAN:{ const bool f=0!=lua_toboolean(L, index); return f?"true":"false"; }
-        case LuaType::TNUMBER:
-        {
-            const auto x=todouble(index);
-            char pad[100];
-            snprintf(pad, sizeof(pad), "%g", x);
-            return pad;
-        }
-        case LuaType::TSTRING:
-        {
-            return tostring(index);
-        }
-        case LuaType::TLIGHTUSERDATA:
-        {
-            const char*s=(char*)lua_touserdata(L, index);
-            char pad[100];
-            snprintf(pad, sizeof(pad), "lightuserdata(%p)", s);
-            return pad;
-        }
-        case LuaType::TUSERDATA:
-        {
-            const char*s=(char*)lua_touserdata(L, index);
-            char pad[100];
-            snprintf(pad, sizeof(pad), "userdata(%p)", s);
-            return pad;
-        }
-        case LuaType::TTABLE:
-        {
-            return "table {...}";
-        }
-        case LuaType::TFUNCTION:
-        {
-            if (lua_iscfunction(L, index)) return "cfunction";
-            else if (lua_isfunction(L, index)) return "lua function";
-            else return "function(neither c nor lua)";
-        }
-        default:
-        {
-            char pad[100];
-            snprintf(pad, sizeof(pad), "<undocumented type %d>", static_cast<int>(t));
-            return pad;
-        }
-    }
 }
 
 string LuaStack::errormessage()

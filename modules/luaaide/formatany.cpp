@@ -173,7 +173,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                     else
                     {
                         Q<<LuaGlobalCall("tostring")<<LuaValue(stackindex(jkey))>>1;
-                        const string repr=Q.stringrepr(-1);
+                        const string repr=Q.asstring(-1);
                         result.push_back(indent1+"["+repr+"]=");
                         Q.drop(1);
                     }
