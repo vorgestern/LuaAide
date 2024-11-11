@@ -19,10 +19,10 @@ namespace {
             {
                 for (const char*s=X.str; *s!=0; ++s) switch (*s)
                 {
-                case '\n': out<<"\\n"; break;
-                case '\r': out<<"\\r"; break;
-                case '\t': out<<"\\t"; break;
-                default: out<<*s;
+                    case '\n': out<<"\\n"; break;
+                    case '\r': out<<"\\r"; break;
+                    case '\t': out<<"\\t"; break;
+                    default: out<<*s;
                 }
                 return out;
             }
