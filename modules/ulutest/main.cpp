@@ -1,7 +1,7 @@
 
 #include <cstring>
 #include <string_view>
-#include <lua.hpp>
+#include <LuaAide.h>
 
 using namespace std;
 
@@ -11,8 +11,9 @@ using namespace std;
 extern "C" char ltest_start;
 extern "C" char ltest_end;
 
-static int mkloader(lua_State*Q, const char name[], const string_view impl)
+static int mkloader(lua_State*L, const char name[], const string_view impl)
 {
+    LuaStack Q(L);
     const string_view errs[]=
     {
         "ok", // #define LUA_OK	0
@@ -27,8 +28,7 @@ static int mkloader(lua_State*Q, const char name[], const string_view impl)
     {
         char pad[100];
         sprintf(pad, "%s: loading '%s' failed with rc=%d.", errs[rc].data(), name, rc);
-        lua_pushstring(Q, pad);
-        return lua_error(Q),0;
+        return Q<<pad>>luaerror;
     }
 }
 
