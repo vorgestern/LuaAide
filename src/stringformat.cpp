@@ -2,6 +2,8 @@
 #include <ostream>
 #include <LuaAide.h>
 
+using namespace std;
+
 // #define LIMIT_DUMP_DEPTH 0
 #define LIMIT_DUMP_DEPTH 3
 
@@ -11,7 +13,7 @@ namespace {
     {
         unsigned level{0};
         Indent(unsigned lev): level(lev){}
-        friend std::ostream&operator<<(std::ostream&out, const Indent&X)
+        friend ostream&operator<<(ostream&out, const Indent&X)
         {
             for (unsigned n=0; n<X.level; ++n) out<<'\t';
             return out;
@@ -22,7 +24,7 @@ namespace {
     {
         const char*str{nullptr};
         Str(const char*s): str(s){}
-        friend std::ostream&operator<<(std::ostream&out, const Str&X)
+        friend ostream&operator<<(ostream&out, const Str&X)
         {
             if (X.str!=nullptr)
             {
@@ -46,7 +48,7 @@ namespace {
         IndentedLuaStackItem(const LuaStackItem&X, unsigned level1): LuaStackItem(X), level(level1){}
     };
 
-    std::ostream&operator<<(std::ostream&out, const IndentedLuaStackItem&X)
+    ostream&operator<<(ostream&out, const IndentedLuaStackItem&X)
     {
         LuaStack Q=State(X);
         const auto index=Index(X);
@@ -110,7 +112,7 @@ namespace {
 
 } // anon
 
-std::ostream&operator<<(std::ostream&out, const LuaStack&X)
+ostream&operator<<(ostream&out, const LuaStack&X)
 {
     const int h=height(X);
     out<<"Stack("<<h<<")={";
@@ -122,4 +124,4 @@ std::ostream&operator<<(std::ostream&out, const LuaStack&X)
     return out<<"\n}";
 }
 
-std::ostream&operator<<(std::ostream&out, const LuaStackItem&X){ return out<<IndentedLuaStackItem(X, 0); }
+ostream&operator<<(ostream&out, const LuaStackItem&X){ return out<<IndentedLuaStackItem(X, 0); }
