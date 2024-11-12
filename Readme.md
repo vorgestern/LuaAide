@@ -1,16 +1,10 @@
 
-<style type="text/css">
-h1 { color: red; }
-table { border-collapse:collapse; }
-table tr td { border: solid 1px; }
-</style>
-
 # Purpose
 Substitute Lua's C-API with a C++ API that is more expressive and easier to use.
 
 # Usecases
 + **Embedding** Lua in a program, e.g. for configuration or as a plugin
-+ **Extending** Scripts by loading binary Lua-modules
++ **Extending** Scripts by loading binary Lua-modules written with LuaAide
 + **Exposing** C++ Types and functions to Lua scripts
 
 # Examples
@@ -69,10 +63,6 @@ demo.lua: use as ```lua demo.lua```
 - (optional) make test
 - Install manually by copying libLuaAide.a and include/LuaAide.h where they belong.
   (optional: Copy luaaide.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4))
-
-[comment]: # ## Windows
-[comment]: # - Install Visual Studio 22 and Lua 5.4
-[comment]: # - Use LuaAide.sln
 
 # Error handling
 ## Handling compile-errors in an application that embeds Lua
@@ -161,7 +151,3 @@ Throw a conventional Lua-Error, let Lua handle it:
     LuaStack Q=...;
     cout<<Q;
 ```
-
-[comment]: # # Sandbox to handle configuration files
-
-[comment]: # # Similar projects
