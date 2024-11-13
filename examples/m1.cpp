@@ -3,16 +3,18 @@
 #include <iostream>
 
 // Handlungsbedarf:
-// - Verbirg mtvec3
+// + Verbirg mtvec3 (LuaRegValue(tag))
 // - wrap lua_newuserdatauv
 // - wrap lua_setmetatable
 // - wrap indizierten Zugriff auf Listenelemente
-// - wrap lua_touserdata
+// + wrap lua_touserdata
 // - Konzept für die Identifikation des Datentyps, der in userdata gekapselt ist.
 
 using namespace std;
 
 namespace { namespace Vec3 {
+
+const char tag[]="mtvec3";
 
 struct V { double x, y, z; };
 
@@ -60,7 +62,7 @@ static int mydemo(lua_State*L)
     const auto A=argvector(Q, -1);
     auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
     *P=new V {A};
-    Q<<LuaGlobal("mtvec3");
+    Q<<LuaRegValue(tag);
     lua_setmetatable(L, -2);
     return 1;
 }
@@ -68,7 +70,7 @@ static int mydemo(lua_State*L)
 static int myconstructor(LuaStack&Q, const V&arg)
 {
     auto P=reinterpret_cast<V**>(lua_newuserdatauv(Q, sizeof(V*), 0));
-    Q<<LuaGlobal("mtvec3");
+    Q<<LuaRegValue(tag);
     lua_setmetatable(Q, -2);
     *P=new V(arg);
     return 1;
@@ -124,7 +126,7 @@ static int myadd(lua_State*L)
     try {
         const V A=argvector(Q, -2), B=argvector(Q, -1);
         auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
-        Q<<LuaGlobal("mtvec3");
+        Q<<LuaRegValue(tag);
         lua_setmetatable(L, -2);
         *P=new V {A.x+B.x, A.y+B.y, A.z+B.z};
         return 1;
@@ -139,7 +141,7 @@ static int mysubtract(lua_State*L)
     try {
         const V A=argvector(Q, -2), B=argvector(Q, -1);
         auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
-        Q<<LuaGlobal("mtvec3");
+        Q<<LuaRegValue(tag);
         lua_setmetatable(L, -2);
         *P=new V {A.x-B.x, A.y-B.y, A.z-B.z};
         return 1;
@@ -159,7 +161,7 @@ extern "C" int luaopen_m1(lua_State*L)
         <<mytostring>>LuaField("__tostring")
         <<myadd>>LuaField("__add")
         <<mysubtract>>LuaField("__sub")
-        >>LuaGlobal("mtvec3");
+        >>LuaRegValue(tag);
     Q  <<LuaTable()
         <<"0.1">>LuaField("version")
         <<mydemo>>LuaField("Demo")
