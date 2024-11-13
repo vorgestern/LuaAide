@@ -64,7 +64,16 @@ int LuaCall::operator>>(std::pair<int,int>X)
             remove(stackindex(msgh));                                   // [other[numtodrop], results[numresults]]
             if (numtodrop>0)
             {
-                rotate(-(numresults+numtodrop), numresults);            // [results[numresults], other[numtodrop]]
+                if (numresults>0) rotate(-(numresults+numtodrop), numresults);  // [results[numresults], other[numtodrop]]
+                else
+                {
+                    const auto here=index(-1);
+                    const auto numr=max(stackindex(here)-stackindex(msgh)+1, 0);
+                    // printf("\nhere=%d", stackindex(here));
+                    // printf("\nmsgh=%d", stackindex(msgh));
+                    // printf("\nnumr=%d\n", numr);
+                    rotate(-(numr+numtodrop), numr);
+                }
                 drop(numtodrop);                                        // [results[numresults]]
             }
             return rc;
@@ -184,6 +193,17 @@ TEST_F(CallEnv, CallPair)
     ASSERT_EQ(24, Q.toint(-2))<<Q;
     ASSERT_TRUE(Q.hasstringat(-1))<<Q;
     ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
+}
+
+TEST_F(CallEnv, CallPairMultRet)
+{
+    Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q));
+    Q<<demo_multret>>make_pair(3,LUA_MULTRET);      ASSERT_EQ(5, height(Q))<<Q;
+    ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==121)<<Q;
+    ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==122)<<Q;
+    ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==123)<<Q;
+    ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==124)<<Q;
+    ASSERT_TRUE(Q.hasintat(-1) && Q.toint(-1)==125)<<Q;
 }
 
 TEST_F(CallEnv, CallPairError)
