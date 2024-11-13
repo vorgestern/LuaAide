@@ -15,11 +15,13 @@ class LuaList;
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
 const enum class LuaSwap {a} luaswap=LuaSwap::a;
-const enum class LuaRotate:int {up4=-4, up3=-3, down3=3, down4=4}
+const enum class LuaRotate:int {up5=-5, up4=-4, up3=-3, down3=3, down4=4, down5=5}
+    luarot_5=LuaRotate::up5,
     luarot_4=LuaRotate::up4,
     luarot_3=LuaRotate::up3,
     luarot3=LuaRotate::down3,
-    luarot4=LuaRotate::down4;
+    luarot4=LuaRotate::down4,
+    luarot5=LuaRotate::down5;
 
 enum class LuaType:int {
     TNONE=-1,
