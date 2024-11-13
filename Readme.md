@@ -71,6 +71,7 @@ demo.lua: use as ```lua demo.lua```
 
 ```
     #include <LuaAide.h>
+    using namespace std;
 
     int main_throwing(lua_State*L)
     {
