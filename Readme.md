@@ -69,7 +69,6 @@ demo.lua: use as ```lua demo.lua```
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
 - Combine LuaCode with a name in a std::pair to get better error messages.
 
-```
     \#include <LuaAide.h>
     using namespace std;
 
@@ -104,7 +103,6 @@ demo.lua: use as ```lua demo.lua```
             return 0;
         }
     }
-```
 
 ## Handling runtime-errors in an application that embeds Lua
 - Throw conventional Lua-errors where applicable. Have it translated into
