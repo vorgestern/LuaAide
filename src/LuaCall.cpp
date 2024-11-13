@@ -25,7 +25,6 @@ int LuaCall::operator>>(int numresults)
     lua_pushcfunction(L, TracebackAdder);                               // [func, args[numargs], errorhandler]
     const auto msgh=index(-(numargs+2));
     rotate(stackindex(msgh), 1);                                        // [errorhandler, func, args[numargs]]
-
     const int rc=lua_pcall(L, numargs, numresults, stackindex(msgh));   // [errorhandler, results[numresults]] | [errorhandler, errorobject]
     switch (rc)
     {
@@ -51,20 +50,23 @@ int LuaCall::operator>>(int numresults)
 
 int LuaCall::operator>>(std::pair<int,int>X)
 {
-    const int numtodrop=X.first, numresults=X.second;
-    const auto now=index(-1);
-    const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
-    const int msgh=-(numargs+2);
-    lua_pushcfunction(L, TracebackAdder);                           // [other[numtodrop], func, args[numargs], messagehandler]
-    rotate(msgh, 1);                                                // [other[numtodrop], messagehandler, func, args[numargs]]
-    const int rc=lua_pcall(L, numargs, numresults, msgh);
+    const int numtodrop=X.first, numresults=X.second>=0?X.second:LUA_MULTRET;
+    const auto here=index(-1);
+    const auto numargs=max(stackindex(here)-stackindex(funcindex), 0);
+    lua_pushcfunction(L, TracebackAdder);                               // [other[numtodrop], func, args[numargs], errorhandler]
+    const auto msgh=index(-(numargs+2));
+    rotate(stackindex(msgh), 1);                                        // [other[numtodrop], errorhandler, func, args[numargs]]
+    const int rc=lua_pcall(L, numargs, numresults, stackindex(msgh));   // [other[numtodrop], errorhandler, results[numresults]] | [other[numtodrop], errorhandler, errorobject]
     switch (rc)
     {
-        case LUA_OK:                                                // [other[numtodrop], messagehandler, results[numresuls]]
+        case LUA_OK:                                                    // [other[numtodrop], errorhandler, results[numresuls]]
         {
-            remove(-1-numresults);                                  // [other[numtodrop], results[numresults]]
-            rotate(-(numresults+numtodrop), numresults);            // [results[numresults], other[numtodrop]]
-            drop(numtodrop);                                        // [results[numresults]]
+            remove(stackindex(msgh));                                   // [other[numtodrop], results[numresults]]
+            if (numtodrop>0)
+            {
+                rotate(-(numresults+numtodrop), numresults);            // [results[numresults], other[numtodrop]]
+                drop(numtodrop);                                        // [results[numresults]]
+            }
             return rc;
         }
         default:
@@ -72,9 +74,9 @@ int LuaCall::operator>>(std::pair<int,int>X)
         case LUA_ERRMEM: // OutOfMemory
         case LUA_ERRERR: // Fehler im Messagehandler
         {
-                                                // [other[numtodrop], messagehandler, errorobject]
-            rotate(-(numtodrop+2), 1);          // [errorobject, other[numtodrop], messagehandler]
-            drop(numtodrop+1);                  // [errorobject]
+                                                                        // [other[numtodrop], errorhandler, errorobject]
+            rotate(-(numtodrop+2), 1);                                  // [errorobject, other[numtodrop], errorhandler]
+            drop(numtodrop+1);                                          // [errorobject]
             return rc;
         }
     }
@@ -133,13 +135,8 @@ TEST_F(CallEnv, CallInt)
     ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
 }
 
-static int demo_multret(lua_State*L)
-{
-    LuaStack Q(L);
-    Q<<121<<122<<123<<124<<125;
-    return 5;
-}
-TEST_F(CallEnv, DISABLED_CallMultRet)
+static int demo_multret(lua_State*L){ LuaStack Q(L); Q<<121<<122<<123<<124<<125; return 5; }
+TEST_F(CallEnv, CallIntMultRet)
 {
                                                     ASSERT_EQ(0, height(Q));
     Q<<demo_multret>>LUA_MULTRET;                   ASSERT_EQ(5, height(Q))<<Q;
@@ -178,6 +175,27 @@ TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
     ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
 }
 
+TEST_F(CallEnv, CallPair)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q))<<Q;
+    Q<<demofunc<<LuaValue(-2)>>make_pair(3, 2);     ASSERT_EQ(2, height(Q))<<Q;
+    ASSERT_TRUE(Q.hasintat(-2))<<Q;
+    ASSERT_EQ(24, Q.toint(-2))<<Q;
+    ASSERT_TRUE(Q.hasstringat(-1))<<Q;
+    ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
+}
+
+TEST_F(CallEnv, CallPairError)
+{
+                                                                ASSERT_EQ(0, height(Q));
+    Q<<21<<22<<23;                                              ASSERT_EQ(3, height(Q));
+    const auto rc=Q<<demoerror<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
+                                                                ASSERT_EQ(1, height(Q));
+    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
+}
+
 TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
 {
                                                             ASSERT_EQ(0, height(Q));
@@ -191,26 +209,6 @@ TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
                                                             ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));
     ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"myscript\"]:3: in function 'gehtnicht'", Q.tostring(-1));
-}
-
-TEST_F(CallEnv, CallPair)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<21<<22<<23; ASSERT_EQ(3, height(Q));
-    Q<<demofunc<<LuaValue(-2)>>make_pair(3, 2); ASSERT_EQ(2, height(Q));
-    ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==24);
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("hoppla", Q.tostring(-1));
-}
-
-TEST_F(CallEnv, CallPairError)
-{
-                                                                ASSERT_EQ(0, height(Q));
-    Q<<21<<22<<23;                                              ASSERT_EQ(3, height(Q));
-    const auto rc=Q<<demoerror<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
-                                                                ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
 // =====================================================================
