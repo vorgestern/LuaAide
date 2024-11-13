@@ -144,11 +144,11 @@ TEST_F(CallEnv, CallInt)
     ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
 }
 
-static int demo_multret(lua_State*L){ LuaStack Q(L); Q<<121<<122<<123<<124<<125; return 5; }
+static int demo_multret5(lua_State*L){ LuaStack Q(L); Q<<121<<122<<123<<124<<125; return 5; }
 TEST_F(CallEnv, CallIntMultRet)
 {
                                                     ASSERT_EQ(0, height(Q));
-    Q<<demo_multret>>LUA_MULTRET;                   ASSERT_EQ(5, height(Q))<<Q;
+    Q<<demo_multret5>>LUA_MULTRET;                   ASSERT_EQ(5, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==121)<<Q;
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==122)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==123)<<Q;
@@ -198,7 +198,7 @@ TEST_F(CallEnv, CallPair)
 TEST_F(CallEnv, CallPairMultRet)
 {
     Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q));
-    Q<<demo_multret>>make_pair(3,LUA_MULTRET);      ASSERT_EQ(5, height(Q))<<Q;
+    Q<<demo_multret5>>make_pair(3,LUA_MULTRET);     ASSERT_EQ(5, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==121)<<Q;
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==122)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==123)<<Q;

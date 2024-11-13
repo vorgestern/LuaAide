@@ -71,15 +71,16 @@ int main()
     {
         printf("\nScript with unknown number of return values:\n");
         auto C=Q.clear()<<LuaCode(R"xxx(
-            local drop,this=math.randomseed(21, 23)
-            local num=math.tointeger(...)
+            local drop,this=math.randomseed() -- (21, 230)
+            local num=math.random(10) -- num in [1,10]
             local X={}
             for k=1,num do table.insert(X, "item_"..tostring(k)) end
+            -- print("==>",table.concat(X, ","),"<==")
             return table.unpack(X)
         )xxx");
-        C<<11   >>-1; // -1 (==LUA_MULTRET): keep all results
-        const auto h=height(C);
-        for (unsigned n=1; n<=h; ++n) printf("%d/%d: %s\n", n, h, C.tostring(-n).c_str());
+        C>>-1; // -1 (==LUA_MULTRET): keep all results
+        const int h=height(C);
+        for (int n=1; n<=h; ++n){ printf("%d/%d: %s\n", n, h, C.tostring(-n).c_str()); }
     }
 
     if (true)
