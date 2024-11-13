@@ -53,13 +53,9 @@ namespace {
             case LuaType::TUSERDATA: return out<<"userdata("<<lua_touserdata(Q, index)<<")";
             case LuaType::TFUNCTION:
             {
-                if (lua_iscfunction(Q, index))
-                {
-                    const auto cf=lua_tocfunction(Q, index);
-                    if (cf) return out<<"cfunction("<<cf<<")";
-                    else    return out<<"cfunction(failed to get pointer)";
-                }
-                else if (lua_isfunction(Q, index)) return out<<"luafunction";
+                const auto p=lua_topointer(Q, index);
+                if (lua_iscfunction(Q, index))     return out<<"cfunction("<<p<<")";
+                else if (lua_isfunction(Q, index)) return out<<"luafunction("<<p<<")";
                 else return out<<"function(unknown type)";
             }
             case LuaType::TTABLE:
