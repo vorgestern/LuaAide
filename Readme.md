@@ -70,7 +70,7 @@ demo.lua: use as ```lua demo.lua```
 - Combine LuaCode with a name in a std::pair to get better error messages.
 
 ```
-    #include <LuaAide.h>
+    ##include <LuaAide.h>
     using namespace std;
 
     int main_throwing(lua_State*L)
