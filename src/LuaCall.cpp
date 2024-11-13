@@ -19,17 +19,19 @@ static int TracebackAdder(lua_State*Q)
 
 int LuaCall::operator>>(int numresults)
 {
-    const auto now=index(-1);
-    const auto numargs=stackindex(now)>=stackindex(funcindex)?stackindex(now)-stackindex(funcindex):0;
-    lua_pushcfunction(L, TracebackAdder);                   // [func, args[numargs], errorhandler]
-    const int idx=-(numargs+2);
-    rotate(idx, 1);                                         // [errorhandler, func, args[numargs]]
-    const int rc=lua_pcall(L, numargs, numresults, idx);    // [errorhandler, results[numresults]] | [errorhandler, errorobject]
+    if (numresults<0) numresults=LUA_MULTRET;
+    const auto here=index(-1);
+    const auto numargs=max(stackindex(here)-stackindex(funcindex), 0);
+    lua_pushcfunction(L, TracebackAdder);                               // [func, args[numargs], errorhandler]
+    const auto msgh=index(-(numargs+2));
+    rotate(stackindex(msgh), 1);                                        // [errorhandler, func, args[numargs]]
+
+    const int rc=lua_pcall(L, numargs, numresults, stackindex(msgh));   // [errorhandler, results[numresults]] | [errorhandler, errorobject]
     switch (rc)
     {
-        case LUA_OK:                                        // [errorhandler, results[numresults]]
+        case LUA_OK:                                                    // [errorhandler, results[numresults]]
         {
-            remove(-1-numresults);                          // [results[numresults]]
+            remove(stackindex(msgh));                                   // [results[numresults]]
             return rc;
         }
         default:
@@ -40,8 +42,8 @@ int LuaCall::operator>>(int numresults)
         // Dieser Fehlercode wurde in Lua 5.4 entfernt.
         // Vgl. http://www.lua.org/manual/5.4/manual.html#8.3
         {
-                                                            // [errorhandler, errorobject]
-            remove(-2);                                     // [errorobject]
+                                                                        // [errorhandler, errorobject]
+            remove(-2);                                                 // [errorobject]
             return rc;
         }
     }
@@ -209,6 +211,47 @@ TEST_F(CallEnv, CallPairError)
                                                                 ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));
     ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
+}
+
+// =====================================================================
+
+int demo_studie(lua_State*L)
+{
+    // []  ==> [nil, "hoppla"]
+    // [n] ==> [n+1, "hoppla"]
+    LuaStack Q(L);
+    if (Q.hasintat(-1))
+    {
+        const int arg=Q.toint(-1);
+        Q<<arg+1;
+    }
+    else Q<<luanil;
+    Q<<"hoppla"<<"mehr";
+    return 3;
+}
+TEST_F(CallEnv, Studie)
+{
+    Q<<demo_studie;
+    const auto func=Q.index(-1);                                        EXPECT_EQ(1, stackindex(func));
+    Q<<21<<22<<23;
+    const auto here=Q.index(-1);                                        EXPECT_EQ(4, stackindex(here));
+    const int numargs=stackindex(here)>=stackindex(func)?stackindex(here)-stackindex(func):0;
+    EXPECT_EQ(3, numargs);
+    cout<<"1 "<<Q<<"\n";
+
+    lua_pushcfunction(Q, TracebackAdder);
+    cout<<"2 "<<Q<<"\n";
+
+    lua_rotate(Q, -(numargs+2), -(numargs+1));
+    // const int msgh=-(numargs+2);
+    const auto msgh=Q.index(-(numargs+2));
+    cout<<"3 "<<Q<<" msgh="<<stackindex(msgh)<<"\n";
+
+    const int rc=lua_pcall(Q, numargs, LUA_MULTRET, stackindex(msgh));
+    cout<<"rc="<<rc<<" "<<Q<<"\n";
+
+    lua_remove(Q, stackindex(msgh));
+    cout<<"remove: "<<Q<<"\n";
 }
 
 #endif
