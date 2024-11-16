@@ -1,6 +1,6 @@
 
 # Purpose
-Substitute Lua's C-API with a C++ API that is more expressive and easier to use.
+Provide a C++ substitute for Lua's C-API that is more expressive and easier to use.
 
 # Usecases
 + **Embedding** Lua in a program, e.g. for configuration or as a plugin
@@ -11,7 +11,7 @@ Substitute Lua's C-API with a C++ API that is more expressive and easier to use.
 
 ## Embedding Lua
 ```
-    include <LuaAide.h>
+    #include <LuaAide.h>
     auto Q=LuaStack::New(true, nullptr);
     Q<<LuaCode("local a,b=...; return a+b")<<21<<22>>1;
     printf("C++ code receives 21+22=%d\n", Q.toint(-1));
@@ -49,6 +49,8 @@ demo.lua: use as ```lua demo.lua```
     print("demomodule version", X.version)
     ..
 ```
+## Exposing C++ Types
+(examples/m1.cpp, examples/m1test.lua)
 
 # Requirements
 + C++ 20
@@ -69,7 +71,7 @@ demo.lua: use as ```lua demo.lua```
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
 - Combine LuaCode with a name in a std::pair to get better error messages.
 ```
-    \#include <LuaAide.h>
+    #include <LuaAide.h>
     using namespace std;
 
     int main_throwing(lua_State*L)
