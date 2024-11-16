@@ -56,6 +56,25 @@ unsigned version(const LuaStack&S)
     return static_cast<unsigned>(lua_version(S.L));
 }
 
+lua_State*LuaStack::New(bool defaultlibs, lua_CFunction errorhandler)
+{
+    auto*L=luaL_newstate();
+    if (defaultlibs) luaL_openlibs(L);
+    if (errorhandler!=nullptr) lua_atpanic(L, errorhandler);
+    return L;
+}
+
+void LuaStack::Close()
+{
+    if (L!=nullptr)
+    {
+        lua_close(L);
+        L=nullptr;
+    }
+}
+
+bool LuaStack::check(int numpos){ return lua_checkstack(L, numpos); }
+
 LuaStack&LuaStack::clear()
 {
     const int ns=height(*this);
@@ -77,6 +96,14 @@ LuaStack&LuaStack::swap()
     remove(-3);
     return*this;
 }
+
+LuaStack&LuaStack::rotate(int wo, int num){ lua_rotate(L, wo, num); return*this; }
+
+LuaStack&LuaStack::dup(int was){ lua_pushvalue(L, was); return*this; }
+
+LuaStack&LuaStack::remove(int was){ lua_remove(L, was); return*this; }
+
+LuaAbsIndex LuaStack::index(int n){ return LuaAbsIndex(lua_absindex(L, n)); }
 
 bool LuaStack::dofile(const char filename[], int argc, char*argv[])
 {
@@ -148,7 +175,7 @@ string LuaStack::asstring(int pos)
     }
 }
 
-// **********************************************************************
+// *********************************************************************
 
 static int errfunction(lua_State*L)
 {
@@ -279,6 +306,20 @@ LuaStack&LuaStack::operator>>(const LuaRegValue&X)
         <<luarot_3;                                 // [Registry, key, value]
     lua_settable(L, -3);                            // [Registry]
     drop(1);                                        // []
+    return*this;
+}
+
+LuaStack&LuaStack::operator<<(LuaRotate X)
+{
+    auto index=static_cast<int>(X);
+    if (index<0) lua_rotate(L, index, -1);
+    else if (index>0) lua_rotate(L, -index, 1);
+    return*this;
+}
+
+LuaStack&LuaStack::operator<<(LuaSwap)
+{
+    lua_rotate(L, -2, 1);
     return*this;
 }
 

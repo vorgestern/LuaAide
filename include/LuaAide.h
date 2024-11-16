@@ -213,19 +213,14 @@ public:
     LuaStack&clear();
     LuaStack&swap(); //!< Tausche die beiden obersten Werte auf dem Stack.
     LuaStack&drop(unsigned num); //!< Wenn num>height ==> Leere den Stack.
-    LuaStack&rotate(int wo, int num){ lua_rotate(L, wo, num); return*this; }
-    LuaStack&dup(int was=-1){ lua_pushvalue(L, was); return*this; }
-    LuaStack&remove(int was){ lua_remove(L, was); return*this; }
+    LuaStack&rotate(int wo, int num);
+    LuaStack&dup(int was=-1);
+    LuaStack&remove(int was);
 
-    LuaAbsIndex index(int n){ return LuaAbsIndex(lua_absindex(L, n)); }
+    LuaAbsIndex index(int wo);
 
-    LuaStack&operator<<(LuaSwap){ lua_rotate(L, -2, 1); return*this; }
-    LuaStack&operator<<(LuaRotate X){
-        auto index=static_cast<int>(X);
-        if (index<0) lua_rotate(L, index, -1);
-        else if (index>0) lua_rotate(L, -index, 1);
-        return*this;
-    }
+    LuaStack&operator<<(LuaSwap);
+    LuaStack&operator<<(LuaRotate);
 
     LuaStack&operator<<(bool b){ lua_pushboolean(L, b?1:0); return*this; }
     LuaStack&operator<<(int n){ lua_pushinteger(L, n); return*this; }
@@ -263,6 +258,7 @@ public:
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.tableindex, X.elementindex)); }
+//  LuaType operator()(const LuaField&X){ return static_cast<LuaType>(lua_getfield(L, -1, X.name)); }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
     LuaType typeat(int pos){ return static_cast<LuaType>(lua_type(L, pos)); }
@@ -293,23 +289,9 @@ public:
     bool dofile(const char filename[], int argc, char*argv[]);
     bool dostring(const char text[], int argc, char*argv[], const char tag[]);
 
-    static lua_State*New(bool defaultlibs, lua_CFunction errorhandler)
-    {
-        auto*L=luaL_newstate();
-        if (defaultlibs) luaL_openlibs(L);
-        if (errorhandler!=nullptr) lua_atpanic(L, errorhandler);
-        return L;
-    }
-    void Close()
-    {
-        if (L!=nullptr)
-        {
-            lua_close(L);
-            L=nullptr;
-        }
-    }
-
-    bool check(int numpos){ return lua_checkstack(L, numpos); }
+    static lua_State*New(bool defaultlibs, lua_CFunction errorhandler);
+    void Close();
+    bool check(int numpos);
 
     std::string errormessage();
 };
