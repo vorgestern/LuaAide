@@ -175,6 +175,26 @@ string LuaStack::asstring(int pos)
     }
 }
 
+string_view tostring(LuaType t)
+{
+    static string_view names[]=
+    {
+        // TNONE=-1,
+        "nil", // TNIL=0,
+        "boolean", // TBOOLEAN,
+        "lightuserdata", // TLIGHTUSERDATA,
+        "number", // TNUMBER,
+        "string", // TSTRING,
+        "table", // TTABLE,
+        "function", // TFUNCTION,
+        "userdata", // TUSERDATA,
+        "thread" // TTHREAD
+    };
+    if (t<=LuaType::TNONE) return "none";
+    else if (t<=LuaType::TTHREAD) return names[static_cast<int>(t)];
+    else return "none";
+}
+
 // *********************************************************************
 
 static int errfunction(lua_State*L)
@@ -807,6 +827,22 @@ TEST_F(StackEnv, AsString)
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(0x%p)", &p));
     Q.drop(1);
+}
+
+TEST(LuaType, ToString)
+{
+    EXPECT_EQ("none", tostring(LuaType::TNONE));
+    EXPECT_EQ("nil", tostring(LuaType::TNIL));
+    EXPECT_EQ("boolean", tostring(LuaType::TBOOLEAN));
+    EXPECT_EQ("lightuserdata", tostring(LuaType::TLIGHTUSERDATA));
+    EXPECT_EQ("number", tostring(LuaType::TNUMBER));
+    EXPECT_EQ("string", tostring(LuaType::TSTRING));
+    EXPECT_EQ("table", tostring(LuaType::TTABLE));
+    EXPECT_EQ("function", tostring(LuaType::TFUNCTION));
+    EXPECT_EQ("userdata", tostring(LuaType::TUSERDATA));
+    EXPECT_EQ("thread", tostring(LuaType::TTHREAD));
+    EXPECT_EQ("none", tostring(static_cast<LuaType>(-2)));
+    EXPECT_EQ("none", tostring(static_cast<LuaType>(9)));
 }
 
 // Teststatus LuaStack:

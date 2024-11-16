@@ -35,6 +35,7 @@ enum class LuaType:int {
     TUSERDATA,
     TTHREAD
 };
+std::string_view tostring(LuaType);
 
 class LuaValue
 {
