@@ -18,7 +18,7 @@ Provide a C++ substitute for Lua's C-API that is more expressive and easier to u
 
     const std::vector<std::string> A {"Hoppla", "a list", "of strings"};
     Q<<LuaCode(R"xx(return table.concat(..., "\n"))xx")<<A>>1;
-    const std::string Aconcat(Q.tostring(-1));
+    const std::string Aconcat(Q.tostring(-1)); // == "Hoppla\na list\nof strings"
 ```
 
 ## Extending scripts
@@ -133,16 +133,8 @@ Throw a conventional Lua-Error, let Lua handle it:
     {
         // Called at runtime from Lua, unhappy with arguments:
         LuaStack Q(L);
-        if (height(Q)<1)
-        {
-            Q<<"demofunction: Argument (string) expected">>luaerror;
-            return 0;
-        }
-        if (Q.typeat(-1)!=LUA_TSTRING)
-        {
-            Q<<"demofunction: string expected">>luaerror;
-            return 0;
-        }
+        if (height(Q)<1) return Q<<"demofunction: Argument (string) expected">>luaerror;
+        if (Q.typeat(-1)!=LuaType::TSTRING) return Q<<"demofunction: string expected">>luaerror;
         .....
     }
 ```
