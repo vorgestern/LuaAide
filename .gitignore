@@ -6,3 +6,11 @@ bt/*
 *.gch
 *.geany
 LuaAideTest
+
+*.lib
+*.pdb
+buildsys/VS17/.vs
+buildsys/VS17/LuaAide
+buildsys/VS17/x64
+buildsys/VS17/Win32
+buildsys/*/*.user
