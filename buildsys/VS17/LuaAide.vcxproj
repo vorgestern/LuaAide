@@ -28,11 +28,11 @@
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings"/>
+  <ImportGroup Label="ExtensionSettings" />
 
   <ImportGroup Label="PropertySheets">
-    <Import Project="Lua.props"/>
-    <Import Project="LuaAide.props"/>
+    <Import Project="Lua.props" />
+    <Import Project="LuaAide.props" />
   </ImportGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -78,13 +78,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup/>
   <ItemGroup>
-    <ClCompile Include="..\..\src\LuaStack.cpp"/>
-    <ClCompile Include="..\..\src\LuaCall.cpp"/>
-    <ClCompile Include="..\..\src\streamout.cpp"/>
+    <ClCompile Include="..\..\src\LuaStack.cpp" />
+    <ClCompile Include="..\..\src\LuaCall.cpp" />
+    <ClCompile Include="..\..\src\streamout.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\LuaAide.h"/>
+    <ClInclude Include="..\..\include\LuaAide.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets"/>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

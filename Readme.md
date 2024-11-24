@@ -72,6 +72,8 @@ demo.lua: use as ```lua demo.lua```
   * **AdditionalIncludeDirectories**: Include the directory that contains lua.hpp.
   * **AdditionalDependencies** Include the import library for Lua 5.4.
   * **AdditionalLibraryDirectories** Include the directory where the import library is located.
+- LuaAide.lib (Release|Win32) will be built in the root directory, others under buildsys/VS17.
+  Select a different Konfiguration|Platform in buildsys/VS17/LuaAide.props.
 - Build with Visual Studio 2022 (VS17) by launching buildsys/VS17/LuaAide.sln
 
 # Error handling

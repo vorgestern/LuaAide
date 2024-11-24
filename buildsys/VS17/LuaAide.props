@@ -6,7 +6,7 @@
         <_ProjectFileVersion>17.0.35327.3</_ProjectFileVersion>
         <_PropertySheetDisplayName>LuaAide Eigenschaftsseiten</_PropertySheetDisplayName>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
         <OutDir>..\..\</OutDir>
     </PropertyGroup>
 
@@ -18,6 +18,8 @@
             <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <ConformanceMode>true</ConformanceMode>
             <LanguageStandard>stdcpp20</LanguageStandard>
+            <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+            <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
         </ClCompile>
         <Link>
             <SubSystem/>
