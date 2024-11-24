@@ -119,7 +119,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 if (result.size()>0) result.back().append("{}");
                 else result.push_back("{}");
             }
-            else if (num_key==0 && num_index>0 && max_index==num_index)
+            else if (num_key==0 && num_index>0 && max_index>0 && static_cast<size_t>(max_index)==num_index)
             {
                 // Vektor, Liste
                 if (result.size()>0) result.back().append("{");
