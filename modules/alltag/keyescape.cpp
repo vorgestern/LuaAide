@@ -23,8 +23,8 @@ int keyescape(lua_State*L)
 
     bool issymbol=true;
     size_t required=0;
-    static const string_view repr2 {"\a\b\f\r\n\t\v\\\'\"\e"};
-    static const string_view repr2a {"abfrntv\\\'\"e"};
+    static const string_view repr2 {"\a\b\f\r\n\t\v\\\'\"\x1B"};
+    static const string_view repr2a {"abfrntv\\\'\"x1B"};
     for (size_t j=0; j<len; ++j)
     {
         const char c=A[j];
