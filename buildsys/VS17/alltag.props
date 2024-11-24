@@ -27,6 +27,7 @@
             <SubSystem>Windows</SubSystem>
             <GenerateDebugInformation>true</GenerateDebugInformation>
             <EnableUAC>false</EnableUAC>
+            <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
         </Link>
     </ItemDefinitionGroup>
 
