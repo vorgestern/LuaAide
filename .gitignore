@@ -11,9 +11,11 @@ LuaAideTest
 *.pdb
 *.exp
 *.dll
+*.aps
 buildsys/VS17/.vs
 buildsys/VS17/LuaAide
 buildsys/VS17/alltag
+buildsys/VS17/ulutest
 buildsys/VS17/x64
 buildsys/VS17/Win32
 buildsys/*/*.user

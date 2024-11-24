@@ -3,17 +3,18 @@
 #include <string_view>
 #include <LuaAide.h>
 
-using namespace std;
-
-// Die Adressen dieser Symbole liegen in ltest.o,
-// wo sie von objcopy erzeugt wurden (beim Bauen unter Linux).
-// Beachte die Anpassung der Namen in syminfo (opjcopy --redefine-syms=modules/ulutest/syminfo)
-extern "C" char ltest_start;
-extern "C" char ltest_end;
+using std::string_view;
+string_view chunk_ulutest();
 
 static int mkloader(lua_State*L, const char name[], const string_view impl)
 {
     LuaStack Q(L);
+    if (impl.size()==0)
+    {
+        char pad[100];
+        snprintf(pad, sizeof(pad), "Chunk is empty ('%s').", name);
+        return Q<<pad>>luaerror;
+    }
     const string_view errs[]=
     {
         "ok", // #define LUA_OK	0
@@ -27,21 +28,19 @@ static int mkloader(lua_State*L, const char name[], const string_view impl)
     else
     {
         char pad[100];
-        sprintf(pad, "%s: loading '%s' failed with rc=%d.", errs[rc].data(), name, rc);
+        snprintf(pad, sizeof(pad), "%s: loading '%s' failed with rc=%d.", errs[rc].data(), name, rc);
         return Q<<pad>>luaerror;
     }
 }
 
-#ifdef WIN32
-#define EXTERN __declspec(dllexport)
-#else
-#define EXTERN
+#ifndef ULUTEST_EXPORTS
+#define ULUTEST_EXPORTS
 #endif
 
-extern "C" EXTERN int luaopen_ulutest(lua_State*Q)
+extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
 {
-    const string_view ulutest(&ltest_start, &ltest_end-&ltest_start);
+    const auto ulutest=chunk_ulutest();
     if (mkloader(Q, "ulutest", ulutest)==1) return lua_call(Q,0,1), 1;
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
-    return lua_error(Q),0;
+    return lua_error(Q), 0;
 }
