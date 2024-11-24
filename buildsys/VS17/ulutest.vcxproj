@@ -106,6 +106,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ulutest_main.cpp" />
     <ClCompile Include="..\..\modules\ulutest\main.cpp" />
     <ClCompile Include="..\..\modules\ulutest\resources_winapi.cpp" />
   </ItemGroup>

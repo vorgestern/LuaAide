@@ -6,24 +6,27 @@
 #include <string_view>
 #include <vector>
 
+extern HMODULE ulutest_module;
+
 using std::string_view;
 using std::vector;
 
 static string_view loadresource_msvc(unsigned resid, unsigned restype)
 {
-    HRSRC resinfo=FindResource(nullptr, MAKEINTRESOURCE(resid), MAKEINTRESOURCE(restype));
-    printf("loadresource(%u, %u)=>%p\n", resid, restype, resinfo);
+    HRSRC resinfo=FindResource(ulutest_module, MAKEINTRESOURCE(resid), MAKEINTRESOURCE(restype));
+    // printf("FindResource(%p, %u, %u)=>%p\n", ulutest_module, resid, restype, resinfo);
     if (resinfo!=0)
     {
-        HGLOBAL reshandle=LoadResource(nullptr, resinfo);
-        if (reshandle!=0) return {static_cast<char*>(LockResource(reshandle)),
-            static_cast<size_t>(SizeofResource(nullptr, resinfo))};
+        HGLOBAL reshandle=LoadResource(ulutest_module, resinfo);
+        // printf("LoadResource(%p, %u, %u)=>%p\n", ulutest_module, resid, restype, reshandle);
+        if (reshandle!=nullptr) return {static_cast<char*>(LockResource(reshandle)),
+            static_cast<size_t>(SizeofResource(ulutest_module, resinfo))};
         else return {};
     }
     else return {};
 }
 
-string_view chunk_ulutest() { return loadresource_msvc(1001, 101); }
+string_view chunk_ulutest() { return loadresource_msvc(101, 1024); }
 
 // ============================================================================
 
@@ -43,13 +46,13 @@ static BOOL __stdcall collect_resname(HMODULE, LPCSTR typ, LPSTR nam, LONG_PTR l
 
 void enumerate_resources()
 {
-    printf("Resource Types:\n");
-    BOOL f=EnumResourceTypesEx(nullptr, enumerate_restype, 0l, allres, 0);
+    printf("Resource Types (%p):\n", ulutest_module);
+    BOOL f=EnumResourceTypesEx(ulutest_module, enumerate_restype, 0l, allres, 0);
     const vector<LPCSTR> Types {MAKEINTRESOURCE(0x18)};
     printf("Resources:\n");
     for (auto k: Types)
     {
-        BOOL g=EnumResourceNamesEx(nullptr, k, collect_resname, 0l, allres, 0);
+        BOOL g=EnumResourceNamesEx(ulutest_module, k, collect_resname, 0l, allres, 0);
     }
 }
 
