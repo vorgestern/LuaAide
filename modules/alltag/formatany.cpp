@@ -5,17 +5,18 @@ using namespace std;
 
 int keyescape(lua_State*);
 
-static tuple<int, int, int>keynum(lua_State*L)
+static tuple<size_t, size_t, long long>keynum(lua_State*L)
 {
     LuaStack Q(L);
-    int num_index=0, num_key=0, max_index=-1;
+    size_t num_index=0, num_key=0;
+    long long max_index=-1;
     for (LuaIterator J(Q); next(J); ++J)
     {
         // [key, value]
         if (Q.hasintat(-2))
         {
             ++num_index;
-            const int index=Q.toint(-2);
+            const auto index=Q.toint(-2);
             if (index>max_index) max_index=index;
         }
         else ++num_key;
@@ -186,7 +187,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         default:
         {
             char pad[100];
-            sprintf(pad, "unexpected_type(%d)", static_cast<int>(t));
+            snprintf(pad, sizeof(pad), "unexpected_type(%d)", static_cast<int>(t));
             if (result.size()>0) result.back().append(pad);
             else result.push_back(pad);
             return;

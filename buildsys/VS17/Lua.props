@@ -12,6 +12,8 @@
             <AdditionalIncludeDirectories>$(ROBINSON)\lua\5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
+          <AdditionalDependencies>lua54-shared.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+          <AdditionalLibraryDirectories>$(ROBINSON)\lua\lib</AdditionalLibraryDirectories>
         </Link>
     </ItemDefinitionGroup>
 

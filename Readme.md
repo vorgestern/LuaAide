@@ -62,9 +62,17 @@ demo.lua: use as ```lua demo.lua```
   Check with ```make prerequisites```.
 - Adapt Makefile if Lua is not at default location.
 - make
-- (optional) make test
+- *optional*: make test
 - Install manually by copying libLuaAide.a and include/LuaAide.h where they belong.
-  (optional: Copy luaaide.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4))
+- *optional*: Copy demo alltag.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4)
+
+## Windows
+- (Currently no Unit tests)
+- Edit buildsys/VS17/Lua.props to point to your Lua-Installation:
+  * **AdditionalIncludeDirectories**: Include the directory that contains lua.hpp.
+  * **AdditionalDependencies** Include the import library for Lua 5.4.
+  * **AdditionalLibraryDirectories** Include the directory where the import library is located.
+- Build with Visual Studio 2022 (VS17) by launching buildsys/VS17/LuaAide.sln
 
 # Error handling
 ## Handling compile-errors in an application that embeds Lua
