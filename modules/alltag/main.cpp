@@ -50,13 +50,13 @@ extern "C" int cd(lua_State*L)
             if (!ec) return 0;
             else
             {
-                sprintf(pad, "cwd: system error %d", ec.value());
+                snprintf(pad, sizeof(pad), "cwd: system error %d", ec.value());
                 Q<<pad>>luaerror;
             }
         }
         else
         {
-            sprintf(pad, "cd requires string argument <path>, not %d", static_cast<int>(Q.typeat(-1)));
+            snprintf(pad, sizeof(pad), "cd requires string argument <path>, not %d", static_cast<int>(Q.typeat(-1)));
             Q<<pad>>luaerror;
         }
     }
@@ -65,7 +65,11 @@ extern "C" int cd(lua_State*L)
 }
 }
 
-extern "C" int luaopen_alltag(lua_State*L)
+#ifndef ALLTAG_EXPORTS
+#define ALLTAG_EXPORTS
+#endif
+
+extern "C" ALLTAG_EXPORTS int luaopen_alltag(lua_State*L)
 {
     LuaStack Q(L);
     Q<<LuaTable()

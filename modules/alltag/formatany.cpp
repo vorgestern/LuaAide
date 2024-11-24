@@ -87,7 +87,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         case LuaType::TLIGHTUSERDATA:
         {
             char pad[100];
-            sprintf(pad, "lightuserdata(%p)", lua_touserdata(Q, -1));
+            snprintf(pad, sizeof(pad), "lightuserdata(%p)", lua_touserdata(Q, -1));
             if (result.size()>0) result.back().append(pad);
             else result.push_back(pad);
             return;
@@ -95,7 +95,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
         case LuaType::TUSERDATA:
         {
             char pad[100];
-            sprintf(pad, "userdata(0x%p)", lua_touserdata(Q, -1));
+            snprintf(pad, sizeof(pad), "userdata(0x%p)", lua_touserdata(Q, -1));
             if (result.size()>0) result.back().append(pad);
             else result.push_back(pad);
             return;
