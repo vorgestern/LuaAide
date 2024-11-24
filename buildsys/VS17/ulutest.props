@@ -25,7 +25,6 @@
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
-            <GenerateDebugInformation>true</GenerateDebugInformation>
             <EnableUAC>false</EnableUAC>
             <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
             <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
