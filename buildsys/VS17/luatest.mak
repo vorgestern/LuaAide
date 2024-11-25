@@ -21,6 +21,11 @@ LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
     @time /T >> $(MAKEDIR)\LuaAideTest.result
     @LuaAideTest.exe >> $(MAKEDIR)\LuaAideTest.result
 
+testsummary.result: alltag.result LuaAideTest.result
+    @date /T > $(MAKEDIR)\testsummary.result
+    @time /T >> $(MAKEDIR)\testsummary.result
+    @lua testsummary.lua testsummary.result alltag.result LuaAideTest.result
+
 help:
     echo "MAKEDIR=$(MAKEDIR)"
     echo "REPOROOT=$(REPOROOT)"
