@@ -68,7 +68,7 @@ b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 
 # ============================================================
 
-ulutest.so: b/ulutest/main.o b/ulutest/ltest.o libLuaAide.a
+ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/ltest.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
 b/ulutest/main.o: modules/ulutest/main.cpp
