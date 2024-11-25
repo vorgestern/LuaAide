@@ -7,7 +7,9 @@ bt/*
 *.geany
 LuaAideTest
 
+*.exe
 *.lib
+*.ilk
 *.pdb
 *.exp
 *.dll

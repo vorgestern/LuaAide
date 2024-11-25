@@ -7,7 +7,7 @@
         <_PropertySheetDisplayName>Lua Eigenschaftsseiten</_PropertySheetDisplayName>
     </PropertyGroup>
 
-    <ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
         <ClCompile>
             <AdditionalIncludeDirectories>$(ROBINSON)\lua\5.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
@@ -15,6 +15,11 @@
           <AdditionalDependencies>lua54-shared.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
           <AdditionalLibraryDirectories>$(ROBINSON)\lua\lib</AdditionalLibraryDirectories>
         </Link>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
+        <!--
+            If Lua is present in 64bits, supply corresponding settings here.
+        -->
     </ItemDefinitionGroup>
 
     <ItemGroup/>
