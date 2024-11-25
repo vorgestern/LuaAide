@@ -20,4 +20,5 @@ buildsys/VS17/alltag
 buildsys/VS17/ulutest
 buildsys/VS17/x64
 buildsys/VS17/Win32
+buildsys/VS17/packages
 buildsys/*/*.user
