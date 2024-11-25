@@ -37,11 +37,8 @@ static int mkloader(lua_State*L, const char name[], const string_view impl)
 #define ULUTEST_EXPORTS
 #endif
 
-void enumerate_resources();
-
 extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
 {
-    // enumerate_resources();
     const auto ulutest=chunk_ulutest();
     if (mkloader(Q, "ulutest", ulutest)==1) return lua_call(Q,0,1), 1;
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
