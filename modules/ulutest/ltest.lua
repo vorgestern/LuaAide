@@ -10,14 +10,14 @@
         - Implementiere den Zugriff auf Datei und Zeilennummer mit Hilfe von debug.getinfo
 --]]
 
-local grey=nil
+local grey=not isatty(1)
 local function red(str)    return grey and str or "\27[1;31m"..str.."\27[0m" end
 local function blue(str)   return grey and str or "\27[1;34m"..str.."\27[0m" end
 local function green(str)  return grey and str or "\27[1;32m"..str.."\27[0m" end
 local function yellow(str) return grey and str or "\27[1;33m"..str.."\27[0m" end
 local tags={
     RUNTEST=            blue   "[ RUN      ]",
-    FAILEDTEST=         red    "[   FAILED ]",
+    FAILEDTEST=         red    "[  FAILED  ]",
     SUCCESSFULTEST=     green  "[       OK ]",
     FAILEDCRITERION=    red    "[     FAIL ]",
     SUCCESSFULCRITERION=green  "[       OK ]",

@@ -111,6 +111,9 @@
     <ClCompile Include="..\..\modules\ulutest\resources_winapi.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\modules\ulutest\ltest.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ResourceCompile Include="ulutest.rc" />
   </ItemGroup>
   <ItemGroup>

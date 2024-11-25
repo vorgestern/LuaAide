@@ -1,6 +1,7 @@
 
 #include <Windows.h>
 #include <cstdio>
+#include <io.h>
 
 HMODULE ulutest_module=nullptr;
 
@@ -24,3 +25,5 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     }
     return TRUE;
 }
+
+bool check_tty(int id) { return _isatty(id); }

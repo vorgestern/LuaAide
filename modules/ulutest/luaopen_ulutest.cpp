@@ -37,8 +37,20 @@ static int mkloader(lua_State*L, const char name[], const string_view impl)
 #define ULUTEST_EXPORTS
 #endif
 
+bool check_tty(int fd);
+
+extern "C" int check_tty(lua_State*L)
+{
+    if (lua_gettop(L)<1) return lua_pushliteral(L, "isatty: Argument (int fd) expected."), lua_error(L);
+    if (!lua_isinteger(L, 1)) return lua_pushliteral(L, "isatty: Argument 'id' expected to be an integer."), lua_error(L);
+    const auto fd=static_cast<int>(lua_tointeger(L, 1));
+    return lua_pushboolean(L, check_tty(fd)), 1;
+}
+
 extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
 {
+    lua_pushcfunction(Q, check_tty);
+    lua_setglobal(Q, "isatty");
     const auto ulutest=chunk_ulutest();
     if (mkloader(Q, "ulutest", ulutest)==1) return lua_call(Q,0,1), 1;
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
