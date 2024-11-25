@@ -71,7 +71,7 @@ b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/ltest.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
-b/ulutest/main.o: modules/ulutest/main.cpp
+b/ulutest/luaopen_ulutest.o: modules/ulutest/luaopen_ulutest.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
 
 b/ulutest/ltest.o: b/ulutest/ltest.luac
