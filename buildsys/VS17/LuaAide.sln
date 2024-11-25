@@ -11,6 +11,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulutest", "ulutest.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaAideTest", "LuaAideTest.vcxproj", "{421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tester", "Tester.vcxproj", "{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}"
+	ProjectSection(ProjectDependencies) = postProject
+		{421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5} = {421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5}
+		{8F4698FB-30BD-4BF9-B21B-63BD1AE51B30} = {8F4698FB-30BD-4BF9-B21B-63BD1AE51B30}
+		{DD45F047-233F-4C33-BA1D-F3BD73F9A99C} = {DD45F047-233F-4C33-BA1D-F3BD73F9A99C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +58,14 @@ Global
 		{421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5}.Release|x64.Build.0 = Release|x64
 		{421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5}.Release|x86.ActiveCfg = Release|Win32
 		{421F0C8E-DC01-40FF-B105-A3DCB7CDDEF5}.Release|x86.Build.0 = Release|Win32
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Debug|x64.ActiveCfg = Debug|x64
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Debug|x64.Build.0 = Debug|x64
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Debug|x86.ActiveCfg = Debug|Win32
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Debug|x86.Build.0 = Debug|Win32
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Release|x64.ActiveCfg = Release|x64
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Release|x64.Build.0 = Release|x64
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Release|x86.ActiveCfg = Release|Win32
+		{4DB8D54F-E085-4DCC-A3DD-DB5D79026D36}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
