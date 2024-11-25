@@ -18,6 +18,7 @@ local function yellow(str) return grey and str or "\27[1;33m"..str.."\27[0m" end
 local tags={
     RUNTEST=            blue   "[ RUN      ]",
     FAILEDTEST=         red    "[  FAILED  ]",
+    PASSEDTEST=         green  "[  PASSED  ]",
     SUCCESSFULTEST=     green  "[       OK ]",
     FAILEDCRITERION=    red    "[     FAIL ]",
     SUCCESSFULCRITERION=green  "[       OK ]",
@@ -218,6 +219,14 @@ return {
                 end
                 print(tags.FRAME.." "..#Tests.." Tests finished")
             end
+        end
+        print("\n"..tags.SEP.." Global test environment tear-down")
+        print(tags.FRAME..string.format(" %d tests from %d test cases ran.", 999, 999))
+        print(tags.PASSEDTEST..string.format(" %d tests", 999))
+        if 1 then
+            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", 999, "S"))
+            for _,nam in ipairs({"abc", "def"}) do print(tags.FAILEDTEST.." "..nam) end
+            print(string.format("\n%3d FAILED TEST%s", 999, "s"))
         end
     end
 }
