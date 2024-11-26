@@ -1,14 +1,5 @@
 
-local function resformat(S)
-    local X={}
-    for _,A in ipairs(S) do
-        local Lf=""
-        if #A.failedtests>0 then
-            Lf="'"..table.concat(A.failedtests, "', '").."'"
-        end
-        table.insert(X, string.format("    results '%s' {passed=%d, failed=%d, failedtests={%s}}", A.name, A.passed, A.failed, Lf))
-    end
-    return [[
+local pre,post=[[
 
 local mt={
     __tostring=function(self)
@@ -17,13 +8,11 @@ local mt={
     end
 }
 
--- local function results(fn) return function(...) end end
 local function results(fn) return function(outcome) outcome.name=fn return setmetatable(outcome, mt) end end
 
 local summary={
-]]
-..table.concat(X, ",\n").."\n}\n"..
-[[
+]], [[ --
+}
 
 local function main(args)
     if #args>0 and args[1]=="--print" then
@@ -34,6 +23,17 @@ end
 
 main {...}
 ]]
+
+local function resformat(S)
+    local X={}
+    for _,A in ipairs(S) do
+        local Lf=""
+        if #A.failedtests>0 then
+            Lf="'"..table.concat(A.failedtests, "', '").."'"
+        end
+        table.insert(X, string.format("    results '%s' {passed=%d, failed=%d, failedtests={%s}}", A.name, A.passed, A.failed, Lf))
+    end
+    return table.concat(X, ",\n")
 end
 
 local function main(ziel, args)
@@ -56,9 +56,8 @@ local function main(ziel, args)
         end
     end
     local T=resformat(S)
-    io.output(ziel):write(T, "\n")
+    io.output(ziel):write(pre..T..post)
     io.close()
-    io.output(io.stdout)
 end
 
 local args={...}
