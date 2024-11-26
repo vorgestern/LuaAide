@@ -782,50 +782,50 @@ TEST_F(StackEnv, LuaIterator)
 TEST_F(StackEnv, AsString)
 {
     Q<<true;
-    ASSERT_EQ(LuaType::TBOOLEAN, Q.typeat(-1));
-    ASSERT_EQ("true", Q.asstring(-1));
+    ASSERT_EQ(LuaType::TBOOLEAN, Q.typeat(-1))<<Q;
+    ASSERT_EQ("true", Q.asstring(-1))<<Q;
     Q.drop(1);
 
     void*p=nullptr;
 
     Q<<lua_error;
     ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(0x%p)", &p));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
     Q.drop(1);
 
     Q<<LuaLightUserData((void*)lua_error);
     ASSERT_EQ(LuaType::TLIGHTUSERDATA, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(0x%p)", &p));
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(%p)", &p))<<Q;
     Q.drop(1);
 
     Q<<luanil;
-    ASSERT_EQ(LuaType::TNIL, Q.typeat(-1));
-    ASSERT_EQ("nil", Q.asstring(-1));
+    ASSERT_EQ(LuaType::TNIL, Q.typeat(-1))<<Q;
+    ASSERT_EQ("nil", Q.asstring(-1))<<Q;
     Q.drop(1);
 
     Q<<3.1415926;
-    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
-    ASSERT_EQ("3.14159", Q.asstring(-1));
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1))<<Q;
+    ASSERT_EQ("3.14159", Q.asstring(-1))<<Q;
     Q.drop(1);
 
     Q<<"hoppla";
-    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_EQ("hoppla", Q.asstring(-1));
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1))<<Q;
+    ASSERT_EQ("hoppla", Q.asstring(-1))<<Q;
     Q.drop(1);
 
     Q<<LuaTable(0,0);
-    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(0x%p)", &p));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1))<<Q;
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
     Q.drop(1);
 
     lua_pushthread(Q);
-    ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(0x%p)", &p));
+    ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1))<<Q;
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
     Q.drop(1);
 
     lua_newuserdatauv(Q, sizeof(void*), 0);
-    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(0x%p)", &p));
+    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1))<<Q;
+    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
     Q.drop(1);
 }
 
