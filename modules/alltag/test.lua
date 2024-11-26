@@ -59,7 +59,7 @@ ULU.RUN(
     TT("escape lf",        function(T) T:ASSERT_EQ('["abc\\ndef"]', alltag.keyescape(setup1(10))) end),
     TT("escape ff",        function(T) T:ASSERT_EQ('["abc\\fdef"]', alltag.keyescape(setup1(12))) end),
     TT("escape cr",        function(T) T:ASSERT_EQ('["abc\\rdef"]', alltag.keyescape(setup1(13))) end),
-    TT("escape escape",    function(T) T:ASSERT_EQ('["abc\\edef"]', alltag.keyescape(setup1(27))) end),
+    TT("escape escape",    function(T) T:ASSERT_EQ('["abc\\x1Bdef"]', alltag.keyescape(setup1(27))) end),
     TT("escape 21",        function(T) T:ASSERT_EQ('["abc\\x15def"]', alltag.keyescape(setup1(21))) end),
     TT("escape space",     function(T) T:ASSERT_EQ('["abc def"]',   alltag.keyescape("abc def")) end),
     TT("escape dot",       function(T) T:ASSERT_EQ('["abc.def"]',   alltag.keyescape("abc.def")) end),
