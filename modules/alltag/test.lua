@@ -19,12 +19,18 @@ end
 
 local TT=ULU.TT
 
+local function TCASE(name)
+    return function(criteria)
+        criteria.name=name
+        return criteria
+    end
+end
+
 local function setup1(c) return string.format("abc%cdef", c) end
 
 ULU.RUN(
 
-{
-    name="Version",
+TCASE "Version" {
     TT("version present", function(T)
         T:ASSERT_EQ(type(alltag.version), "string")
     end),
@@ -35,8 +41,7 @@ ULU.RUN(
     end)
 },
 
-{
-    name="Functions present",
+TCASE "Functions present" {
     TT("pwd present", function(T)
         T:ASSERT_EQ(type(alltag.pwd), "function")
     end),
@@ -51,8 +56,7 @@ ULU.RUN(
     end),
 },
 
-{
-    name="keyescape",
+TCASE "keyescape" {
     TT("escape bell",      function(T) T:ASSERT_EQ('["abc\\adef"]', alltag.keyescape(setup1(7))) end),
     TT("escape backspace", function(T) T:ASSERT_EQ('["abc\\bdef"]', alltag.keyescape(setup1(8))) end),
     TT("escape tab",       function(T) T:ASSERT_EQ('["abc\\tdef"]', alltag.keyescape(setup1(9))) end),
@@ -72,8 +76,7 @@ ULU.RUN(
 --  TT("escape ß",         function(T) T:ASSERT_EQ('["abcßdef"]', alltag.keyescape("abcßdef")) end),
 },
 
-{
-    name="formatany",
+TCASE "formatany" {
     TT("1", function(T)
         local X=alltag.formatany {21,22,23}
         local ok,R=pcall(load, X)
