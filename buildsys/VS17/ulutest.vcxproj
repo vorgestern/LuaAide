@@ -109,6 +109,7 @@
     <ClCompile Include="ulutest_dllmain.cpp" />
     <ClCompile Include="..\..\modules\ulutest\luaopen_ulutest.cpp" />
     <ClCompile Include="..\..\modules\ulutest\resources_winapi.cpp" />
+    <ClCompile Include="..\..\modules\ulutest\ulu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\modules\ulutest\ltest.lua" />
