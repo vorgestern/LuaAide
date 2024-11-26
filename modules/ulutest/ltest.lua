@@ -158,58 +158,105 @@ return {
         return function(disabled)
             if disabled then
                 print(string.format("%s %s", tags.SKIPPING, name))
-                return
+                return {name=T.name, outcome="skipped"}
             end
             local name_skipped=T.name:match "DISABLED%s*(.*)"
             if name_skipped then
                 print(string.format("%s %s", tags.SKIPPING, name_skipped))
-                return
+                return {name=T.name, outcome="disabled"}
             end
             print(string.format("%s %s", tags.RUNTEST, name))
             local flag,err=xpcall(func, msghandler, T)
             if not flag then
                 print(string.format("%s Test was aborted: %s", tags.FAILEDTEST, err))
+                return {name=T.name, outcome="aborted"}
             elseif T.failed_assertions>0 then
                 print(string.format("%s %s", tags.FAILEDTEST, name))
+                return {name=T.name, outcome="failed"}
             elseif T.unmet_expectations>0 then
                 print(string.format("%s %s: unmet expectations", tags.FAILEDTEST, name))
+                return {name=T.name, outcome="unexpected", unmet_expectations=T.unmet_expectations}
             elseif T.asserted_ok+T.met_expectations>0 then
                 print(tags.SUCCESSFULTEST)
+                return {name=T.name, outcome="successful"}
             else
                 print(string.format("%s Warning: Test applies no criteria", tags.SUCCESSFULTEST))
+                return {name=T.name, outcome="void"}
             end
         end
     end,
     RUN=function(...)
-        for k,Tests in ipairs {...} do
-            -- Die Tests in Tests werden mit ipairs abgefragt.
-            -- Außerdem wird ein Feld 'name' beachtet.
-            local testname=k
-            if type(Tests)=="table" and Tests.name then
-                testname=tostring(Tests.name)
-            end
-            local testname_disabled=testname:match "^DISABLED%s*(.*)"
-            if testname_disabled then
-                print(tags.DISABLED.." Skipping "..#Tests.." Tests from TestCase '"..testname_disabled.."'")
-                for _,func in ipairs(Tests) do func(true) end
+        local Summary={
+            testcases=0,
+            tests=0,
+            passed=0, Failed={},
+            skipped=0,
+            Notplausible={}
+        }
+        local OutcomeClass={
+            aborted=0, failed=0, unexpected=0,
+            successful=1, void=1,
+            disabled=10, skipped=10
+        }
+        local aggregate=function(R, testcasename)
+            Summary.tests=Summary.tests+1
+            if not R.outcome or not R.name then
+                table.insert(Summary.notplausible, testcasename.."."..(R.name or "unnamed (unplausible)"))
             else
-                print(tags.FRAME.." Running "..#Tests.." Tests from TestCase '"..testname.."'")
-                local nt,last=0,#Tests
-                for _,func in ipairs(Tests) do
-                    func()
+                local f=OutcomeClass[R.outcome]
+                if f==0 then
+                    table.insert(Summary.Failed, testcasename.."."..R.name)
+                elseif f==1 then
+                    Summary.passed=Summary.passed+1
+                elseif f==10 then
+                    Summary.skipped=Summary.skipped+1
+                end
+            end
+        end
+        for k,Testcase in ipairs {...} do
+            Summary.testcases=Summary.testcases+1
+            -- Die Tests in Testcase werden mit ipairs abgefragt.
+            -- Außerdem wird ein Feld 'name' beachtet.
+            local testcasename=k
+            if type(Testcase)=="table" and Testcase.name then
+                testcasename=tostring(Testcase.name)
+            end
+            local testname_disabled=testcasename:match "^DISABLED%s*(.*)"
+            if testname_disabled then
+                print(tags.DISABLED.." Skipping "..#Testcase.." Testcase from TestCase '"..testname_disabled.."'")
+                for _,func in ipairs(Testcase) do aggregate(func(true), testcasename) end
+            else
+                print(tags.FRAME.." Running "..#Testcase.." Testcase from TestCase '"..testcasename.."'")
+                local nt,last=0,#Testcase
+                for _,func in ipairs(Testcase) do
+                    aggregate(func(), testcasename)
                     nt=nt+1
                     if _<last then print(tags.SEP) end
                 end
-                print(tags.FRAME.." "..#Tests.." Tests finished")
+                print(tags.FRAME.." "..#Testcase.." Testcase finished")
             end
         end
+
         print("\n"..tags.SEP.." Global test environment tear-down")
-        print(tags.FRAME..string.format(" %d tests from %d test cases ran.", 999, 999))
-        print(tags.PASSEDTEST..string.format(" %d tests", 999))
-        if 1 then
-            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", 999, "S"))
-            for _,nam in ipairs({"abc", "def"}) do print(tags.FAILEDTEST.." "..nam) end
-            print(string.format("\n%3d FAILED TEST%s", 999, "s"))
+        print(tags.FRAME..string.format(" %d tests from %d test cases ran.", Summary.tests, Summary.testcases))
+        local wennplural="s"
+        if Summary.passed==1 then wennplural="" end
+        print(tags.PASSEDTEST..string.format(" %d tests", Summary.passed))
+        local nf=#Summary.Failed
+        if nf>0 then
+            local wennplural="s"
+            if nf==1 then wennplural="" end
+            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", nf, wennplural))
+            for _,nam in ipairs(Summary.Failed) do print(tags.FAILEDTEST.." "..nam) end
+            print(string.format("\n%3d FAILED TEST%s", nf, wennplural))
+        end
+        local nu=#Summary.Notplausible
+        if nu>0 then
+            local wennplural="s"
+            if nu==1 then wennplural="" end
+            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", nu, wennplural))
+            for _,nam in ipairs(Summary.Notplausible) do print(tags.FAILEDTEST.." "..nam) end
+            print(string.format("\n%3d TEST%s processed with unplausible outcome", nf, wennplural))
         end
     end
 }
