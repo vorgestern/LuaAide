@@ -13,7 +13,7 @@
     <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
-    <CustomBuild Include="testsummary.lua">
+    <CustomBuild Include="..\generic\summarise_tests.lua">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
   </ItemGroup>

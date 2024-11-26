@@ -130,18 +130,18 @@
     <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test module 'alltag'.</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake Alltagstest.result</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\alltag.dll;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\LuaAideTest.exe">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test library 'LuaAide.lib'.</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake LuaAideTest.result</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result</Outputs>
     </CustomBuild>
-    <CustomBuild Include="testsummary.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake testsummary.result</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">testsummary.result;%(Outputs)</Outputs>
+    <CustomBuild Include="..\generic\summarise_tests.lua">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\Summary.lua).</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake ..\..\Summary.lua</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Summary.lua</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;LuaAideTest.result;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
