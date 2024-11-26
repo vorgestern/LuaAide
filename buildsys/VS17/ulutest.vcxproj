@@ -119,11 +119,7 @@
   <ItemGroup>
     <None Include="ulutest.def" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="LuaAide.vcxproj">
-      <Project>{a8208cf9-c2fd-45c6-9411-a4e6c8546d74}</Project>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup/>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

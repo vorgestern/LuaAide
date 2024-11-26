@@ -1,19 +1,19 @@
 
 #include <cstring>
 #include <string_view>
-#include <LuaAide.h>
+#include <lua.hpp>
 
 using std::string_view;
 string_view chunk_ulutest();
 
 static int mkloader(lua_State*L, const char name[], const string_view impl)
 {
-    LuaStack Q(L);
     if (impl.size()==0)
     {
         char pad[100];
-        snprintf(pad, sizeof(pad), "Chunk is empty ('%s').", name);
-        return Q<<pad>>luaerror;
+        const auto nw=snprintf(pad, sizeof(pad), "Chunk is empty ('%s').", name);
+        lua_pushlstring(L, pad, nw);
+        return lua_error(L);
     }
     const string_view errs[]=
     {
@@ -24,12 +24,13 @@ static int mkloader(lua_State*L, const char name[], const string_view impl)
         "out of memory", // #define LUA_ERRMEM 4
         "unknown error", // #define LUA_ERRERR 5
     };
-    if (const int rc=luaL_loadbufferx(Q, impl.data(), impl.size(), name, nullptr); rc==LUA_OK) return 1;
+    if (const int rc=luaL_loadbufferx(L, impl.data(), impl.size(), name, nullptr); rc==LUA_OK) return 1;
     else
     {
         char pad[100];
-        snprintf(pad, sizeof(pad), "%s: loading '%s' failed with rc=%d.", errs[rc].data(), name, rc);
-        return Q<<pad>>luaerror;
+        const auto nw=snprintf(pad, sizeof(pad), "%s: loading '%s' failed with rc=%d.", errs[rc].data(), name, rc);
+        lua_pushlstring(L, pad, nw);
+        return lua_error(L);
     }
 }
 
