@@ -42,7 +42,7 @@ const auto
 // DISABLED=           yellow "[ DISABLED ]"
 // SKIPPING=           yellow "[ skipping ]"
 
-constexpr string bunt(const string&str, const pair<string,string>&color){ return color.first+str+color.second; }
+const string bunt(const string&str, const pair<string,string>&color){ return color.first+str+color.second; }
 
 const vector<pair<string,string>> Colortags={
     make_pair("RUNTEST", bunt(RUNTEST, blue)),
