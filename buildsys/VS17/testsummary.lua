@@ -17,13 +17,12 @@ local summary={
 end
 
 local function main(ziel, args)
-    print("Ziel:", ziel)
-    print("Args:", table.concat(args, ", "))
+    -- print("Ziel:", ziel)
+    -- print("Args:", table.concat(args, ", "))
     local S={}
     for _,f in ipairs(args) do
         local A={name=f, failedtests={}, passed=0, failed=0}
         table.insert(S, A)
-        print(#S, "==", _, f)
         for line in io.lines(f) do
             -- print("==", line)
             local num=line:match "%[  PASSED  %]%s+(%d+)%s+tests"
@@ -39,6 +38,11 @@ local function main(ziel, args)
     local T=resformat(S)
     io.output(ziel):write(T, "\n")
     io.close()
+    io.output(io.stdout)
+    print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failedtests"))
+    for j,r in ipairs(S) do
+        print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, table.concat(r.failedtests, ", ")))
+    end
 end
 
 local args={...}

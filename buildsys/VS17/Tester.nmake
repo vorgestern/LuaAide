@@ -29,4 +29,4 @@ testsummary.result: Alltagstest.result LuaAideTest.result
 help:
     echo "MAKEDIR=$(MAKEDIR)"
     echo "REPOROOT=$(REPOROOT)"
-    echo "Targets: all clean Alltagstest.result LuaAideTest.result
+    echo "Targets: all clean Alltagstest.result LuaAideTest.result testsummary.result
