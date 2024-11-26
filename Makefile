@@ -26,11 +26,8 @@ prerequisites:
 	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
 	@mkdir -p b/alltag b/ulutest bt
-test:
-	./LuaAideTest | tee bt/LuaAideTest.result && \
-	lua modules/alltag/Alltagstest.lua | tee bt/Alltagstest.result && \
-	lua examples/m1test.lua && \
-	lua buildsys/VS17/testsummary.lua TestSummary.lua bt/Alltagstest.result bt/LuaAideTest.result
+test: bt/TestSummary.lua
+	@lua $< --print
 
 # ============================================================
 
@@ -92,3 +89,17 @@ b/ulutest/ltest.o: b/ulutest/ltest.luac
 
 b/ulutest/ltest.luac: modules/ulutest/ltest.lua
 	luac -o $@ $<
+
+# ============================================================
+
+bt/LuaAideTest.result: ./LuaAideTest
+	@./LuaAideTest > $@
+
+bt/Alltagstest.result: modules/alltag/Alltagstest.lua
+	@lua $< > $@
+
+bt/m1test.result: examples/m1test.lua
+	@lua $< > $@
+
+bt/TestSummary.lua: bt/LuaAideTest.result bt/Alltagstest.result bt/m1test.result
+	@lua buildsys/VS17/testsummary.lua $@ $^
