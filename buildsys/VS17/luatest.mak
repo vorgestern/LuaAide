@@ -4,16 +4,16 @@
 
 REPOROOT= $(MAKEDIR)\..\..
 
-all: alltag.result LuaAideTest.result
+all: Alltagstest.result LuaAideTest.result
 
 clean:
-    @del /F alltag.test
+    @del /F Alltagstest.result LuaAideTest.result
 
-alltag.result: $(REPOROOT)\alltag.dll $(REPOROOT)\modules\alltag\test.lua
+Alltagstest.result: $(REPOROOT)\alltag.dll $(REPOROOT)\modules\alltag\Alltagstest.lua
     @cd $(REPOROOT)
-    @date /T > $(MAKEDIR)\alltag.result
-    @time /T >> $(MAKEDIR)\alltag.result
-    @lua modules\alltag\test.lua >> $(MAKEDIR)\alltag.result
+    @date /T > $(MAKEDIR)\Alltagstest.result
+    @time /T >> $(MAKEDIR)\Alltagstest.result
+    @lua modules\alltag\Alltagstest.lua >> $(MAKEDIR)\Alltagstest.result
 
 LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
     @cd $(REPOROOT)
@@ -21,12 +21,12 @@ LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
     @time /T >> $(MAKEDIR)\LuaAideTest.result
     @LuaAideTest.exe >> $(MAKEDIR)\LuaAideTest.result
 
-testsummary.result: alltag.result LuaAideTest.result
+testsummary.result: Alltagstest.result LuaAideTest.result
     @date /T > $(MAKEDIR)\testsummary.result
     @time /T >> $(MAKEDIR)\testsummary.result
-    @lua testsummary.lua testsummary.result alltag.result LuaAideTest.result
+    @lua testsummary.lua testsummary.result Alltagstest.result LuaAideTest.result
 
 help:
     echo "MAKEDIR=$(MAKEDIR)"
     echo "REPOROOT=$(REPOROOT)"
-    echo "Targets: all clean alltag.test
+    echo "Targets: all clean Alltagstest.result LuaAideTest.result

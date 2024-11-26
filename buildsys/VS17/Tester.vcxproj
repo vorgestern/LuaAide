@@ -127,10 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\modules\alltag\test.lua">
+    <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test module 'alltag'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f luatest.mak alltag.result</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">alltag.result;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f luatest.mak Alltagstest.result</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;%(Outputs)</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\alltag.dll;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\..\LuaAideTest.exe">

@@ -18,7 +18,7 @@
     <CustomBuild Include="..\..\LuaAideTest.exe">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\modules\alltag\test.lua">
+    <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
   </ItemGroup>
