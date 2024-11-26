@@ -1,23 +1,4 @@
 
-local pre,post=[[
-
-local function results(fn) return function(outcome) outcome.name=fn return outcome end end
-
-local summary={
-]], [[ --
-}
-
-local function main(args)
-    print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
-    for j,r in ipairs(summary) do
-        local F=table.concat(r.failedtests, ", ")
-        print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, F))
-    end
-end
-
-main {...}
-]]
-
 local function resformat(S)
     local X={}
     for _,A in ipairs(S) do
@@ -25,14 +6,12 @@ local function resformat(S)
         if #A.failedtests>0 then
             Lf="'"..table.concat(A.failedtests, "', '").."'"
         end
-        table.insert(X, string.format("    results '%s' {passed=%d, failed=%d, failedtests={%s}}", A.name, A.passed, A.failed, Lf))
+        table.insert(X, string.format("{name='%s', passed=%d, failed=%d, failedtests={%s}}", A.name, A.passed, A.failed, Lf))
     end
-    return table.concat(X, ",\n")
+    return "local summary={\n    "..table.concat(X, ",\n    ").."\n}"
 end
 
 local function main(ziel, args)
-    -- print("Ziel:", ziel)
-    -- print("Args:", table.concat(args, ", "))
     local S={}
     for _,f in ipairs(args) do
         local A={name=f, failedtests={}, passed=0, failed=0}
@@ -50,7 +29,13 @@ local function main(ziel, args)
         end
     end
     local T=resformat(S)
-    io.output(ziel):write(pre..T..post)
+    io.output(ziel):write("\n", T, "\n\n", [[
+    print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
+    for j,r in ipairs(summary) do
+        local F=table.concat(r.failedtests, ", ")
+        print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, F))
+    end
+]])
     io.close()
 end
 
