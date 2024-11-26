@@ -1,23 +1,17 @@
 
 local pre,post=[[
 
-local mt={
-    __tostring=function(self)
-        -- print(string.format("%2d: %4d|%-4d %s (%s)", j, self.passed, self.failed, self.name, table.concat(self.failedtests, ", ")))
-        return string.format("%4d|%-4d %s (%s)", self.passed, self.failed, self.name, table.concat(self.failedtests, ", "))
-    end
-}
-
-local function results(fn) return function(outcome) outcome.name=fn return setmetatable(outcome, mt) end end
+local function results(fn) return function(outcome) outcome.name=fn return outcome end end
 
 local summary={
 ]], [[ --
 }
 
 local function main(args)
-    if #args>0 and args[1]=="--print" then
-        print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
-        for j,r in ipairs(summary) do print(string.format("%2d: %s", j, r)) end
+    print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
+    for j,r in ipairs(summary) do
+        local F=table.concat(r.failedtests, ", ")
+        print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, F))
     end
 end
 
