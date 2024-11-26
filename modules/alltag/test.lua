@@ -20,9 +20,9 @@ end
 local TT=ULU.TT
 
 local function TCASE(name)
-    return function(criteria)
-        criteria.name=name
-        return criteria
+    return function(tests)
+        tests.name=name
+        return tests
     end
 end
 
