@@ -16,7 +16,7 @@ string_view chunk_ulutest()
 {
     // const string_view ulutest(&ltest_start, &ltest_end-&ltest_start);
     // return ulutest;
-    return {&ltest_start, &ltest_end-&ltest_start};
+    return {&ltest_start, static_cast<size_t>(&ltest_end-&ltest_start)};
 }
 
 bool check_tty(int fd)

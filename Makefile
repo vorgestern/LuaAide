@@ -68,10 +68,13 @@ b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 
 # ============================================================
 
-ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/ltest.o libLuaAide.a
+ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/resources_linux.o b/ulutest/ltest.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 
 b/ulutest/luaopen_ulutest.o: modules/ulutest/luaopen_ulutest.cpp
+	g++ -o $@ -c $< -fpic $(CPPFLAGS)
+
+b/ulutest/resources_linux.o: modules/ulutest/resources_linux.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
 
 b/ulutest/ltest.o: b/ulutest/ltest.luac
