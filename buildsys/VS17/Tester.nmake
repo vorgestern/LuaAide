@@ -11,15 +11,15 @@ clean:
 
 Alltagstest.result: $(REPOROOT)\alltag.dll $(REPOROOT)\modules\alltag\Alltagstest.lua
     @cd $(REPOROOT)
-    @date /T > $(MAKEDIR)\Alltagstest.result
-    @time /T >> $(MAKEDIR)\Alltagstest.result
-    @lua modules\alltag\Alltagstest.lua >> $(MAKEDIR)\Alltagstest.result
+    @date /T > $(MAKEDIR)\$@
+    @time /T >> $(MAKEDIR)\$@
+    @lua modules\alltag\Alltagstest.lua >> $(MAKEDIR)\$@
 
 LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
     @cd $(REPOROOT)
-    @date /T > $(MAKEDIR)\LuaAideTest.result
-    @time /T >> $(MAKEDIR)\LuaAideTest.result
-    @LuaAideTest.exe >> $(MAKEDIR)\LuaAideTest.result
+    @date /T > $(MAKEDIR)\$@
+    @time /T >> $(MAKEDIR)\$@
+    @LuaAideTest.exe >> $(MAKEDIR)\$@
 
 ..\..\Summary.lua: Alltagstest.result LuaAideTest.result
     @lua ..\generic\summarise_tests.lua $@ $**
