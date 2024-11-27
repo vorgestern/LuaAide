@@ -102,4 +102,4 @@ bt/m1test.result: examples/m1test.lua
 	@lua $< > $@
 
 bt/TestSummary.lua: bt/LuaAideTest.result bt/Alltagstest.result bt/m1test.result
-	@lua buildsys/VS17/testsummary.lua $@ $^
+	@lua buildsys/generic/summarise_tests.lua $@ $^
