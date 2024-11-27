@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
     for (auto n=0; n<16; ++n)
     {
         char pad[100];
-        sprintf(pad, "String %d", n);
+        snprintf(pad, sizeof(pad), "String %d", n);
         Q<<LuaLightUserData(reinterpret_cast<void*>(100+n))<<pad;
         lua_settable(Q, -3);
     }
