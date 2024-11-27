@@ -45,6 +45,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="Lua.props" />
     <Import Project="Example.props" />
+    <Import Project="Console.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>

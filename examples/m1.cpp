@@ -131,7 +131,7 @@ static int myadd(lua_State*L)
         *P=new V {A.x+B.x, A.y+B.y, A.z+B.z};
         return 1;
     }
-    catch (const runtime_error&E) { return Q>>luaerror; }
+    catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }
 }
 
 static int mysubtract(lua_State*L)
@@ -146,7 +146,7 @@ static int mysubtract(lua_State*L)
         *P=new V {A.x-B.x, A.y-B.y, A.z-B.z};
         return 1;
     }
-    catch (const runtime_error&E) { return Q>>luaerror; }
+    catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }
 }
 
 }}
