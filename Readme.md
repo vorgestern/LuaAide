@@ -67,7 +67,6 @@ demo.lua: use as ```lua demo.lua```
 - *optional*: Copy demo alltag.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4)
 
 ## Windows
-- (Currently no Unit tests)
 - Edit buildsys/VS17/Lua.props to point to your Lua-Installation:
   * **AdditionalIncludeDirectories**: Include the directory that contains lua.hpp.
   * **AdditionalDependencies** Include the import library for Lua 5.4.
