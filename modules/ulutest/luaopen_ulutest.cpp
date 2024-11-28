@@ -59,10 +59,10 @@ extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
         // Pass bindings to functions implemented in C to loader
         // for inclusion in module table.
         lua_createtable(Q, 0, 2);
-            lua_pushcfunction(Q, timestamp);  lua_setfield(Q, -2, "timestamp");
-            lua_pushcfunction(Q, gtest_tags); lua_setfield(Q, -2, "tags");
-            lua_pushcfunction(Q, check_tty);  lua_setfield(Q, -2, "isatty");
-        lua_call(Q,1,1);
+            lua_pushcfunction(Q, timestamp);                     lua_setfield(Q, -2, "timestamp");
+            lua_pushcfunction(Q, gtest_tags); lua_call(Q, 0, 1); lua_setfield(Q, -2, "tags");
+            lua_pushcfunction(Q, check_tty);                     lua_setfield(Q, -2, "isatty");
+        lua_call(Q, 1, 1);
         return 1;
     }
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
