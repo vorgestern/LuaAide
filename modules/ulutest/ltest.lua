@@ -146,6 +146,22 @@ local function msghandler(msg)
     end
 end
 
+-- Vorläufige Implementierung einer timestamp-Funktion
+local a=100
+local function timestamp()
+    a=a+1
+    return a
+end
+
+local function singularplural(num, name)
+    if num==1 then return "1 "..name
+    else return num.." "..name.."s"
+    end
+end
+
+-- Leider braucht es bisher diesen 'globalen' Zustand.
+local testcase_running=""
+
 return {
     TT=function(name, func)
         local T=setmetatable({
@@ -158,30 +174,34 @@ return {
         return function(disabled)
             if disabled then
                 print(string.format("%s %s", tags.SKIPPING, name))
-                return {name=T.name, outcome="skipped"}
+                return {name=T.name, outcome="skipped", duration=0}
             end
             local name_skipped=T.name:match "DISABLED%s*(.*)"
             if name_skipped then
                 print(string.format("%s %s", tags.SKIPPING, name_skipped))
-                return {name=T.name, outcome="disabled"}
+                return {name=T.name, outcome="disabled", duration=0}
             end
-            print(string.format("%s %s", tags.RUNTEST, name))
+            local testdotname=testcase_running.."."..name
+            print(string.format("%s %s", tags.RUNTEST, testdotname))
+            local ta=timestamp()
             local flag,err=xpcall(func, msghandler, T)
+            local tb=timestamp()
+            local dur_test=tb-ta
             if not flag then
                 print(string.format("%s Test was aborted: %s", tags.FAILEDTEST, err))
-                return {name=T.name, outcome="aborted"}
+                return {name=T.name, outcome="aborted", duration=tb-ta}
             elseif T.failed_assertions>0 then
                 print(string.format("%s %s", tags.FAILEDTEST, name))
-                return {name=T.name, outcome="failed"}
+                return {name=T.name, outcome="failed", duration=tb-ta}
             elseif T.unmet_expectations>0 then
                 print(string.format("%s %s: unmet expectations", tags.FAILEDTEST, name))
-                return {name=T.name, outcome="unexpected", unmet_expectations=T.unmet_expectations}
+                return {name=T.name, outcome="unexpected", duration=tb-ta, unmet_expectations=T.unmet_expectations}
             elseif T.asserted_ok+T.met_expectations>0 then
-                print(tags.SUCCESSFULTEST)
-                return {name=T.name, outcome="successful"}
+                print(tags.SUCCESSFULTEST.." "..testdotname.." ("..dur_test.." ms)")
+                return {name=T.name, outcome="successful", duration=tb-ta}
             else
                 print(string.format("%s Warning: Test applies no criteria", tags.SUCCESSFULTEST))
-                return {name=T.name, outcome="void"}
+                return {name=T.name, outcome="void", duration=tb-ta}
             end
         end
     end,
@@ -198,7 +218,7 @@ return {
             successful=1, void=1,
             disabled=10, skipped=10
         }
-        local aggregate=function(R, testcasename)
+        local aggregate=function(R, testcasename, duration)
             Summary.tests=Summary.tests+1
             if not R.outcome or not R.name then
                 table.insert(Summary.notplausible, testcasename.."."..(R.name or "unnamed (unplausible)"))
@@ -213,7 +233,13 @@ return {
                 end
             end
         end
-        for k,Testcase in ipairs {...} do
+        local Testcases={...}
+        local total=0
+        for j,k in ipairs(Testcases) do total=total+#k end
+        print(tags.FRAME.." Running "..singularplural(total, "test").." from "..singularplural(#Testcases, "test case")..".")
+        print(tags.SEP.." Global test environment set-up.")
+        local Ta=timestamp()
+        for k,Testcase in ipairs(Testcases) do
             Summary.testcases=Summary.testcases+1
             -- Die Tests in Testcase werden mit ipairs abgefragt.
             -- Außerdem wird ein Feld 'name' beachtet.
@@ -223,38 +249,44 @@ return {
             end
             local testname_disabled=testcasename:match "^DISABLED%s*(.*)"
             if testname_disabled then
-                print(tags.DISABLED.." Skipping "..#Testcase.." Testcase from TestCase '"..testname_disabled.."'")
-                for _,func in ipairs(Testcase) do aggregate(func(true), testcasename) end
-            else
-                print(tags.FRAME.." Running "..#Testcase.." Testcase from TestCase '"..testcasename.."'")
-                local nt,last=0,#Testcase
+                print(tags.DISABLED.." Skipping "..singularplural(#Testcase, "test").." from "..testname_disabled)
                 for _,func in ipairs(Testcase) do
-                    aggregate(func(), testcasename)
-                    nt=nt+1
-                    if _<last then print(tags.SEP) end
+                    aggregate(func(true), testcasename, 0)
                 end
-                print(tags.FRAME.." "..#Testcase.." Testcase finished")
+            else
+                local step=k>1 and "\n" or ""
+                print(step..tags.SEP.." "..singularplural(#Testcase, "test").." from "..testcasename)
+                testcase_running=testcasename
+                local nt,last=0,#Testcase
+                local ta=timestamp()
+                for _,func in ipairs(Testcase) do
+                    local R=func()
+                    aggregate(R, testcasename)
+                    nt=nt+1
+                    -- if _<last then print(tags.SEP) end
+                end
+                local tb=timestamp()
+                local dur_testcase=tb-ta
+                print(tags.SEP.." "..singularplural(#Testcase, "test").." from "..testcasename.." ("..dur_testcase.." ms total)")
             end
         end
+        local Tb=timestamp()
+        local dur_total=Tb-Ta
 
         print("\n"..tags.SEP.." Global test environment tear-down")
-        print(tags.FRAME..string.format(" %d tests from %d test cases ran.", Summary.tests, Summary.testcases))
+        print(tags.FRAME..string.format(" %s from %s ran. (%d ms total)", singularplural(Summary.tests, "test"), singularplural(Summary.testcases, "test case"), dur_total))
         local wennplural="s"
         if Summary.passed==1 then wennplural="" end
-        print(tags.PASSEDTEST..string.format(" %d tests", Summary.passed))
+        print(tags.PASSEDTEST.." "..singularplural(Summary.passed, "test"))
         local nf=#Summary.Failed
         if nf>0 then
-            local wennplural="s"
-            if nf==1 then wennplural="" end
-            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", nf, wennplural))
+            print(tags.FAILEDTEST..string.format(" %s, listed below:", singularplural(nf, "test")))
             for _,nam in ipairs(Summary.Failed) do print(tags.FAILEDTEST.." "..nam) end
             print(string.format("\n%3d FAILED TEST%s", nf, wennplural))
         end
         local nu=#Summary.Notplausible
         if nu>0 then
-            local wennplural="s"
-            if nu==1 then wennplural="" end
-            print(tags.FAILEDTEST..string.format(" %d test%s, listed below:", nu, wennplural))
+            print(tags.FAILEDTEST..string.format(" %s, listed below:", singularplural(nu, "test")))
             for _,nam in ipairs(Summary.Notplausible) do print(tags.FAILEDTEST.." "..nam) end
             print(string.format("\n%3d TEST%s processed with unplausible outcome", nf, wennplural))
         end

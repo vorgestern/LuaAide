@@ -1,6 +1,4 @@
 
-print "\n******** test alltag ********"
-
 local ok,alltag=pcall(require, "alltag")
 
 if not ok then
