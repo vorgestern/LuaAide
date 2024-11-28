@@ -1,4 +1,6 @@
 
+package.cpath=package.cpath..";b/?.so"
+
 local function takeawhile()
     local S="ABCDEFGH"
     local T=""
@@ -12,16 +14,11 @@ local function takeawhile()
     return T
 end
 
-package.cpath=package.cpath..";b/?.so"
+local X=require "m2"
 
-require "m2"
-
--- print("tshighres", tshighres)
--- print("\n\n\n")
-
-local t1=tshighres(); print("t1", t1)
+local t1=X.now(); print("t1", t1)
 local text=takeawhile()
-local t2=tshighres(); print("t2", t2)
-local d=t2-t1; print("d", d)
+local t2=X.now(); print("t2", t2)
+local diff=t2-t1; print("diff", diff, "msec")
 
--- io.output("nixdat.txt"); io.write(text)
+-- io.output("nixda.txt"); io.write(text)
