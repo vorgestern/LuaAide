@@ -234,6 +234,7 @@ public:
     LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.index)); return*this; }
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaField&X){ lua_getfield(L, -1, X.name); return*this; }
     LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.tableindex, X.elementindex); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
