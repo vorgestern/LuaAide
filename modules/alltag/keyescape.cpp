@@ -6,16 +6,8 @@ using namespace std;
 int keyescape(lua_State*L)
 {
     LuaStack Q(L);
-    if (height(Q)<1)
-    {
-        Q<<"keyescape: Argument (string) expected">>luaerror;
-        return 0;
-    }
-    if (Q.typeat(-1)!=LuaType::TSTRING)
-    {
-        Q<<"keyescape: string expected">>luaerror;
-        return 0;
-    }
+    if (height(Q)<1) return Q<<"keyescape: Argument (string) expected">>luaerror;
+    if (Q.typeat(-1)!=LuaType::TSTRING) return luaL_typeerror(L, -1, "string");
 
     size_t len=0;
     const char*a=lua_tolstring(L, -1, &len);

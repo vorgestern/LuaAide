@@ -22,49 +22,6 @@ int demofail(lua_State*L)
     return 1;
 }
 
-namespace {
-extern "C" int pwd(lua_State*L)
-{
-    LuaStack Q(L);
-    auto X=filesystem::current_path().string();
-    Q<<X.c_str();
-    return 1;
-}
-
-extern "C" int cd(lua_State*L)
-{
-    LuaStack Q(L);
-    if (height(Q)==1)
-    {
-        char pad[100];
-        if (Q.hasstringat(-1))
-        {
-            const fspath neu(Q.tostring(-1));
-            if (!filesystem::exists(neu))
-            {
-                const string meld="path does not exist: '"+neu.string()+"'";
-                Q<<meld>>luaerror;
-            }
-            std::error_code ec;
-            current_path(neu, ec);
-            if (!ec) return 0;
-            else
-            {
-                snprintf(pad, sizeof(pad), "cwd: system error %d", ec.value());
-                Q<<pad>>luaerror;
-            }
-        }
-        else
-        {
-            snprintf(pad, sizeof(pad), "cd requires string argument <path>, not %d", static_cast<int>(Q.typeat(-1)));
-            Q<<pad>>luaerror;
-        }
-    }
-    else Q<<"cd requires argument (string path)">>luaerror;
-    return 0;
-}
-}
-
 #ifndef ALLTAG_EXPORTS
 #define ALLTAG_EXPORTS
 #endif
@@ -74,8 +31,6 @@ extern "C" ALLTAG_EXPORTS int luaopen_alltag(lua_State*L)
     LuaStack Q(L);
     Q<<LuaTable()
         <<"0.1">>LuaField("version")
-        <<pwd>>LuaField("pwd")
-        <<cd>>LuaField("cd")
         <<formatany>>LuaField("formatany")
         <<keyescape>>LuaField("keyescape")
         <<demofail>>LuaField("demofail") // Produziert eine Fehlermeldung aus einem Aufruf von LuaAide.
