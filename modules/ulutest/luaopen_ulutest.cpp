@@ -43,7 +43,8 @@ bool check_tty(int fd);
 static int check_tty(lua_State*L)
 {
     if (lua_gettop(L)<1) return lua_pushliteral(L, "isatty: Argument (int fd) expected."), lua_error(L);
-    if (!lua_isinteger(L, 1)) return lua_pushliteral(L, "isatty: Argument 'id' expected to be an integer."), lua_error(L);
+    if (!lua_isinteger(L, 1)) return luaL_typeerror(L, 1, "integer");
+
     const auto fd=static_cast<int>(lua_tointeger(L, 1));
     return lua_pushboolean(L, check_tty(fd)), 1;
 }
