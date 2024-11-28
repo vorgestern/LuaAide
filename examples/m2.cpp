@@ -1,6 +1,7 @@
 
 #include <LuaAide.h>
 #include <chrono>
+#include <thread>
 
 // Example module m2: Embedding timestamps as userdata
 // (used by examples/m2test.lua):
@@ -46,6 +47,16 @@ extern "C" int now(lua_State*L)
     return 1;
 }
 
+extern "C" int sleep_ms(lua_State*L)
+{
+    LuaStack Q(L);
+    if (height(Q)<1) return Q<<"sleep_ms expects argument (ms: number)">>luaerror;
+    if (Q.typeat(1)!=LuaType::TNUMBER) return luaL_typeerror(Q, 1, "number");
+    const auto num=Q.todouble(1);
+    this_thread::sleep_for(num*1ms);
+    return 0;
+}
+
 } // anon
 
 extern "C" int luaopen_m2(lua_State*L)
@@ -65,6 +76,7 @@ extern "C" int luaopen_m2(lua_State*L)
     Q   <<LuaTable()
         <<"https://github.com/vorgestern/LuaAide">>LuaField("origin")
         <<"0.1">>LuaField("version")
-        <<now>>LuaField("now");
+        <<now>>LuaField("now")
+        <<sleep_ms>>LuaField("sleep_ms");
     return 1;
 }
