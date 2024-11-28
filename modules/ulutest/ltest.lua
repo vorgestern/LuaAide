@@ -10,7 +10,9 @@
         - Implementiere den Zugriff auf Datei und Zeilennummer mit Hilfe von debug.getinfo
 --]]
 
-local tags=gtest_tags();
+local bind=...
+local timestamp=bind.timestamp
+local tags=bind.tags();
 
 local helpful_boolean=function(v)
     if v==true then return "true"
@@ -156,6 +158,9 @@ end
 local testcase_running=""
 
 return {
+    tags=tags,
+    timestamp=timestamp,
+    isatty=bind.isatty,
     TT=function(name, func)
         local T=setmetatable({
             name=name,

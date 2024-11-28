@@ -38,33 +38,33 @@ static int mkloader(lua_State*L, const char name[], const string_view impl)
 #define ULUTEST_EXPORTS
 #endif
 
-#define EXPOSE_ISATTY
-#undef  EXPOSE_ISATTY
-
-#ifdef EXPOSE_ISATTY
 bool check_tty(int fd);
 
-int check_tty(lua_State*L)
+static int check_tty(lua_State*L)
 {
     if (lua_gettop(L)<1) return lua_pushliteral(L, "isatty: Argument (int fd) expected."), lua_error(L);
     if (!lua_isinteger(L, 1)) return lua_pushliteral(L, "isatty: Argument 'id' expected to be an integer."), lua_error(L);
     const auto fd=static_cast<int>(lua_tointeger(L, 1));
     return lua_pushboolean(L, check_tty(fd)), 1;
 }
-#endif
 
 extern "C" int gtest_tags(lua_State*);
 extern "C" int timestamp(lua_State*);
 
 extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
 {
-#ifdef EXPOSE_ISATTY
-    lua_pushcfunction(Q, check_tty); lua_setglobal(Q, "isatty");
-#endif
-    lua_pushcfunction(Q, gtest_tags); lua_setglobal(Q, "gtest_tags");
-    lua_pushcfunction(Q, timestamp); lua_setglobal(Q, "timestamp");
     const auto ulutest=chunk_ulutest();
-    if (mkloader(Q, "ulutest", ulutest)==1) return lua_call(Q,0,1), 1;
+    if (mkloader(Q, "ulutest", ulutest)==1)
+    {
+        // Pass bindings to functions implemented in C to loader
+        // for inclusion in module table.
+        lua_createtable(Q, 0, 2);
+            lua_pushcfunction(Q, timestamp);  lua_setfield(Q, -2, "timestamp");
+            lua_pushcfunction(Q, gtest_tags); lua_setfield(Q, -2, "tags");
+            lua_pushcfunction(Q, check_tty);  lua_setfield(Q, -2, "isatty");
+        lua_call(Q,1,1);
+        return 1;
+    }
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
     return lua_error(Q), 0;
 }
