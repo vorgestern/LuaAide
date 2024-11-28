@@ -146,13 +146,6 @@ local function msghandler(msg)
     end
 end
 
--- Vorläufige Implementierung einer timestamp-Funktion
-local a=100
-local function timestamp()
-    a=a+1
-    return a
-end
-
 local function singularplural(num, name)
     if num==1 then return "1 "..name
     else return num.." "..name.."s"

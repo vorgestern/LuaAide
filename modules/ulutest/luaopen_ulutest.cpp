@@ -54,6 +54,7 @@ int check_tty(lua_State*L)
 #endif
 
 extern "C" int gtest_tags(lua_State*);
+extern "C" int timestamp(lua_State*);
 
 extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
 {
@@ -61,6 +62,7 @@ extern "C" ULUTEST_EXPORTS int luaopen_ulutest(lua_State*Q)
     lua_pushcfunction(Q, check_tty); lua_setglobal(Q, "isatty");
 #endif
     lua_pushcfunction(Q, gtest_tags); lua_setglobal(Q, "gtest_tags");
+    lua_pushcfunction(Q, timestamp); lua_setglobal(Q, "timestamp");
     const auto ulutest=chunk_ulutest();
     if (mkloader(Q, "ulutest", ulutest)==1) return lua_call(Q,0,1), 1;
     lua_pushliteral(Q, "ulutest cannot be loaded (internal error).");
