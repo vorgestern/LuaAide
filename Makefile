@@ -98,8 +98,11 @@ bt/LuaAideTest.result: ./LuaAideTest
 bt/Alltagstest.result: modules/alltag/Alltagstest.lua
 	@lua $< > $@
 
-bt/m1test.result: examples/m1test.lua
+bt/m1test.result: examples/m1test.lua b/m2.so
 	@lua $< > $@
 
-bt/TestSummary.lua: bt/LuaAideTest.result bt/Alltagstest.result bt/m1test.result
+bt/m2test.result: examples/m2test.lua b/m2.so
+	@lua $< > $@
+
+bt/TestSummary.lua: bt/LuaAideTest.result bt/Alltagstest.result bt/m1test.result  bt/m2test.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^
