@@ -26,6 +26,16 @@ static bool istimestamp(lua_State*L, int index)
     return p==mtpointer;
 }
 
+extern "C" int tostring(lua_State*L)
+{
+    LuaStack Q(L);
+    if (!istimestamp(Q, 1)) return luaL_typeerror(Q, 1, "timestamp");
+    const tp T1=*reinterpret_cast<tp*>(lua_touserdata(Q, 1));
+    char pad[100];
+    const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(T1.time_since_epoch()/1ms));
+    return Q<<string_view {pad, nw}, 1;
+}
+
 extern "C" int tsdiff(lua_State*L)
 {
     if (!istimestamp(L, 1)) return luaL_typeerror(L, 1, "timestamp");
@@ -68,6 +78,7 @@ extern "C" int luaopen_m2(lua_State*L)
     Q   <<LuaValue(LUA_REGISTRYINDEX)
             <<LuaTable()
                 <<"timestamp">>LuaField("__name")
+                <<tostring>>LuaField("__tostring")
                 <<tsdiff>>LuaField("__sub");
     mtpointer=lua_topointer(L, -1);
     Q       >>LuaField(mtname);
