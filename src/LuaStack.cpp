@@ -343,16 +343,37 @@ LuaStack&LuaStack::operator<<(LuaSwap)
     return*this;
 }
 
+void LuaStack::argcheck(int index, LuaType t, std::string_view hint)
+{
+    if (typeat(index)!=t)
+    {
+        if (hint.empty()) luaL_typeerror(L, index, ::tostring(t).data());
+        else luaL_typeerror(L, index, hint.data());
+    }
+}
+
+void LuaStack::argcheck(int index, const std::function<bool(LuaStack&, int index)>&cond, std::string_view hint)
+{
+    if (!cond(*this, index)) luaL_error(L, "%s", hint.data());
+}
+
 // ============================================================================
 
 #ifdef UNITTEST
 #include <gtest/gtest.h>
 
+static int panichandler(lua_State*L)
+{
+    LuaStack Q(L);
+    throw runtime_error(Q.errormessage());
+    return 0;
+}
+
 class StackEnv: public ::testing::Test
 {
 protected:
     LuaStack Q{};
-    void SetUp() override { Q=LuaStack::New(true, nullptr); }
+    void SetUp() override { Q=LuaStack::New(true, panichandler); }
     void TearDown() override { Q.Close(); }
 };
 
@@ -829,6 +850,33 @@ TEST_F(StackEnv, AsString)
     Q.drop(1);
 }
 
+TEST_F(StackEnv, ArgCheckTypeThrow)
+{
+    Q<<"abc";
+    EXPECT_THROW(Q.argcheck(-1, LuaType::TFUNCTION, "function"), std::runtime_error);
+}
+
+TEST_F(StackEnv, ArgCheckTypeNoThrow)
+{
+    Q<<"abc";
+    EXPECT_NO_THROW(Q.argcheck(-1, LuaType::TSTRING, {}));
+}
+
+TEST_F(StackEnv, ArgCheckCondThrow)
+{
+    Q<<"abc";
+    auto cond=[](LuaStack&, int)->bool{ return false; };
+    EXPECT_THROW(Q.argcheck(-1, cond, "fail whenever"), std::runtime_error);
+    // EXPECT_NO_THROW(Q.argcheck(-1, cond, "Das kann nicht klappen."));
+}
+
+TEST_F(StackEnv, ArgCheckCondNoThrow)
+{
+    Q<<"abc";
+    auto cond=[](LuaStack&, int)->bool{ return true; };
+    EXPECT_NO_THROW(Q.argcheck(-1, cond, "success guaranteed"));
+}
+
 TEST(LuaType, ToString)
 {
     EXPECT_EQ("none", tostring(LuaType::TNONE));
@@ -907,6 +955,8 @@ TEST(LuaType, ToString)
 // - New
 // - Close
 // - stringrepr
+//
+// + argcheck
 
 // Teststatus LuaCall:
 // ===================

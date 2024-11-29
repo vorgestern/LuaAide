@@ -296,6 +296,10 @@ public:
     bool check(int numpos);
 
     std::string errormessage();
+
+    // luaerror if condition not met:
+    void argcheck(int index, LuaType, std::string_view hint); // Expect argument type
+    void argcheck(int index, const std::function<bool(LuaStack&, int index)>&cond, std::string_view hint); // Expect argument to meet cond
 };
 
 class LuaCall: public LuaStack
