@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <LuaAide.h>
 
-// a1: Inline scripting with LuaCode
+// Example 'a1' for embedding Lua:
+// Inline scripting with LuaCode
 
 int main()
 {

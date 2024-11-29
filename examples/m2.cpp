@@ -3,8 +3,9 @@
 #include <chrono>
 #include <thread>
 
-// Example module m2: Embedding timestamps as userdata
-// (used by examples/m2test.lua):
+// Example module m2 for extending scripts:
+// Expose type 'timestamp' to Lua.
+// m2test.lua and m2demo.lua demonstrate its use.
 
 using namespace std;
 using namespace std::chrono_literals;

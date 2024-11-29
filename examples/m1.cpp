@@ -2,6 +2,10 @@
 #include <LuaAide.h>
 #include <iostream>
 
+// Example module m1 for extending scripts:
+// Expose type 'vec3' to Lua.
+// m1test.lua demonstrates its use.
+
 // Handlungsbedarf:
 // + Verbirg mtvec3 (LuaRegValue(tag))
 // - wrap lua_newuserdatauv

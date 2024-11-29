@@ -2,7 +2,8 @@
 #include <LuaAide.h>
 #include <iostream>
 
-// a4: LuaUserData
+// Example 'a4' for embedding Lua:
+// Userdata
 
 using namespace std;
 
