@@ -811,12 +811,12 @@ TEST_F(StackEnv, AsString)
 
     Q<<lua_error;
     ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
+    ASSERT_EQ(1, sscanf_s(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
     Q.drop(1);
 
     Q<<LuaLightUserData((void*)lua_error);
     ASSERT_EQ(LuaType::TLIGHTUSERDATA, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(%p)", &p))<<Q;
+    ASSERT_EQ(1, sscanf_s(Q.asstring(-1).c_str(), "lightuserdata(%p)", &p))<<Q;
     Q.drop(1);
 
     Q<<luanil;
@@ -836,17 +836,17 @@ TEST_F(StackEnv, AsString)
 
     Q<<LuaTable(0,0);
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
+    ASSERT_EQ(1, sscanf_s(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
     Q.drop(1);
 
     lua_pushthread(Q);
     ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
+    ASSERT_EQ(1, sscanf_s(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
     Q.drop(1);
 
     lua_newuserdatauv(Q, sizeof(void*), 0);
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
+    ASSERT_EQ(1, sscanf_s(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
     Q.drop(1);
 }
 

@@ -109,7 +109,7 @@ int demofunc(lua_State*L) // [n] ==> [n+1, "hoppla"]
     LuaStack Q(L);
     if (Q.hasintat(-1))
     {
-        const int arg=Q.toint(-1);
+        const auto arg=static_cast<int>(Q.toint(-1));
         Q<<arg+1;
     }
     else Q<<luanil;
@@ -122,7 +122,7 @@ int demoerror(lua_State*L) // [n] ==> [n+1, "hoppla", e]
     LuaStack Q(L);
     if (Q.hasintat(-1))
     {
-        const int arg=Q.toint(-1);
+        const auto arg=static_cast<int>(Q.toint(-1));
         Q<<arg+1;
     }
     else Q<<luanil;
@@ -240,7 +240,7 @@ int demo_studie(lua_State*L)
     LuaStack Q(L);
     if (Q.hasintat(-1))
     {
-        const int arg=Q.toint(-1);
+        const auto arg=static_cast<int>(Q.toint(-1));
         Q<<arg+1;
     }
     else Q<<luanil;

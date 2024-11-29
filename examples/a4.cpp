@@ -28,10 +28,10 @@ static int mynew(lua_State*L)
     lua_setmetatable(L, -2);
     if (Q.hastableat(-2))
     {
-        const int a=Q(LuaElement(-2, 1))==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
-        const int b=Q(LuaElement(-2, 2))==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);
-        const int c=Q(LuaElement(-2, 3))==LuaType::TNUMBER?Q.toint(-1):103; Q.drop(1);
-        *P=new DemoClass {a, b, c};
+        const auto a=Q(LuaElement(-2, 1))==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
+        const auto b=Q(LuaElement(-2, 2))==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);
+        const auto c=Q(LuaElement(-2, 3))==LuaType::TNUMBER?Q.toint(-1):103; Q.drop(1);
+        *P=new DemoClass {(int)a, (int)b, (int)c};
     }
     else *P=new DemoClass {1, 2, 3};
     return 1;
