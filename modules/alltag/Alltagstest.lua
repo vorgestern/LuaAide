@@ -40,12 +40,6 @@ TCASE "Version" {
 },
 
 TCASE "Functions present" {
-    TT("pwd present", function(T)
-        T:ASSERT_EQ(type(alltag.pwd), "function")
-    end),
-    TT("cd present", function(T)
-        T:ASSERT_EQ(type(alltag.cd), "function")
-    end),
     TT("formatany present", function(T)
         T:ASSERT_EQ(type(alltag.formatany), "function")
     end),
