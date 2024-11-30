@@ -151,10 +151,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\m2.dll;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\generic\summarise_tests.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\Summary.lua).</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake ..\..\Summary.lua</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Summary.lua</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;LuaAideTest.result;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\TestSummary.lua).</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake ..\..\TestSummary.lua</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\TestSummary.lua</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;LuaAideTest.result;m1test.result;m2test.result;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
