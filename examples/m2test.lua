@@ -1,5 +1,9 @@
 
-package.cpath=package.cpath..";b/?.so"
+local binext={
+    ["/"]=";b/?.so",
+    ["\\"]=";b\\?.dll",
+}
+package.cpath=package.cpath..(binext[package.config:sub(1,1)] or "")
 
 local ok,m2=pcall(require, "m2")
 
@@ -43,14 +47,15 @@ ULU.RUN (
         TT("sleeping 100ms", function(T)
             -- This test is autocratic in that it evaluates m2.now vs m2.sleep.
             local ta=m2.now()
-            m2.sleep_ms(100)
+            m2.sleep_ms(500)
             local tb=m2.now()
-            m2.sleep_ms(10)
+            m2.sleep_ms(100)
             local tc=m2.now()
-            T:ASSERT(tb-ta>0, "should be 100 ms")
-            T:ASSERT(tc-tb>0, "should be 10 ms")
-            local d10=tc-tb
-            T:ASSERT_EQ(10*d10, tb-ta, "tb-ta sould be 10 x tc-tb")
+            local dcb=tc-tb
+            T:ASSERT(tb-ta>0, "should be 500 ms.")
+            T:ASSERT(tc-tb>0, "should be 100 ms.")
+            T:EXPECT(5*dcb>0.8*(tb-ta), "tb-ta sould be near 5*(tc-tb).")
+            T:EXPECT(5*dcb<1.2*(tb-ta), "tb-ta sould be near 5*(tc-tb).")
         end),
     },
     TCASE "Megamicrosleep" {

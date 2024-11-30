@@ -138,6 +138,18 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake LuaAideTest.result</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result</Outputs>
     </CustomBuild>
+    <CustomBuild Include="..\..\examples\m1test.lua">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'm1'.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake m1test.result</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m1test.result</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\m1.dll;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\examples\m2test.lua">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'm2'.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake m2test.result</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m2test.result</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\m2.dll;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
     <CustomBuild Include="..\generic\summarise_tests.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\Summary.lua).</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /NOLOGO /f Tester.nmake ..\..\Summary.lua</Command>

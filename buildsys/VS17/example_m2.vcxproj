@@ -61,18 +61,27 @@
     <Import Project="Windows.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
+  <PropertyGroup>
+    <TargetName>m2</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\b\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>EXAMPLEM1_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m2.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
 
   <ItemGroup>
     <ClCompile Include="..\..\examples\m2.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="m2.def" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">

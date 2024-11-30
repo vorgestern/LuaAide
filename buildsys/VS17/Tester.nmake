@@ -4,7 +4,7 @@
 
 REPOROOT= $(MAKEDIR)\..\..
 
-all: ..\..\Summary.lua Alltagstest.result LuaAideTest.result
+all: ..\..\Summary.lua Alltagstest.result LuaAideTest.result m1test.result m2test.result
 
 clean:
     @del /F Alltagstest.result LuaAideTest.result ..\..\Summary.lua
@@ -21,7 +21,19 @@ LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
     @time /T >> $(MAKEDIR)\$@
     @LuaAideTest.exe >> $(MAKEDIR)\$@
 
-..\..\Summary.lua: Alltagstest.result LuaAideTest.result
+m1test.result: $(REPOROOT)\b\m1.dll $(REPOROOT)\examples\m1test.lua
+    @cd $(REPOROOT)
+    @date /T > $(MAKEDIR)\$@
+    @time /T >> $(MAKEDIR)\$@
+    @lua examples\m1test.lua >> $(MAKEDIR)\$@
+
+m2test.result: $(REPOROOT)\b\m2.dll $(REPOROOT)\examples\m2test.lua
+    @cd $(REPOROOT)
+    @date /T > $(MAKEDIR)\$@
+    @time /T >> $(MAKEDIR)\$@
+    @lua examples\m2test.lua >> $(MAKEDIR)\$@
+
+..\..\Summary.lua: Alltagstest.result LuaAideTest.result m1test.result m2test.result
     @lua ..\generic\summarise_tests.lua $@ $**
     @lua $@
 

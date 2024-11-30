@@ -1,5 +1,9 @@
 
-package.cpath=package.cpath..";b/?.so"
+local binext={
+    ["/"]=";b/?.so",
+    ["\\"]=";b\\?.dll",
+}
+package.cpath=package.cpath..(binext[package.config:sub(1,1)] or "")
 
 local ok,vec3=pcall(require, "m1")
 

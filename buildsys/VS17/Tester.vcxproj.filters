@@ -16,6 +16,12 @@
     <CustomBuild Include="..\generic\summarise_tests.lua">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\examples\m1test.lua">
+      <Filter>Quelldateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\examples\m2test.lua">
+      <Filter>Quelldateien</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tester.nmake" />
