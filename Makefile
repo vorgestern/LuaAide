@@ -1,18 +1,4 @@
 
-#  1 + Schaffe LuaChunk ab.
-#  2   Lege vor lua_error eine Stringdarstellung des Stacks global ab.
-#  3 + Benutze luaL_loadbufferx statt lua_load.
-#  4   Bearbeite alle Vorkommen von lua_error() und >>luaerror.
-#  5   Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
-#  6   Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
-#  7   luaaide.formatany sollte genau ein Argument akzeptieren.
-#  8   Fehlendes Konzept: Metatable
-#  9   Fehlendes Konzept: Userdata
-# 10 + LuaStack<<LuaList gibt einen Iterator zurück: LuaStack<<LuaList<<21<<22<<23; erzeugt eine Liste.
-# 11 + LuaStack.tostrint(index) ==> std::string
-# 12   Schaffe LuaArray ab.
-# 13.  LuaStack<<lambda
-
 XFILES   := LuaCall LuaStack streamout
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
@@ -35,7 +21,6 @@ test: TestSummary.lua
 libLuaAide.a: $(XFILES:%=b/%.o)
 	@echo $<
 	@ar -crs $@ $^
-
 b/%.o: src/%.cpp $(XHEADER)
 	@echo $<
 	@g++ -fpic -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
@@ -45,7 +30,6 @@ b/%.o: src/%.cpp $(XHEADER)
 LuaAideTest: src/testmain.cpp $(XFILES:%=$(BT)/%.o)
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
-
 $(BT)/%.o: src/%.cpp $(XHEADER)
 	@echo $<
 	@g++ -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
@@ -55,7 +39,6 @@ $(BT)/%.o: src/%.cpp $(XHEADER)
 b/a%: examples/a%.cpp libLuaAide.a $(XHEADER)
 	@echo $<
 	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
-
 b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
 	g++ -shared -fpic -o $@ $^ $(CPPFLAGS) $(CXXFLAGS)
 
@@ -63,7 +46,6 @@ b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
 
 alltag.so: b/alltag/main.o b/alltag/formatany.o b/alltag/keyescape.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
-
 b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
@@ -71,23 +53,18 @@ b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 
 ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/ulu.o b/ulutest/resources_linux.o b/ulutest/ltest.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
-
 b/ulutest/luaopen_ulutest.o: modules/ulutest/luaopen_ulutest.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-
 b/ulutest/resources_linux.o: modules/ulutest/resources_linux.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-
 b/ulutest/ulu.o: modules/ulutest/ulu.cpp
 	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-
 b/ulutest/ltest.o: b/ulutest/ltest.luac
 	# objcopy -I binary -O elf64-x86-64 --redefine-syms=modules/ulutest/syminfo $< $@
 	objcopy -I binary -O elf64-x86-64\
 		--redefine-sym _binary_b_ulutest_ltest_luac_start=ltest_start\
 		--redefine-sym _binary_b_ulutest_ltest_luac_end=ltest_end $< $@
 	nm $@ > $(@:.o=.symbols)
-
 b/ulutest/ltest.luac: modules/ulutest/ltest.lua
 	luac -o $@ $<
 
@@ -95,15 +72,11 @@ b/ulutest/ltest.luac: modules/ulutest/ltest.lua
 
 $(BT)/LuaAideTest.result: ./LuaAideTest
 	@./LuaAideTest > $@
-
 $(BT)/Alltagstest.result: modules/alltag/Alltagstest.lua
 	@lua $< > $@
-
 $(BT)/m1test.result: examples/m1test.lua b/m2.so
 	@lua $< > $@
-
 $(BT)/m2test.result: examples/m2test.lua b/m2.so
 	@lua $< > $@
-
 TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/Alltagstest.result $(BT)/m1test.result $(BT)/m2test.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^
