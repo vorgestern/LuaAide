@@ -1,9 +1,9 @@
 
-local binext={
+local bpattern={
     ["/"]=";b/?.so",
     ["\\"]=";b\\?.dll",
 }
-package.cpath=package.cpath..(binext[package.config:sub(1,1)] or "")
+package.cpath=package.cpath..(bpattern[package.config:sub(1,1)] or "")
 
 local ok,m2=pcall(require, "m2")
 
