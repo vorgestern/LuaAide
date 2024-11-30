@@ -17,16 +17,17 @@ XFILES   := LuaCall LuaStack streamout
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
+BT       := buildsys/gcc/bt
 .PHONY: clean dir prerequisites test
 
 all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so b/m2.so alltag.so ulutest.so
 clean:
-	@rm -rf b/* bt/* libLuaAide.a LuaAideTest alltag.so ulutest.so
+	@rm -rf b/* $(BT) libLuaAide.a LuaAideTest alltag.so ulutest.so
 prerequisites:
 	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
-	@mkdir -p b/alltag b/ulutest bt
-test: bt/TestSummary.lua
+	@mkdir -p b/alltag b/ulutest buildsys/gcc/bt
+test: TestSummary.lua
 	@lua $< --print
 
 # ============================================================
@@ -41,11 +42,11 @@ b/%.o: src/%.cpp $(XHEADER)
 
 # ============================================================
 
-LuaAideTest: src/testmain.cpp $(XFILES:%=bt/%.o)
+LuaAideTest: src/testmain.cpp $(XFILES:%=$(BT)/%.o)
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
-bt/%.o: src/%.cpp $(XHEADER)
+$(BT)/%.o: src/%.cpp $(XHEADER)
 	@echo $<
 	@g++ -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
 
@@ -92,17 +93,17 @@ b/ulutest/ltest.luac: modules/ulutest/ltest.lua
 
 # ============================================================
 
-bt/LuaAideTest.result: ./LuaAideTest
+$(BT)/LuaAideTest.result: ./LuaAideTest
 	@./LuaAideTest > $@
 
-bt/Alltagstest.result: modules/alltag/Alltagstest.lua
+$(BT)/Alltagstest.result: modules/alltag/Alltagstest.lua
 	@lua $< > $@
 
-bt/m1test.result: examples/m1test.lua b/m2.so
+$(BT)/m1test.result: examples/m1test.lua b/m2.so
 	@lua $< > $@
 
-bt/m2test.result: examples/m2test.lua b/m2.so
+$(BT)/m2test.result: examples/m2test.lua b/m2.so
 	@lua $< > $@
 
-bt/TestSummary.lua: bt/LuaAideTest.result bt/Alltagstest.result bt/m1test.result  bt/m2test.result
+TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/Alltagstest.result $(BT)/m1test.result $(BT)/m2test.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^
