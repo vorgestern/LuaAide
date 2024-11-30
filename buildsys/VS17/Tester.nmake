@@ -1,35 +1,35 @@
 
 # Nmake Makefile for Unittests
 # Called from Tester.vcxproj
+# Dependecies are only known to Tester.vcxproj,
+# so nmake is used as a mere command processor, not as a make utility
 
 REPOROOT= $(MAKEDIR)\..\..
 
-all: $(REPOROOT)\TestSummary.lua Alltagstest.result LuaAideTest.result m1test.result m2test.result
-
 clean:
-    @del /F Alltagstest.result LuaAideTest.result $(REPOROOT)\TestSummary.lua
+    @del /F Alltagstest.result LuaAideTest.result m1test.result m2test.result $(REPOROOT)\TestSummary.lua
 
-Alltagstest.result: $(REPOROOT)\alltag.dll $(REPOROOT)\modules\alltag\Alltagstest.lua
+Alltagstest:
     @cd $(REPOROOT)
-    @lua modules\alltag\Alltagstest.lua >> $(MAKEDIR)\$@
+    @lua modules\alltag\Alltagstest.lua >> $(MAKEDIR)\Alltagstest.result
 
-LuaAideTest.result: $(REPOROOT)\LuaAideTest.exe
+LuaAideTest99:
     @cd $(REPOROOT)
-    @LuaAideTest.exe > $(MAKEDIR)\$@
+    @LuaAideTest.exe > $(MAKEDIR)\LuaAideTest.result
 
-m1test.result: $(REPOROOT)\b\m1.dll $(REPOROOT)\examples\m1test.lua
+m1test:
     @cd $(REPOROOT)
-    @lua examples\m1test.lua > $(MAKEDIR)\$@
+    @lua examples\m1test.lua > $(MAKEDIR)\m1test.result
 
-m2test.result: $(REPOROOT)\b\m2.dll $(REPOROOT)\examples\m2test.lua
+m2test:
     @cd $(REPOROOT)
-    @lua examples\m2test.lua > $(MAKEDIR)\$@
+    @lua examples\m2test.lua > $(MAKEDIR)\m2test.result
 
-..\..\TestSummary.lua: Alltagstest.result LuaAideTest.result m1test.result m2test.result
-    @lua ..\generic\summarise_tests.lua $@ $**
-    @lua $@
+TestSummary:
+    @lua ..\generic\summarise_tests.lua $(REPOROOT)\TestSummary.lua Alltagstest.result LuaAideTest.result m1test.result m2test.result
+    @lua $(REPOROOT)\TestSummary.lua
 
 help:
     echo "MAKEDIR=$(MAKEDIR)"
     echo "REPOROOT=$(REPOROOT)"
-    echo "Targets: all clean Alltagstest.result LuaAideTest.result ..\..\TestSummary.lua
+    echo "Targets: clean Alltagstest LuaAideTest99 m1test m2test TestSummary
