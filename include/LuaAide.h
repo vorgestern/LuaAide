@@ -22,6 +22,8 @@ const enum class LuaRotate:int {up5=-5, up4=-4, up3=-3, down3=3, down4=4, down5=
     luarot3=LuaRotate::down3,
     luarot4=LuaRotate::down4,
     luarot5=LuaRotate::down5;
+const enum class LuaListStart {a} lualist=LuaListStart::a;
+const enum class LuaListEnd {a} lualistend=LuaListEnd::a;
 
 enum class LuaType:int {
     TNONE=-1,
@@ -268,7 +270,7 @@ public:
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);
 
-    LuaList list();
+    LuaList operator<<(LuaListStart);
 
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
@@ -389,6 +391,7 @@ public:
     LuaList&operator<<(bool f){ LuaStack::operator<<(f); return append(); }
     LuaList&operator<<(float x){ LuaStack::operator<<(x); return append(); }
     LuaList&operator<<(double x){ LuaStack::operator<<(x); return append(); }
+    LuaStack operator<<(LuaListEnd){ return*this; }
 };
 
 /*

@@ -117,7 +117,8 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
     else return myhandleload(*this, rc, tag), false;
 }
 
-LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
+// LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
+LuaList LuaStack::operator<<(LuaListStart){ *this<<LuaArray(0); return LuaList(L); }
 
 string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
 
@@ -808,7 +809,7 @@ TEST_F(StackEnv, LuaElementSet)
 TEST_F(StackEnv, LuaList)
 {
     ASSERT_EQ(0, height(Q));
-    Q.list()<<21<<22<<23;
+    Q<<lualist<<21<<22<<23;
     ASSERT_EQ(1, height(Q));
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
 
@@ -820,7 +821,7 @@ TEST_F(StackEnv, LuaList)
 
 TEST_F(StackEnv, LuaIterator)
 {
-    Q.list()<<121<<122<<123<<124<<125;
+    Q<<lualist<<121<<122<<123<<124<<125;
 
     for (LuaIterator J(Q); next(J); ++J)
     {
