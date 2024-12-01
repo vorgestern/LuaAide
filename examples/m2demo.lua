@@ -1,6 +1,9 @@
 
--- Find m2.so in b/m2.so
-package.cpath=package.cpath..";b/?.so"
+local bpattern={
+    ["/"]=";b/?.so",
+    ["\\"]=";b\\?.dll",
+}
+package.cpath=package.cpath..(bpattern[package.config:sub(1,1)] or "")
 
 local X=require "m2"
 
