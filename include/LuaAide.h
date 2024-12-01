@@ -37,6 +37,23 @@ enum class LuaType:int {
 };
 std::string_view tostring(LuaType);
 
+enum class LuaMetaMethod:unsigned {
+    tostring,
+    add, sub, mul, div, mod, pow,
+    unm,
+    band, bor, bxor, bnot, shl, shr,
+    concat,
+    len,
+    eq, lt, le,
+    index, newindex,
+    call,
+    gc,
+    close,
+    mode,
+    name                   
+};
+std::string_view tostring(LuaMetaMethod);
+
 class LuaValue
 {
     int stackindex;
@@ -300,6 +317,8 @@ public:
     // luaerror if condition not met:
     void argcheck(int index, LuaType, std::string_view hint); // Expect argument type
     void argcheck(int index, const std::function<bool(LuaStack&, int index)>&cond, std::string_view hint); // Expect argument to meet cond
+
+    LuaCall operator[](LuaMetaMethod);
 };
 
 class LuaCall: public LuaStack
