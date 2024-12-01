@@ -913,6 +913,42 @@ TEST_F(StackEnv, ArgCheckCondNoThrow)
     EXPECT_NO_THROW(Q.argcheck(-1, cond, "success guaranteed"));
 }
 
+TEST_F(StackEnv, FieldAssignment)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<LuaTable()<<"alpha">=21;
+    Q<<"beta">=22;
+    Q<<"gamma">=23;
+    ASSERT_EQ(1, height(Q))<<Q;
+    Q<<LuaCode("x=...; return x.alpha, x.beta, x.gamma")<<LuaValue(-2)>>3;
+    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
+    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
+}
+
+TEST_F(StackEnv, FieldAssignmentF)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<LuaTable(); Q.F("alpha",21).F("beta",22).F("gamma",23);
+    ASSERT_EQ(1, height(Q))<<Q;
+    Q<<LuaCode("x=...; return x.alpha, x.beta, x.gamma")<<LuaValue(-2)>>3;
+    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
+    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
+}
+
+TEST_F(StackEnv, FieldAssignmentF1)
+{
+    ASSERT_EQ(0, height(Q));
+    LuaLightUserData luvkey((void*)0x12345678);
+    Q<<LuaTable(); Q.F("alpha",21).F("beta",22).F(luvkey,23);
+    ASSERT_EQ(1, height(Q))<<Q;
+    Q<<LuaCode("X,luvkey=...; return X.alpha, X.beta, X[luvkey]")<<LuaValue(-2)<<luvkey>>3;
+    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
+    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
+    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
+}
+
 TEST(LuaType, ToString)
 {
     EXPECT_EQ("none", tostring(LuaType::TNONE));

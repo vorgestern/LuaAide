@@ -12,3 +12,4 @@
 1. x LuaStack.tostrint(index) ==> std::string
 1. _ Schaffe LuaArray ab.
 1. _ LuaStack<<lambda
+1. _ Führe Literale zur Erzeugung von Objekten ein (LightUserData 0x12378lud: LuaStack.F(0x1234lud, "Hoppla"))

@@ -272,6 +272,17 @@ public:
 
     LuaList operator<<(LuaListStart);
 
+    // Konzept: Creating arbitrary tables with <<value>=key;   (downside: not chainable due to preference descent)
+    // Q<<LuaTable()<<101>="key1";                             {key1=101, version="0.1", [..]=myprint}
+    // Q<<"0.1">="version";
+    // Q<<myprint>=LuaLightUserData(0x12345678);
+    LuaStack&operator>=(int n){ operator<<(n); lua_settable(L, -3); return*this; }
+
+    // Konzept: Creating arbitrary tables with .F(key, value)  (chainable; downside: restart, parentheses)
+    // Q<<LuaTable();
+    // Q.F("key1", 101).F("version", "0.1").F(?, myprint);
+    template<typename K, typename V>LuaStack&F(K k, V v) {  operator<<(k)<<v; lua_settable(L, -3); return*this; }
+
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
@@ -368,6 +379,7 @@ public:
     LuaCall&operator<<(float x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(double x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const LuaLightUserData&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(const LuaElement&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator>>(const LuaElement&E){ LuaStack::operator>>(E); return*this; }
 };
