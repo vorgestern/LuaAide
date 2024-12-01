@@ -366,6 +366,8 @@ public:
     LuaCall&operator<<(float x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(double x){ LuaStack::operator<<(x); return*this; }
     LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator<<(const LuaElement&X){ LuaStack::operator<<(X); return*this; }
+    LuaCall&operator>>(const LuaElement&E){ LuaStack::operator>>(E); return*this; }
 };
 
 class LuaList: LuaStack
