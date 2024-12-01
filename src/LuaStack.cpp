@@ -195,6 +195,29 @@ string_view tostring(LuaType t)
     else return "none";
 }
 
+string_view tostring(LuaMetaMethod m)
+{
+    static const string_view names[]=
+    {
+        "__tostring",            // tostring,
+        "__add", "__sub", "__mul", "__div", "__mod", "__pow", // add, sub, mul, div, mod, pow,
+        "__unm",                 // unm,
+        "__band", "__bor", "__bxor", "__bnot", "__shl", "__shr", // band, bor, bxor, bnot, shl, shr,
+        "__concat",              // concat,
+        "__len",                 // len,
+        "__eq", "__lt", "__le",  // eq, lt, le,
+        "__index", "__newindex", // index, newindex,
+        "__call",                // call,
+        "__gc",                  // gc,
+        "__close",               // close,
+        "__mode",                // mode,
+        "__name"                 // name                   
+    };
+    const auto index=static_cast<unsigned>(m);
+    if (m<=LuaMetaMethod::name) return names[index];
+    else return "none";
+}
+
 // *********************************************************************
 
 static int errfunction(lua_State*L)
