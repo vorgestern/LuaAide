@@ -24,6 +24,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tester.nmake" />
+    <None Include="makehelper.bat">
+      <Filter>Quelldateien</Filter>
+    </None>
   </ItemGroup>
 </Project>

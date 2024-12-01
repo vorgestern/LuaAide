@@ -129,36 +129,41 @@
   <ItemGroup>
     <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test module 'alltag'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /nologo /f Tester.nmake Alltagstest</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat Alltagstest</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\alltag.dll;%(AdditionalInputs)</AdditionalInputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
     <CustomBuild Include="..\..\LuaAideTest.exe">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test library 'LuaAide.lib'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /nologo /f Tester.nmake LuaAideTest99</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat LuaAideTest99</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result</Outputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
     <CustomBuild Include="..\..\examples\m1test.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'm1'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /nologo /f Tester.nmake m1test</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat m1test</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m1test.result</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\m1.dll;%(AdditionalInputs)</AdditionalInputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
     <CustomBuild Include="..\..\examples\m2test.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'm2'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /nologo /f Tester.nmake m2test</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat m2test</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m2test.result</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\m2.dll;%(AdditionalInputs)</AdditionalInputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
     <CustomBuild Include="..\generic\summarise_tests.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\TestSummary.lua).</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake /nologo /f Tester.nmake TestSummary</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lua ..\generic\summarise_tests.lua ..\..\TestSummary.lua Alltagstest.result LuaAideTest.result m1test.result m2test.result</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\TestSummary.lua</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;LuaAideTest.result;m1test.result;m2test.result;%(AdditionalInputs)</AdditionalInputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tester.nmake" />
+    <None Include="makehelper.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
