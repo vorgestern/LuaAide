@@ -15,7 +15,7 @@
             <LanguageStandard>stdcpp20</LanguageStandard>
             <WarningLevel>Level3</WarningLevel>
             <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-            <PreprocessorDefinitions>_CONSOLE;UNITTEST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions>_CONSOLE;UNITTEST;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
         </ClCompile>
         <Link>
             <SubSystem>Console</SubSystem>
