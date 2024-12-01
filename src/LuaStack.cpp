@@ -380,6 +380,18 @@ void LuaStack::argcheck(int index, const std::function<bool(LuaStack&, int index
     if (!cond(*this, index)) luaL_error(L, "%s", hint.data());
 }
 
+LuaCall LuaStack::operator[](LuaMetaMethod m)
+{
+    const auto t=static_cast<LuaType>(luaL_getmetafield(L, -1, ::tostring(m).data()));
+    if (t==LuaType::TNIL)
+    {
+        // Hier sollte eine Dummymethode auf den Stack gelegt werden, die beim Aufruf eine Fehlermeldung erzeugt.
+        // cout<<"Metamethod "<<::tostring(m)<<": TNIL\n";
+    }
+    swap();
+    return LuaCall(L, index(-2));
+}
+
 // ============================================================================
 
 #ifdef UNITTEST

@@ -4,6 +4,11 @@
 
 // Example 'a4' for embedding Lua:
 // Userdata
+// Make C++ class DemoClass available to Lua scripts.
+
+// - defineclass creates Metatable (global 'mtdemo')
+//   and Constructor (global 'newdemo')
+// - Inline script create instance and prints it.
 
 using namespace std;
 
@@ -82,6 +87,14 @@ int main(int argc, char*argv[])
 {
     LuaStack Q=LuaStack::New(true, panichandler);
     defineclass(Q);
+
+    // Use democlass from C++
+    Q<<mynew<<LuaTable()<<55>>LuaElement(-2, 1)<<56>>LuaElement(-2,2)<<57>>LuaElement(-2,3)>>1;  // democlass {55,56,57}
+    // Save string representation in 'demostring'.
+    Q[LuaMetaMethod::tostring]>>1;
+    Q>>LuaGlobal("demostring");
+    Q.drop(1);
+
     const auto rc=Q<<LuaCode(R"xxx(
         if true then
             local A=newdemo {31,32,33}
@@ -89,6 +102,8 @@ int main(int argc, char*argv[])
             -- for k,v in ipairs(A) do print(k,v) end
         end
         collectgarbage()
+        print "demostring:"
+        print(demostring)
     )xxx")>>0;
     printf("\n==============\nScript executed, rc=%d.\n", rc);
     if (rc!=0) cout<<Q;
