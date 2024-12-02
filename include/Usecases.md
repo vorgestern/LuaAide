@@ -1,38 +1,40 @@
 
 # Usecases
 
-## Metatabellen
+## Metatables
 
-    Benannte Metatabelle
+    Named metatables
     ==================================================
-    luaL_newmetatable   erzeugen 
-    luaL_setmetatable   zuordnen
-    luaL_getmetatable   holen/pushen
+    luaL_newmetatable   create 
+    luaL_setmetatable   assign
+    luaL_getmetatable   get/push
 
-    Freie Metatabelle
+    Free metatables
     ==================================================
-    lua_setmetatable    vom Stack zum Stack zuordnen
-    lua_getmetatable    vom Stack pushen
+    lua_setmetatable    assign from stack to stackvalue
+    lua_getmetatable    push from stackvalue
 
-    Objektbezogen
+    Implied metatables
     ==================================================
-    luaL_getmetafield   Metafeld eines Werts pushen
-    luaL_callmeta       Aufruf einer bekannten Bethode
+    luaL_getmetafield   push metafield of a stackvalue
+    luaL_callmeta       call metafunction of stackvalue
 
-## Metamethoden
+## Metamethods
 
-    __add   __sub   __mul           Mathematische Operationen
+    __tostring                      Missing in manual 2.4!
+
+    __add   __sub   __mul           Mathematical operations
     __div   __mod   __pow
     __unm
 
-    __band   __bor    __bxor        Binäroperationen
+    __band   __bor    __bxor        Binary operations
     __bnot   __shl    __shr
 
     __concat                        x:concat(y) == x..y
 
     __len                           x:len()
 
-    __eq    __lt    __le            Vergleiche
+    __eq    __lt    __le            Comparisons
 
     __index
     __newindex
@@ -42,10 +44,11 @@
     __gc
     __close                         x:close(errobject)
     __mode                          k,v,kv weak keys or values
-    __name                          Typname
+    __name                          Type name
 
 ## Entwurf
-    Benutzung von Metamethoden
+Using Metamethods
+
     Q<<Value<<Lmm::add<<21>>1;          Value+21
     Q<<Value<<Lmm::band<<0xff>>1;       Value&0xff
     Q<<Value<<Lmm::concat<<"msec">>1;   Value.."msec"
@@ -57,12 +60,27 @@
     Q<<Value<<Lmm::gc>>1;               ?
     Q<<Value<<Lmm::close>>1;
     Q<<Value<<Lmm::mode;                k|v|kv
-    Q<<Value<<Lmm::name;                Typname
+    Q<<Value<<Lmm::name;                Type name
 
     Q<<Value[Lmm::add]<<21>>1;          Value+21
     Q<<Value[Lmm::band]0xff>>1;         Value&0xff
-        Hier sollte ggfs eine Dummymethode auf den Stack gelegt werden,
-        die beim Aufruf eine Fehlermeldung erzeugt.
+        On error operator[] shold push function to issue error message
 
-    Definition von Metamethoden
+Definition of Metamethods
+
     Q<<LuaTable<<function>>Lmm::add;
+
+Creation of arbitrary tables
+
+    // verbose
+    Q<<LuaTable()<<21>>LuaField("x")<<22>>LuaField("y")<<23>>LuaField("z")>>LuaGlobal("mytable");
+
+    // not chainable (operator precendence)
+    Q<<LuaTable()<<21>="x";
+    Q<<22>="y";
+    Q<<23>="z";
+    Q>>LuaGlobal("mytable");
+
+    // chainable after restart, verbose
+    Q<<LuaTable();
+    Q.F("key1", 101).F("version", "0.1").F("print", myprint);

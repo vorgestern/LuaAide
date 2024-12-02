@@ -365,23 +365,8 @@ public:
         // die Buchhaltung von LuaCall durcheinanderbringt.
 
     // Überschreibe die Ausgabefunktionen mit Varianten, die LuaCall statt LuaStack zurückgeben.
-    LuaCall&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const LuaValue&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const char s[]){ LuaStack::operator<<(s); return*this; }
-    LuaCall&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const std::vector<std::string>&X){ LuaStack::operator<<(X); return*this; }
     LuaCall&operator<<(std::function<void(LuaStack&)>ArgumentProvider){ ArgumentProvider(*this); return*this; }
-    LuaCall&operator<<(int n){ LuaStack::operator<<(n); return*this; }
-    LuaCall&operator<<(unsigned n){ LuaStack::operator<<(n); return*this; }
-    LuaCall&operator<<(bool f){ LuaStack::operator<<(f); return*this; }
-    LuaCall&operator<<(float x){ LuaStack::operator<<(x); return*this; }
-    LuaCall&operator<<(double x){ LuaStack::operator<<(x); return*this; }
-    LuaCall&operator<<(const LuaUpValue&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const LuaLightUserData&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator<<(const LuaElement&X){ LuaStack::operator<<(X); return*this; }
-    LuaCall&operator>>(const LuaElement&E){ LuaStack::operator>>(E); return*this; }
+    template<typename Arg>LuaCall&operator<<(const Arg&X){ LuaStack::operator<<(X); return*this; }
 };
 
 class LuaList: LuaStack
