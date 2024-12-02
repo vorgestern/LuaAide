@@ -63,7 +63,7 @@ Using Metamethods
     Q<<Value<<Lmm::name;                Type name
 
     Q<<Value[Lmm::add]<<21>>1;          Value+21
-    Q<<Value[Lmm::band]0xff>>1;         Value&0xff
+    Q<<Value[Lmm::band]<<0xff>>1;       Value&0xff
         On error operator[] shold push function to issue error message
 
 Definition of Metamethods

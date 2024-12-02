@@ -65,14 +65,6 @@ public:
     LuaValue(int index): stackindex(index){}
 };
 
-class LuaAbsIndex
-{
-    friend class LuaStack;
-    int absindex{0};
-    friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
-    LuaAbsIndex(int j): absindex(j){}
-};
-
 class LuaUpValue
 {
     friend class LuaStack;
@@ -226,6 +218,14 @@ class LuaStack
 
 protected:
     lua_State*L{nullptr};
+
+    class LuaAbsIndex
+    {
+        friend class LuaStack;
+        int absindex{0};
+        friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
+        LuaAbsIndex(int j): absindex(j){}
+    };
 
 public:
     LuaStack(){}

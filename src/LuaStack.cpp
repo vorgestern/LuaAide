@@ -103,7 +103,7 @@ LuaStack&LuaStack::dup(int was){ lua_pushvalue(L, was); return*this; }
 
 LuaStack&LuaStack::remove(int was){ lua_remove(L, was); return*this; }
 
-LuaAbsIndex LuaStack::index(int n){ return LuaAbsIndex(lua_absindex(L, n)); }
+LuaStack::LuaAbsIndex LuaStack::index(int n){ return LuaAbsIndex(lua_absindex(L, n)); }
 
 bool LuaStack::dofile(const char filename[], int argc, char*argv[])
 {
