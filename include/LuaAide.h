@@ -57,14 +57,6 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-class LuaValue
-{
-    int stackindex;
-    friend int stackindex(const LuaValue&X){ return X.stackindex; }
-public:
-    LuaValue(int index): stackindex(index){}
-};
-
 class LuaLightUserData
 {
     friend class LuaStack;
@@ -163,13 +155,14 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u}; // array,struct,table,tableelement,upvalue
+enum class distinct_pushable {a,s,as,te,u,v}; // array,struct,table,tableelement,upvalue,value
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as> LuaTable;
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te> LuaElement; // tablepos, elementindex
 typedef Distinct<unsigned, distinct_pushable::u> LuaUpValue;
+typedef Distinct<int, distinct_pushable::v> LuaValue;
 
 class LuaStackItem
 {
@@ -225,7 +218,7 @@ public:
     LuaStack&operator<<(std::string_view s){ lua_pushlstring(L, s.data(), s.size()); return*this; }
     LuaStack&operator<<(float x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(double x){ lua_pushnumber(L, x); return*this; }
-    LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, X.value); return*this; }
     LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.value)); return*this; }
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const absindex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
