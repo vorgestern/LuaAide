@@ -68,14 +68,6 @@ public:
     LuaClosure(lua_CFunction c, unsigned numupvalues): closure(c), num_upvalues(numupvalues){}
 };
 
-class LuaGlobal
-{
-    friend class LuaStack;
-    const char*name{nullptr};
-public:
-    LuaGlobal(const char s[]): name(s){}
-};
-
 class LuaField
 {
     friend class LuaStack;
@@ -138,7 +130,7 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
@@ -148,6 +140,7 @@ typedef Distinct<unsigned, distinct_pushable::u> LuaUpValue;
 typedef Distinct<int, distinct_pushable::v> LuaValue;
 typedef Distinct<const void*, distinct_pushable::r> LuaRegValue;
 typedef Distinct<const void*, distinct_pushable::lud> LuaLightUserData;
+typedef Distinct<std::string_view, distinct_pushable::g> LuaGlobal;
 
 class LuaStackItem
 {
@@ -205,7 +198,7 @@ public:
     LuaStack&operator<<(double x){ lua_pushnumber(L, x); return*this; }
     LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, X.value); return*this; }
     LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.value)); return*this; }
-    LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
+    LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.value.data()); return*this; }
     LuaStack&operator<<(const absindex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaField&X){ lua_getfield(L, -1, X.name); return*this; }
     LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.value.first, X.value.second); return*this; }
@@ -240,7 +233,7 @@ public:
     template<typename K, typename V>LuaStack&F(K k, V v) {  operator<<(k)<<v; lua_settable(L, -3); return*this; }
 
     int operator>>(const LuaError&){ lua_error(L); return 0; }
-    LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
+    LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.value.data()); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
     LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.value.first, E.value.second); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
