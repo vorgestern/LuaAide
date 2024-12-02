@@ -263,7 +263,7 @@ LuaCall LuaStack::operator<<(const LuaDotCall&C)
 
 LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 {
-    *this<<LuaGlobal(C.name);
+    *this<<LuaGlobal(C.value.data());
     return LuaCall(L);
 }
 

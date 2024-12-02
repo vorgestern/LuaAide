@@ -92,14 +92,6 @@ public:
     LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
 };
 
-class LuaGlobalCall
-{
-    friend class LuaStack;
-    const char*name{nullptr};
-public:
-    LuaGlobalCall(const char s[]): name(s){}
-};
-
 class LuaCode
 {
     friend class LuaStack;
@@ -108,7 +100,7 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
@@ -121,6 +113,7 @@ typedef Distinct<const void*, distinct_pushable::lud> LuaLightUserData;
 typedef Distinct<std::string_view, distinct_pushable::g> LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f> LuaField;
 typedef Distinct<std::string_view, distinct_pushable::dc> LuaDotCall;
+typedef Distinct<std::string_view, distinct_pushable::gc> LuaGlobalCall;
 
 class LuaStackItem
 {
