@@ -335,7 +335,7 @@ LuaStack&LuaStack::operator<<(const LuaLightUserData&X)
 
 LuaStack&LuaStack::operator<<(const LuaRegValue&X)
 {
-    *this<<LuaValue(LUA_REGISTRYINDEX)<<LuaLightUserData(X.data); // [Registry, key]
+    *this<<LuaValue(LUA_REGISTRYINDEX)<<LuaLightUserData(X.value); // [Registry, key]
     lua_gettable(L, -2);                            // [Registry, [Registry[key]]
     remove(-2);                                     // [[Registry[key]]
     return*this;
@@ -345,7 +345,7 @@ LuaStack&LuaStack::operator>>(const LuaRegValue&X)
 {
                                                     // [value]
     *this<<LuaValue(LUA_REGISTRYINDEX)
-        <<LuaLightUserData(X.data)                  // [value, Registry, key]
+        <<LuaLightUserData(X.value)                 // [value, Registry, key]
         <<luarot_3;                                 // [Registry, key, value]
     lua_settable(L, -3);                            // [Registry]
     drop(1);                                        // []
