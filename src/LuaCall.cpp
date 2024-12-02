@@ -5,7 +5,7 @@ using namespace std;
 
 LuaCall::LuaCall(lua_State*L): LuaStack(L), funcindex(index(-1)){}
 LuaCall::LuaCall(LuaStack&S): LuaStack(S), funcindex(index(-1)){}
-LuaCall::LuaCall(lua_State*L, LuaAbsIndex func): LuaStack(L), funcindex(func){}
+LuaCall::LuaCall(lua_State*L, absindex func): LuaStack(L), funcindex(func){}
 
 static int TracebackAdder(lua_State*Q)
 {

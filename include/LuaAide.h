@@ -218,12 +218,12 @@ class LuaStack
 protected:
     lua_State*L{nullptr};
 
-    class LuaAbsIndex
+    class absindex
     {
         friend class LuaStack;
         int posindex{0};
-        friend int stackindex(const LuaAbsIndex&X){ return X.posindex; }
-        LuaAbsIndex(int j): posindex(j){}
+        friend int stackindex(const absindex&X){ return X.posindex; }
+        absindex(int j): posindex(j){}
     };
 
 public:
@@ -237,7 +237,7 @@ public:
     LuaStack&dup(int was=-1);
     LuaStack&remove(int was);
 
-    LuaAbsIndex index(int wo);
+    absindex index(int wo);
 
     LuaStack&operator<<(LuaSwap);
     LuaStack&operator<<(LuaRotate);
@@ -252,7 +252,7 @@ public:
     LuaStack&operator<<(const LuaValue&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaUpValue&V){ lua_pushvalue(L, lua_upvalueindex(V.index)); return*this; }
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
-    LuaStack&operator<<(const LuaAbsIndex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
+    LuaStack&operator<<(const absindex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaField&X){ lua_getfield(L, -1, X.name); return*this; }
     LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.tableindex, X.elementindex); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
@@ -347,10 +347,10 @@ class LuaCall: public LuaStack
 
     //! Dieser Konstruktor ist nur für Freunde zugänglich.
     //! Diese haben u.U. bereits Informationen auf den Stack gelegt, die am Ende entfernt werden sollen.
-    LuaCall(lua_State*, LuaAbsIndex);
+    LuaCall(lua_State*, absindex);
 
 protected:
-    LuaAbsIndex funcindex; // Stackindex der Funktion auf dem Stack. Wird benutzt, um beim Aufruf der Funktion die Anzahl der Argumente zu ermitteln.
+    absindex funcindex; // Stackindex der Funktion auf dem Stack. Wird benutzt, um beim Aufruf der Funktion die Anzahl der Argumente zu ermitteln.
 
 public:
     LuaCall(lua_State*);
@@ -386,7 +386,7 @@ public:
     LuaList&operator<<(const LuaNil&X){ LuaStack::operator<<(X); return append(); }
     LuaList&operator<<(const LuaValue&X){ LuaStack::operator<<(X); return append(); }
     LuaList&operator<<(const char s[]){ LuaStack::operator<<(s); return append(); }
-    LuaList&operator<<(const LuaAbsIndex&X){ LuaStack::operator<<(X); return append(); }
+    LuaList&operator<<(const absindex&X){ LuaStack::operator<<(X); return append(); }
     LuaList&operator<<(lua_CFunction X){ LuaStack::operator<<(X); return append(); }
     LuaList&operator<<(const LuaTable&X){ LuaStack::operator<<(X); return append(); }
     LuaList&operator<<(const std::vector<std::string>&X){ LuaStack::operator<<(X); return append(); }
