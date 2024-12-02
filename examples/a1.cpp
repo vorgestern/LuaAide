@@ -130,7 +130,7 @@ int main()
     if (true)
     {
         printf("\nLege eine Tabelle mit benannten Feldern an:\n");
-        Q.clear()<<LuaTable()
+        Q.clear()<<newtable
             <<"1.2.3">>LuaField("version")
             <<"vorgestern">>LuaField("author")
             >>LuaGlobal("A");

@@ -29,7 +29,7 @@ int demofail(lua_State*L)
 extern "C" ALLTAG_EXPORTS int luaopen_alltag(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaTable()
+    Q<<newtable
         <<"0.1">>LuaField("version")
         <<formatany>>LuaField("formatany")
         <<keyescape>>LuaField("keyescape")

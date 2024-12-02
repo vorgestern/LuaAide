@@ -24,6 +24,7 @@ const enum class LuaRotate:int {up5=-5, up4=-4, up3=-3, down3=3, down4=4, down5=
     luarot5=LuaRotate::down5;
 const enum class LuaListStart {a} lualist=LuaListStart::a;
 const enum class LuaListEnd {a} lualistend=LuaListEnd::a;
+const enum class LuaTableTag {a} newtable=LuaTableTag::a;
 
 enum class LuaType:int {
     TNONE=-1,
@@ -257,6 +258,7 @@ public:
     LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.tableindex, X.elementindex); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
+    LuaStack&operator<<(LuaTableTag){ lua_createtable(L, 0, 0); return*this; }
     LuaStack&operator<<(const LuaLightUserData&);
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
@@ -273,13 +275,13 @@ public:
     LuaList operator<<(LuaListStart);
 
     // Konzept: Creating arbitrary tables with <<value>=key;   (downside: not chainable due to preference descent)
-    // Q<<LuaTable()<<101>="key1";                             {key1=101, version="0.1", [..]=myprint}
+    // Q<<newtable<<101>="key1";                             {key1=101, version="0.1", [..]=myprint}
     // Q<<"0.1">="version";
     // Q<<myprint>=LuaLightUserData(0x12345678);
     LuaStack&operator>=(int n){ operator<<(n); lua_settable(L, -3); return*this; }
 
     // Konzept: Creating arbitrary tables with .F(key, value)  (chainable; downside: restart, parentheses)
-    // Q<<LuaTable();
+    // Q<<newtable;
     // Q.F("key1", 101).F("version", "0.1").F(?, myprint);
     template<typename K, typename V>LuaStack&F(K k, V v) {  operator<<(k)<<v; lua_settable(L, -3); return*this; }
 

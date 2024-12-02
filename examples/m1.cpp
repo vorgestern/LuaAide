@@ -160,13 +160,13 @@ using namespace Vec3;
 extern "C" int luaopen_m1(lua_State*L)
 {
     LuaStack Q(L);
-    Q   <<LuaTable(0,0)
+    Q   <<newtable
         <<myfinaliser>>LuaField("__gc")
         <<mytostring>>LuaField("__tostring")
         <<myadd>>LuaField("__add")
         <<mysubtract>>LuaField("__sub")
         >>mtvec3;
-    Q  <<LuaTable()
+    Q   <<newtable
         <<"0.1">>LuaField("version")
         <<mydemo>>LuaField("Demo")
         <<mynew>>LuaField("New");

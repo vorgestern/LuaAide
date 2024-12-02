@@ -77,7 +77,7 @@ extern "C" int luaopen_m2(lua_State*L)
     // Create metatable for timestamps.
     // Set Registry[mtname]={__name="timestamp", timestamp=function}:
     Q   <<LuaValue(LUA_REGISTRYINDEX)
-            <<LuaTable()
+            <<newtable
                 <<"timestamp">>LuaField("__name")
                 <<tostring>>LuaField("__tostring")
                 <<tsdiff>>LuaField("__sub");
@@ -85,7 +85,7 @@ extern "C" int luaopen_m2(lua_State*L)
     Q       >>LuaField(mtname);
 
     // Return module table for 'require "m2"':
-    Q   <<LuaTable()
+    Q   <<newtable
         <<"https://github.com/vorgestern/LuaAide">>LuaField("origin")
         <<"0.1">>LuaField("version")
         <<now>>LuaField("now")

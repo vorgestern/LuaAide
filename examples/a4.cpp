@@ -76,7 +76,7 @@ static int mytostring(lua_State*L)
 static void defineclass(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaTable(0,0)
+    Q<<newtable
         <<myfinaliser>>LuaField("__gc")
         <<mytostring>>LuaField("__tostring")
         >>LuaGlobal("mtdemo");
@@ -90,7 +90,7 @@ int main(int argc, char*argv[])
 
     // Use democlass from C++
 #if 0
-    Q<<mynew<<LuaTable()<<55>>LuaElement(-2, 1)<<56>>LuaElement(-2,2)<<57>>LuaElement(-2,3)>>1;  // democlass {55,56,57}
+    Q<<mynew<<newtable<<55>>LuaElement(-2, 1)<<56>>LuaElement(-2,2)<<57>>LuaElement(-2,3)>>1;  // democlass {55,56,57}
 #else
     Q<<lualist<<55<<56<<57<<lualistend;  // democlass {55,56,57}
     Q<<mynew<<LuaValue(-2)>>1;

@@ -608,7 +608,7 @@ TEST_F(StackEnv, HasIntAt)
 
 TEST_F(StackEnv, HasTableAt)
 {
-    Q<<true<<LuaTable()<<true<<true;
+    Q<<true<<newtable<<true<<true;
     ASSERT_EQ(4, height(Q));
     EXPECT_FALSE(Q.hastableat(-5));
     EXPECT_FALSE(Q.hastableat(-4));
@@ -870,7 +870,7 @@ TEST_F(StackEnv, AsString)
     ASSERT_EQ("hoppla", Q.asstring(-1))<<Q;
     Q.drop(1);
 
-    Q<<LuaTable(0,0);
+    Q<<newtable;
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1))<<Q;
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
     Q.drop(1);
@@ -916,7 +916,7 @@ TEST_F(StackEnv, ArgCheckCondNoThrow)
 TEST_F(StackEnv, FieldAssignment)
 {
     ASSERT_EQ(0, height(Q));
-    Q<<LuaTable()<<"alpha">=21;
+    Q<<newtable<<"alpha">=21;
     Q<<"beta">=22;
     Q<<"gamma">=23;
     ASSERT_EQ(1, height(Q))<<Q;
@@ -929,7 +929,7 @@ TEST_F(StackEnv, FieldAssignment)
 TEST_F(StackEnv, FieldAssignmentF)
 {
     ASSERT_EQ(0, height(Q));
-    Q<<LuaTable(); Q.F("alpha",21).F("beta",22).F("gamma",23);
+    Q<<newtable; Q.F("alpha",21).F("beta",22).F("gamma",23);
     ASSERT_EQ(1, height(Q))<<Q;
     Q<<LuaCode("x=...; return x.alpha, x.beta, x.gamma")<<LuaValue(-2)>>3;
     ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
@@ -941,7 +941,7 @@ TEST_F(StackEnv, FieldAssignmentF1)
 {
     ASSERT_EQ(0, height(Q));
     LuaLightUserData luvkey((void*)0x12345678);
-    Q<<LuaTable(); Q.F("alpha",21).F("beta",22).F(luvkey,23);
+    Q<<newtable; Q.F("alpha",21).F("beta",22).F(luvkey,23);
     ASSERT_EQ(1, height(Q))<<Q;
     Q<<LuaCode("X,luvkey=...; return X.alpha, X.beta, X[luvkey]")<<LuaValue(-2)<<luvkey>>3;
     ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
