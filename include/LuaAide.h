@@ -211,7 +211,6 @@ public:
 
 class LuaStack
 {
-    friend class LuaAbsIndex;
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
@@ -222,9 +221,9 @@ protected:
     class LuaAbsIndex
     {
         friend class LuaStack;
-        int absindex{0};
-        friend int stackindex(const LuaAbsIndex&X){ return X.absindex; }
-        LuaAbsIndex(int j): absindex(j){}
+        int posindex{0};
+        friend int stackindex(const LuaAbsIndex&X){ return X.posindex; }
+        LuaAbsIndex(int j): posindex(j){}
     };
 
 public:
