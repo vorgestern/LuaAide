@@ -172,28 +172,12 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-class LuaTable
-{
-    friend class LuaStack;
-    unsigned numindex{0}, numfields{0};
-public:
-    LuaTable(){}
-    LuaTable(unsigned nindex, unsigned nfields): numindex(nindex), numfields(nfields){}
-};
-
-class LuaElement
-{
-    friend class LuaStack;
-    int tableindex, elementindex;
-public:
-    LuaElement(int t, int e): tableindex(t), elementindex(e){}
-};
-
-class LuaArray: public LuaTable
-{
-public:
-    LuaArray(unsigned numindex): LuaTable(numindex, 0){}
-};
+enum class distinct_pushable {a,s,as,te}; // array,struct,table,tableelement
+template<typename I, distinct_pushable d>struct Distinct { I value; };
+typedef Distinct<size_t, distinct_pushable::a> LuaArray;
+typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
+typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as> LuaTable;
+typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te> LuaElement; // tablepos, elementindex
 
 class LuaStackItem
 {
@@ -254,9 +238,10 @@ public:
     LuaStack&operator<<(const LuaGlobal&X){ lua_getglobal(L, X.name); return*this; }
     LuaStack&operator<<(const absindex&X){ lua_pushvalue(L, stackindex(X)); return*this; }
     LuaStack&operator<<(const LuaField&X){ lua_getfield(L, -1, X.name); return*this; }
-    LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.tableindex, X.elementindex); return*this; }
+    LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.value.first, X.value.second); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
-    LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.numindex, X.numfields); return*this; }
+    LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.value.first, X.value.second); return*this; }
+    LuaStack&operator<<(const LuaArray&X){ lua_createtable(L, X.value, 0); return*this; }
     LuaStack&operator<<(LuaTableTag){ lua_createtable(L, 0, 0); return*this; }
     LuaStack&operator<<(const LuaLightUserData&);
     LuaStack&operator<<(const std::vector<std::string>&);
@@ -287,10 +272,10 @@ public:
     int operator>>(const LuaError&){ lua_error(L); return 0; }
     LuaStack&operator>>(const LuaGlobal&X){ lua_setglobal(L, X.name); return*this; } //!< Zuweisung an globale Variable
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.name); return*this; }
-    LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.tableindex, E.elementindex); return*this; }
+    LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.value.first, E.value.second); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
-    LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.tableindex, X.elementindex)); }
+    LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.value.first, X.value.second)); }
 //  LuaType operator()(const LuaField&X){ return static_cast<LuaType>(lua_getfield(L, -1, X.name)); }
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }

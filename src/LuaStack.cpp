@@ -296,7 +296,7 @@ LuaCall LuaStack::operator<<(const LuaClosure&C)
 
 LuaStack&LuaStack::operator<<(const vector<string>&X)
 {
-    *this<<LuaArray(X.size());
+    *this<<LuaArray {X.size()};
     long n=0;
     for (auto&e: X)
     {
@@ -487,7 +487,7 @@ TEST_F(StackEnv, VectorString)
     // ASSERT_EQ(53, X[4].size());
     Q<<X;
     ASSERT_EQ(1, height(Q)); ASSERT_TRUE(Q.hastableat(-1));
-    ASSERT_EQ(LuaType::TSTRING, Q(LuaElement(-1, 5)));
+    ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 5}}));
     ASSERT_EQ(2, height(Q));
     size_t len;
     const char*s=lua_tolstring(Q, -1, &len);
@@ -755,20 +755,20 @@ TEST_F(StackEnv, LuaElement)
     ASSERT_EQ(0, height(Q));
     Q<<vector<string> {"A", "B", "C", "D"};
     ASSERT_EQ(1, height(Q));
-    Q<<LuaElement(-1, 2);
+    Q<<LuaElement {{-1, 2}};
     ASSERT_TRUE(Q.hasstringat(-1));
     ASSERT_EQ("B", Q.tostring(-1));
     Q.drop(1);
-    Q<<LuaElement(-1, 4);
+    Q<<LuaElement {{-1, 4}};
     ASSERT_TRUE(Q.hasstringat(-1));
     ASSERT_EQ("D", Q.tostring(-1));
     Q.drop(1);
-    Q<<LuaElement(-1, 5);
+    Q<<LuaElement {{-1, 5}};
     ASSERT_TRUE(Q.hasnilat(-1));
     Q.drop(1);
     ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hastableat(-1));
-    ASSERT_EQ(LuaType::TSTRING, Q(LuaElement(-1, 1)));
+    ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 1}}));
     ASSERT_EQ(2, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));
     Q.drop(1);
@@ -779,10 +779,10 @@ TEST_F(StackEnv, LuaElementSet)
     ASSERT_EQ(0, height(Q));
     Q<<LuaArray(10);
     ASSERT_EQ(1, height(Q));
-    Q   <<"hoppla">>LuaElement(-2, 5)
-        <<21>>LuaElement(-2, 1)
-        <<22>>LuaElement(-2, 2)
-        <<23>>LuaElement(-2, 3);
+    Q   <<"hoppla">>LuaElement {{-2, 5}}
+        <<21>>LuaElement {{-2, 1}}
+        <<22>>LuaElement {{-2, 2}}
+        <<23>>LuaElement {{-2, 3}};
     // [21,22,23,nil,"hoppla"]
     ASSERT_EQ(1, height(Q));
 
@@ -791,13 +791,13 @@ TEST_F(StackEnv, LuaElementSet)
     ASSERT_EQ(5, Q.toint(-1));
     Q.drop(1);
 
-    Q<<LuaElement(-1, 3);
+    Q<<LuaElement {{-1, 3}};
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
     ASSERT_EQ(23, Q.toint(-1));
     Q.drop(1);
 
-    Q<<LuaElement(-1, 5);
+    Q<<LuaElement {{-1, 5}};
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
     ASSERT_EQ("hoppla", Q.tostring(-1));
@@ -812,7 +812,7 @@ TEST_F(StackEnv, LuaList)
     ASSERT_EQ(1, height(Q));
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
 
-    Q<<LuaElement(-1, 2);
+    Q<<LuaElement {{-1, 2}};
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
     ASSERT_EQ(22, Q.toint(-1));
