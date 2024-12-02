@@ -248,7 +248,7 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
         snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
         const auto str=pad+asstring(-1);
         drop(1);
-        *this<<str<<LuaClosure(errfunction, 1);
+        *this<<str<<LuaClosure {{errfunction, 1}};
         return LuaCall(L, index(-1));
     }
 }
@@ -290,7 +290,7 @@ LuaCall LuaStack::operator<<(lua_CFunction X)
 
 LuaCall LuaStack::operator<<(const LuaClosure&C)
 {
-    lua_pushcclosure(L, C.closure, C.num_upvalues);
+    lua_pushcclosure(L, C.value.first, C.value.second);
     return LuaCall(L);
 }
 

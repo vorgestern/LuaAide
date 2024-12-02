@@ -41,9 +41,9 @@ int main_throwing(lua_State*L)
         vector<string>Arg {"Hier", "wohnen", "die", "Schlümpfe"};
         Q<<Arg;
         // Make Map, Make Closure with upvalue==Map, Call Closure with Argument Arg.
-        Q   <<unordered_map<string,string> {{"Hier", "Dort"}, {"wohnen", "arbeiten"}, {"Schlümpfe", "Zwerge"}}<<LuaClosure(democlosure, 1)
+        Q   <<unordered_map<string,string> {{"Hier", "Dort"}, {"wohnen", "arbeiten"}, {"Schlümpfe", "Zwerge"}}<<LuaClosure {{democlosure, 1}}
             <<Arg>>1;
-        Q   <<unordered_map<string,string> {{"Hier", "Wo"}, {"wohnen", "schlafen"}, {"Schlümpfe", "Heinzelmännchen"}}<<LuaClosure(democlosure, 1)
+        Q   <<unordered_map<string,string> {{"Hier", "Wo"}, {"wohnen", "schlafen"}, {"Schlümpfe", "Heinzelmännchen"}}<<LuaClosure {{democlosure, 1}}
             <<Arg>>1;
         cout<<"\n"<<Q<<"\n";
     }

@@ -57,17 +57,6 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-class LuaClosure
-{
-    friend class LuaStack;
-    // So erzeugt man eine Closure:
-    // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename");
-    lua_CFunction closure{nullptr};
-    unsigned num_upvalues{0};
-public:
-    LuaClosure(lua_CFunction c, unsigned numupvalues): closure(c), num_upvalues(numupvalues){}
-};
-
 //! Diese Klasse erleichtert den Aufruf einer Elementfunktion
 //! (in Lua wäre das z.B. X:MyFunction(self, a, b, c)),
 //! indem sie die Elementfunktion ermittelt und den Stack geeignet vorbereitet:
@@ -100,7 +89,7 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
@@ -114,6 +103,10 @@ typedef Distinct<std::string_view, distinct_pushable::g> LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f> LuaField;
 typedef Distinct<std::string_view, distinct_pushable::dc> LuaDotCall;
 typedef Distinct<std::string_view, distinct_pushable::gc> LuaGlobalCall;
+typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
+
+// So erzeugt man eine Closure:
+// Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename");
 
 class LuaStackItem
 {
