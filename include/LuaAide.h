@@ -339,6 +339,7 @@ public:
     void argcheck(int index, const std::function<bool(LuaStack&, int index)>&cond, std::string_view hint); // Expect argument to meet cond
 
     LuaCall operator[](LuaMetaMethod);
+    LuaStack&operator>>(LuaMetaMethod m){ lua_setfield(L, -2, ::tostring(m).data()); return*this; } // [table, value] ==> [table={..., method=value}]
 };
 
 class LuaCall: public LuaStack

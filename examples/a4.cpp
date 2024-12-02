@@ -68,7 +68,7 @@ static int mytostring(lua_State*L)
     }
     else
     {
-        Q<<"mtdemo.__tostring: internal error, arg is not a 'demo'\n">>luaerror;
+        Q<<"mtdemo:tostring: internal error, arg is not a 'demo'\n">>luaerror;
         return 0;
     }
 }
@@ -77,8 +77,8 @@ static void defineclass(lua_State*L)
 {
     LuaStack Q(L);
     Q<<newtable
-        <<myfinaliser>>LuaField("__gc")
-        <<mytostring>>LuaField("__tostring")
+        <<myfinaliser>>LuaMetaMethod::gc
+        <<mytostring>>LuaMetaMethod::tostring
         >>LuaGlobal("mtdemo");
     Q<<mynew>>LuaGlobal("newdemo");
 }

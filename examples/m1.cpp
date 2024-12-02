@@ -118,7 +118,7 @@ static int mytostring(lua_State*L)
     }
     else
     {
-        Q<<"mtvec3.__tostring: internal error, arg is not a 'Vec3'\n">>luaerror;
+        Q<<"mtvec3:tostring: internal error, arg is not a 'Vec3'\n">>luaerror;
         return 0;
     }
 }
@@ -141,7 +141,7 @@ static int myadd(lua_State*L)
 static int mysubtract(lua_State*L)
 {
     LuaStack Q(L);
-    if (height(Q)<2) return Q<<"mtvec3.__sub: Expect two arguments at least.">>luaerror;
+    if (height(Q)<2) return Q<<"vec3:sub: Expect two arguments at least (self,other).">>luaerror;
     try {
         const V A=argvector(Q, -2), B=argvector(Q, -1);
         auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
@@ -161,10 +161,10 @@ extern "C" int luaopen_m1(lua_State*L)
 {
     LuaStack Q(L);
     Q   <<newtable
-        <<myfinaliser>>LuaField("__gc")
-        <<mytostring>>LuaField("__tostring")
-        <<myadd>>LuaField("__add")
-        <<mysubtract>>LuaField("__sub")
+        <<myfinaliser>>LuaMetaMethod::gc
+        <<mytostring>>LuaMetaMethod::tostring
+        <<myadd>>LuaMetaMethod::add
+        <<mysubtract>>LuaMetaMethod::sub
         >>mtvec3;
     Q   <<newtable
         <<"0.1">>LuaField("version")

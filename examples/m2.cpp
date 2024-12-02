@@ -78,9 +78,9 @@ extern "C" int luaopen_m2(lua_State*L)
     // Set Registry[mtname]={__name="timestamp", timestamp=function}:
     Q   <<LuaValue(LUA_REGISTRYINDEX)
             <<newtable
-                <<"timestamp">>LuaField("__name")
-                <<tostring>>LuaField("__tostring")
-                <<tsdiff>>LuaField("__sub");
+                <<"timestamp">>LuaMetaMethod::name
+                <<tostring>>LuaMetaMethod::tostring
+                <<tsdiff>>LuaMetaMethod::sub;
     mtpointer=lua_topointer(L, -1);
     Q       >>LuaField(mtname);
 
