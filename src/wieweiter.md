@@ -13,3 +13,4 @@
 1. _ Schaffe LuaArray ab.
 1. _ LuaStack<<lambda
 1. _ Führe Literale zur Erzeugung von Objekten ein (LightUserData 0x12378lud: LuaStack.F(0x1234lud, "Hoppla"))
+1. _ Verlege die Implementierung von formatany von alltag nach LuaAide.
