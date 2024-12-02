@@ -14,3 +14,7 @@
 1. _ LuaStack<<lambda
 1. _ Führe Literale zur Erzeugung von Objekten ein (LightUserData 0x12378lud: LuaStack.F(0x1234lud, "Hoppla"))
 1. _ Verlege die Implementierung von formatany von alltag nach LuaAide.
+1. _ Implementiere LuaColonCall analog zu anderen Funktionsaufrufen```
+     Stack<<Objekt<<LuaColonCall(methodname)<<arg1<<arg2>>1;``` statt wie überliefert```
+     Stack<<Objekt<<arg1<<arg2<<LuaColonCall(methodname)>>1;``` Die Anzahl
+     der Argumente muss dann nicht mehr angegeben werden.
