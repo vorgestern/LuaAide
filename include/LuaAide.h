@@ -92,19 +92,6 @@ public:
     LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
 };
 
-//! Diese Klasse erleichtert den Aufruf einer Funktion,
-//! die in einer Struktur abgelegt ist. In Lua wäre das
-//! z.B. Maintainer.func(...);
-//! Das Object (z.B. Maintainer) wird beim Aufruf mit LuaStack<<LuaDotCall
-//! oben auf dem Stack erwartet und vom Stack genommen.
-class LuaDotCall
-{
-    friend class LuaStack;
-    const char*name{nullptr};
-public:
-    LuaDotCall(const char s[]): name(s){}
-};
-
 class LuaGlobalCall
 {
     friend class LuaStack;
@@ -121,7 +108,7 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
@@ -133,6 +120,7 @@ typedef Distinct<const void*, distinct_pushable::r> LuaRegValue;
 typedef Distinct<const void*, distinct_pushable::lud> LuaLightUserData;
 typedef Distinct<std::string_view, distinct_pushable::g> LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f> LuaField;
+typedef Distinct<std::string_view, distinct_pushable::dc> LuaDotCall;
 
 class LuaStackItem
 {

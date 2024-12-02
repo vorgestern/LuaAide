@@ -256,7 +256,7 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
 LuaCall LuaStack::operator<<(const LuaDotCall&C)
 {
     const int objectindex=-1;
-    lua_getfield(L, objectindex, C.name);
+    lua_getfield(L, objectindex, C.value.data());
     remove(objectindex-1);
     return LuaCall(L);
 }
