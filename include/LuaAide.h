@@ -57,14 +57,6 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-class LuaLightUserData
-{
-    friend class LuaStack;
-    const void*data{nullptr};
-public:
-    LuaLightUserData(const void*p): data(p){}
-};
-
 class LuaClosure
 {
     friend class LuaStack;
@@ -146,7 +138,7 @@ public:
     LuaCode(const char s[]): text(s){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r}; // array,struct,table,tableelement,upvalue,value,regvalue
+enum class distinct_pushable {a,s,as,te,u,v,r,lud}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
 template<typename I, distinct_pushable d>struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a> LuaArray;
 typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
@@ -155,6 +147,7 @@ typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te> LuaElement; 
 typedef Distinct<unsigned, distinct_pushable::u> LuaUpValue;
 typedef Distinct<int, distinct_pushable::v> LuaValue;
 typedef Distinct<const void*, distinct_pushable::r> LuaRegValue;
+typedef Distinct<const void*, distinct_pushable::lud> LuaLightUserData;
 
 class LuaStackItem
 {

@@ -329,7 +329,7 @@ string LuaStack::errormessage()
 
 LuaStack&LuaStack::operator<<(const LuaLightUserData&X)
 {
-    lua_pushlightuserdata(L, const_cast<void*>(X.data));
+    lua_pushlightuserdata(L, const_cast<void*>(X.value));
     return*this;
 }
 
