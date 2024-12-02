@@ -117,8 +117,7 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
     else return myhandleload(*this, rc, tag), false;
 }
 
-// LuaList LuaStack::list(){ *this<<LuaArray(0); return LuaList(L); }
-LuaList LuaStack::operator<<(LuaListStart){ *this<<LuaArray(0); return LuaList(L); }
+LuaList LuaStack::operator<<(LuaListStart){ *this<<newtable; return LuaList(L); }
 
 string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
 

@@ -18,7 +18,7 @@ int panichandler(lua_State*L)
 int democlosure(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaArray(0)<<LuaUpValue(1)<<luarot_3;                 // Result, Map, Arg
+    Q<<newtable<<LuaUpValue(1)<<luarot_3;                    // Result, Map, Arg
     auto Result=Q.index(-3), Map=Q.index(-2);
     for (LuaIterator J(Q); next(J); ++J)                     // Result, Map, Arg, key, value
     {
