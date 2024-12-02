@@ -294,7 +294,9 @@ public:
 
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
     LuaType typeat(int pos){ return static_cast<LuaType>(lua_type(L, pos)); }
+    bool hasat(LuaType t, int pos){ return posvalid(pos) && static_cast<LuaType>(lua_type(L, pos))==t; }
 
+#if 1
     bool hasnilat(int pos){ return posvalid(pos) && lua_isnil(L, pos)!=0; }
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
     bool hasboolat(int pos){ return posvalid(pos) && lua_isboolean(L, pos)!=0; }
@@ -305,6 +307,9 @@ public:
     bool hasthreadat(int pos){ return lua_isthread(L, pos)!=0; }
     bool hasuserdataat(int pos){ return lua_isuserdata(L, pos)!=0; }
     bool haslightuserdataat(int pos){ return lua_islightuserdata(L, pos)!=0; }
+#else
+    // Use hasat(Type, pos) instead.
+#endif
     bool hasheavyuserdataat(int pos){ return lua_isuserdata(L, pos) && !lua_islightuserdata(L, pos); }
 
     std::string tostring(int pos);
