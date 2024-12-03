@@ -78,5 +78,5 @@ $(BT)/m1test.result: examples/m1test.lua b/m2.so
 	@lua $< > $@
 $(BT)/m2test.result: examples/m2test.lua b/m2.so
 	@lua $< > $@
-TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/Alltagstest.result $(BT)/m1test.result $(BT)/m2test.result
+TestSummary.lua: $(BT)/Alltagstest.result $(BT)/LuaAideTest.result $(BT)/m1test.result $(BT)/m2test.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^

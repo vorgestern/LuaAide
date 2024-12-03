@@ -18,7 +18,7 @@ end
 local function main(ziel, args)
     local S={}
     for _,f in ipairs(args) do
-        local A={name=f:match "(.*)%.result", failedtests={}, passed=0, failed=0, filenotfound=nil}
+        local A={name=f:match "^.*[/\\]([^/\\]*)%.result", failedtests={}, passed=0, failed=0, filenotfound=nil}
         table.insert(S, A)
         local checkfile=io.open(f, "r")
         if not checkfile then
