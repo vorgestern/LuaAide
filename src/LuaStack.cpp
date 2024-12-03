@@ -1,8 +1,6 @@
 
 #include <LuaAide.h>
 #include <iostream>
-#include <cstring>
-#include <iostream>
 
 using namespace std;
 
