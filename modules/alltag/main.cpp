@@ -6,9 +6,6 @@
 using namespace std;
 using fspath=filesystem::path;
 
-int formatany(lua_State*);
-int keyescape(lua_State*);
-
 int demofail(lua_State*L)
 {
     LuaStack Q(L);

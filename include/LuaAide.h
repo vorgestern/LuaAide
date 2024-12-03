@@ -8,6 +8,9 @@
 #include <unordered_map>
 #include <lua.hpp>
 
+int formatany(lua_State*);
+int keyescape(lua_State*);
+
 class LuaStack;
 class LuaCall;
 class LuaList;

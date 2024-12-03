@@ -99,8 +99,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\modules\alltag\main.cpp" />
-    <ClCompile Include="..\..\modules\alltag\formatany.cpp" />
-    <ClCompile Include="..\..\modules\alltag\keyescape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="alltag.def" />

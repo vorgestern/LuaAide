@@ -81,6 +81,8 @@
     <ClCompile Include="..\..\src\LuaStack.cpp" />
     <ClCompile Include="..\..\src\LuaCall.cpp" />
     <ClCompile Include="..\..\src\streamout.cpp" />
+    <ClCompile Include="..\..\src\formatany.cpp" />
+    <ClCompile Include="..\..\src\keyescape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\LuaAide.h" />

@@ -3,8 +3,6 @@
 
 using namespace std;
 
-int keyescape(lua_State*);
-
 static tuple<size_t, size_t, long long>keynum(lua_State*L)
 {
     LuaStack Q(L);

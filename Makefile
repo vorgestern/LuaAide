@@ -1,5 +1,5 @@
 
-XFILES   := LuaCall LuaStack streamout
+XFILES   := LuaCall LuaStack formatany keyescape streamout
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
@@ -44,7 +44,7 @@ b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
 
 # ============================================================
 
-alltag.so: b/alltag/main.o b/alltag/formatany.o b/alltag/keyescape.o libLuaAide.a
+alltag.so: b/alltag/main.o libLuaAide.a
 	g++ -shared -fpic -o $@ $^
 b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 	g++ -c -Wall -Werror -fpic -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
