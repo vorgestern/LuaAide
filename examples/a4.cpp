@@ -33,9 +33,9 @@ static int mynew(lua_State*L)
     lua_setmetatable(L, -2);
     if (Q.hastableat(-2))
     {
-        const auto a=Q(LuaElement{{-2, 1}})==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
-        const auto b=Q(LuaElement{{-2, 2}})==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);
-        const auto c=Q(LuaElement{{-2, 3}})==LuaType::TNUMBER?Q.toint(-1):103; Q.drop(1);
+        const auto a=Q(LuaElement({-2, 1}))==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
+        const auto b=Q(LuaElement({-2, 2}))==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);
+        const auto c=Q(LuaElement({-2, 3}))==LuaType::TNUMBER?Q.toint(-1):103; Q.drop(1);
         *P=new DemoClass {(int)a, (int)b, (int)c};
     }
     else *P=new DemoClass {1, 2, 3};
@@ -90,7 +90,7 @@ int main(int argc, char*argv[])
 
     // Use democlass from C++
 #if 0
-    Q<<mynew<<newtable<<55>>LuaElement(-2, 1)<<56>>LuaElement(-2,2)<<57>>LuaElement(-2,3)>>1;  // democlass {55,56,57}
+    Q<<mynew<<newtable<<55>>LuaElement({-2, 1})<<56>>LuaElement({-2,2})<<57>>LuaElement({-2,3})>>1;  // democlass {55,56,57}
 #else
     Q<<lualist<<55<<56<<57<<lualistend;  // democlass {55,56,57}
     Q<<mynew<<LuaValue(-2)>>1;
