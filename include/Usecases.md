@@ -3,25 +3,25 @@
 
 ## Metatables
 
-    Named metatables
+    Named metatables                                           - Create a table that serves as metatable.
+    ==================================================         - Save it in a unique place that can be accessed any time.
+    luaL_newmetatable   create                                 - Assign it as metatable to a value on the stack.
+    luaL_setmetatable   assign                              
+    luaL_getmetatable   get/push                               Avoid direct access:
+                                                               - Provide a constructor function that assigns a metatable
+    Free metatables                                              to the object constructed from its arguments.
+    ==================================================           Metatable is kept alive by attaching to Registry or to package.loaded[module].
+    lua_setmetatable    assign from stack to stackvalue          Script can get access: getmetatable(newwidget(...)).
+    lua_getmetatable    push from stackvalue                
+                                                               or expose a metatable explicitly, allow a script to define
+    Implied metatables                                         constructors of its own. Is this useful?
     ==================================================
-    luaL_newmetatable   create 
-    luaL_setmetatable   assign
-    luaL_getmetatable   get/push
-
-    Free metatables
-    ==================================================
-    lua_setmetatable    assign from stack to stackvalue
-    lua_getmetatable    push from stackvalue
-
-    Implied metatables
-    ==================================================
-    luaL_getmetafield   push metafield of a stackvalue
+    luaL_getmetafield   push metafield of a stackvalue         What if a script defines a table that is to be used as metatable by the host?
     luaL_callmeta       call metafunction of stackvalue
 
 ## Metamethods
 
-    __tostring                      Missing in manual 2.4!
+    __tostring                      Missing in manual 2.4!     enum class LuaMetamethod {...};
 
     __add   __sub   __mul           Mathematical operations
     __div   __mod   __pow
