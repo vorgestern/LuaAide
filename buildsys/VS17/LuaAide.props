@@ -20,6 +20,7 @@
             <LanguageStandard>stdcpp20</LanguageStandard>
             <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
             <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+            <DebugInformationFormat>None</DebugInformationFormat>
         </ClCompile>
         <Link>
             <SubSystem/>
