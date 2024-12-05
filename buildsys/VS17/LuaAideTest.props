@@ -20,6 +20,7 @@
         <Link>
             <SubSystem>Console</SubSystem>
             <GenerateDebugInformation>true</GenerateDebugInformation>
+            <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
         </Link>
     </ItemDefinitionGroup>
 
@@ -30,9 +31,6 @@
             <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
             <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
         </ClCompile>
-        <Link>
-            <GenerateDebugInformation>true</GenerateDebugInformation>
-        </Link>
     </ItemDefinitionGroup>
 
     <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
