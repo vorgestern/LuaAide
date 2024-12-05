@@ -23,14 +23,14 @@ static bool istimestamp(lua_State*L, int index)
     if (Q.typeat(index)!=LuaType::TUSERDATA) return false;
     if (!lua_getmetatable(L, index)) return false;
     const void*p=lua_topointer(L, -1);
-    lua_pop(L,1);
+    Q.drop(1);
     return p==mtpointer;
 }
 
 extern "C" int tostring(lua_State*L)
 {
     LuaStack Q(L);
-    if (!istimestamp(Q, 1)) return luaL_typeerror(Q, 1, "timestamp");
+    Q.argcheck(1, istimestamp, "timestamp");
     const tp T1=*reinterpret_cast<tp*>(lua_touserdata(Q, 1));
     char pad[100];
     const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(T1.time_since_epoch()/1ms));
@@ -39,12 +39,12 @@ extern "C" int tostring(lua_State*L)
 
 extern "C" int tsdiff(lua_State*L)
 {
-    if (!istimestamp(L, 1)) return luaL_typeerror(L, 1, "timestamp");
-    if (!istimestamp(L, 2)) return luaL_typeerror(L, 2, "timestamp");
+    LuaStack Q(L);
+    Q.argcheck(1, istimestamp, "timestamp");
+    Q.argcheck(2, istimestamp, "timestamp");
     const tp T1=*reinterpret_cast<tp*>(lua_touserdata(L, 1)),
              T2=*reinterpret_cast<tp*>(lua_touserdata(L, 2));
-    auto d=(T1-T2)/1ms;
-    lua_pushinteger(L, d);
+    Q<<(int)((T1-T2)/1ms);
     return 1;
 }
 
