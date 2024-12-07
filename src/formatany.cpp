@@ -197,7 +197,15 @@ int formatany(lua_State*L)
 {
     LuaStack Q(L);
     vector<string>result;
-    format1(L, result, 0, 0);
+    const auto numargs=height(Q);
+    for (auto n=1u; n<=numargs; ++n)
+    {
+        Q<<LuaValue(n);
+        format1(L, result, 0, 0);
+        Q.drop(1);
+        if (n<numargs && result.size()>0) result.back().append(", ");
+        else if (n<numargs) result.push_back(", ");
+    }
     Q.drop(1)<<"return "<<LuaGlobal("table")<<LuaDotCall("concat")<<result<<"\n">>1;
     lua_concat(Q, 2);
     return 1;

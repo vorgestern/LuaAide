@@ -65,6 +65,20 @@ local demos={
         print(X.formatany({1,2,3}, {4,5,6}))
     end,
 
+    function()
+        local A={
+            k1="This is a string of considerable length",
+            k2=21,
+            k3={
+                "This is a string of considerable length,",
+                "but wait, ...",
+                "there is more!"
+            }
+        }
+        A.k4=table.concat(A.k3, " ")
+        print(X.formatany(A, {4,5,6}, A, B, A, "more", 21.3, A))
+    end,
+
 }
 
 local arg=...
