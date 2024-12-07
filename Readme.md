@@ -1,6 +1,12 @@
 
-# Purpose
+# Purpose & Status
 Provide a C++ substitute for Lua's C-API that is more expressive and easier to use.
+
+## Status:
+- Works as documented
+- Purpose more or less fulfilled
+- User will occasionally use Lua API directly to fill gaps in the usecases covered by LuaAide.
+- Work continues to cover more usecases.
 
 # Usecases
 + **Embedding** Lua in a program, e.g. for configuration or as a plugin
@@ -70,6 +76,80 @@ demo.lua: use as ```lua demo.lua```
 - Build with Visual Studio 2022 (VS17) by launching buildsys/VS17/LuaAide.sln
 
 # How to use
+
+In these examples, it is assumed that Q ist an instance of LuaStack, e.g. from `LuaStack Q(L)`
+or `auto Q=LuaStack::New(true, nullptr);`.
+
+## Creating lists and tables
+
+    using namespace std;
+    Q<<lualist<<21<<22<<23;                         // Pushes {21, 22, 23} on to the stack.
+
+    Q<<LuaTable()<<1.5>>LuaField("x")               // Pushes {x=1.5, y=0.7, z=-2.1} on to the stack.
+                <<0.7>>LuaField("y")
+                <<-2.1>>LuaField("z");
+
+    Q<<vector<string> {"A", "B", "C"};              // Pushes {"A", "B", "C"} on the stack.
+
+    Q<<unordered_map<string,string> {               // Pushes {x="21", y="22", z="23"} on to the stack.
+        {"x", "21"}, {"y", "21"}, {"z", "23"}
+    };
+
+### Storing values in global Lua variables
+
+    Q   <<lualist<<21<<22<<23<<lualistend
+        >>LuaGlobal("L1");                          // L1={21, 22, 23} is a global variable.
+
+## Accessing data on the Lua stack from C++
+
+    Q<<LuaCode("return 21")>>1;                     // Execute a script to push one result.
+    auto result=Q.toint(-1);                        // Read value on top of the stack as integer.
+                                                    // Result will be 21.
+
+## Calling Lua functions
+
+    using namespace std;
+    Q<<lua_error<<"This was not expected">>0;       // Equiv. of 'error "This was not expected"'
+                                                    // lua_error is part of the Lua API.
+
+    vector<string> A={"a", "b", "c"};
+    Q<<formatany<<A>>1;                             // formatany is part of LuaAide.
+    auto str=Q.tostring(-1);                        // It converts any value to a string;
+
+## Creating functions on the stack
+
+## Creating closures
+
+    int join(lua_State*L)                                   // demofunction: table.concat with upvalue sep
+    {
+        LuaStack Q(L);
+        Q   <<LuaGlobal("table")<<LuaDotCall("concat")      // local arg=...
+            <<LuaValue(1)<<LuaUpValue(1)>>1;                // return table.concat(arg, up1)
+        return 1;
+    }
+    Q<<", "<<LuaClosure({join, 1})>>LuaGlobal("KommaJoin"); // Create Closure that joins with comma.
+    Q<<"-" <<LuaClosure({join, 1})>>LuaGlobal("HyphJoin");  // Create Closure that joins with hyphens.
+
+    Q<<LuaCode(R"__(                                        // Execute demo script
+        local A={"a", "b", "c"}
+        print(KommaJoin(A))                                 // prints "a, b, c"
+        print(HyphJoin(A))                                  // prints "a-b-c"
+    )__")>>0;
+
+## Running inline scripts
+
+## Embedding instances of C++ classes
+
+## Calling functions from the Lua runtime
+
+    Q<<LuaGlobal("string")<<LuaDotCall("format")    // Pushes "vector=[21, 22, 23]" on to the stack.
+     <<"vector=[%s, %s, %s]"<<21<<22<<23>>1;
+
+    Q<<lualist<<"First"<<"Second";                  // Pushes {"First", "Second"} on to the stack.
+    Q<<LuaGlobal("table")<<LuaDotCall("concat")
+     <<LuaValue(-2)<<"+">>1;                        // Calls table.concat on the list, i.e. pushes
+                                                    // "First+Second" on to the stack.
+
 ## Error handling
 ### Handling compile-errors in an application that embeds Lua
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
