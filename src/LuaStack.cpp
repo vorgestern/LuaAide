@@ -267,7 +267,7 @@ LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 
 LuaCall LuaStack::operator<<(const LuaCode&C)
 {
-    const int rc=luaL_loadstring(L, C.value.data());
+    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), nullptr, nullptr);
     if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
@@ -275,7 +275,7 @@ LuaCall LuaStack::operator<<(const LuaCode&C)
 LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
 {
     auto [tag,C]=X;
-    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), tag.data(), "t");
+    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), tag.data(), nullptr);
     if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
