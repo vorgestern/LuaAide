@@ -50,6 +50,9 @@
     <Import Project="Console.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>a4</TargetName>
+  </PropertyGroup>
 
   <ItemGroup>
     <ClCompile Include="..\..\examples\a4.cpp" />
