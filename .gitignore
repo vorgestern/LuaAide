@@ -1,6 +1,7 @@
 
 b/*
 bt/*
+buildsys/gcc/bt/*
 *.a
 *.so
 *.gch
