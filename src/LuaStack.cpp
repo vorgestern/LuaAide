@@ -267,7 +267,7 @@ LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 
 LuaCall LuaStack::operator<<(const LuaCode&C)
 {
-    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), nullptr, nullptr);
+    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), C.value.data(), nullptr); // Use string as name, better than nothing.
     if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
