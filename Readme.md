@@ -57,7 +57,12 @@ demo.lua: use as ```lua demo.lua```
 + Lua 5.4
 
 # How to build
-## Linux
+
+## First update submodules,
+    git submodule init
+    git submodule update
+
+## then on Linux
 - Install requirements as you see fit. An additional requirement for Linux is objcopy (for tests).
   Check with ```make prerequisites```.
 - Adapt Makefile if Lua is not at default location.
@@ -66,7 +71,7 @@ demo.lua: use as ```lua demo.lua```
 - Install manually by copying libLuaAide.a and include/LuaAide.h where they belong.
 - *optional*: Copy demo alltag.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4)
 
-## Windows
+## else on Windows
 - Edit buildsys/VS17/Lua.props to point to your Lua-Installation:
   * **AdditionalIncludeDirectories**: Include the directory that contains lua.hpp.
   * **AdditionalDependencies** Include the import library for Lua 5.4.
