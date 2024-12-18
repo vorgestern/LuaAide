@@ -6,13 +6,13 @@ CXXFLAGS := --std=c++20 -Wall -Werror
 BT       := buildsys/gcc/bt
 .PHONY: clean dir prerequisites test
 
-all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so b/m2.so alltag.so ulutest.so
+all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so b/m2.so alltag.so ulutest/ulutest.so
 clean:
-	@rm -rf b/* $(BT) libLuaAide.a LuaAideTest alltag.so ulutest.so
+	@rm -rf b/* $(BT) libLuaAide.a LuaAideTest alltag.so ulutest/ulutest.so
 prerequisites:
 	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
-	@mkdir -p b/alltag b/ulutest buildsys/gcc/bt
+	@mkdir -p b/alltag buildsys/gcc/bt
 test: TestSummary.lua
 	@lua $< --print
 
@@ -51,22 +51,8 @@ b/alltag/%.o: modules/alltag/%.cpp $(XHEADER)
 
 # ============================================================
 
-ulutest.so: b/ulutest/luaopen_ulutest.o b/ulutest/ulu.o b/ulutest/resources_linux.o b/ulutest/ltest.o libLuaAide.a
-	g++ -shared -fpic -o $@ $^
-b/ulutest/luaopen_ulutest.o: modules/ulutest/luaopen_ulutest.cpp
-	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-b/ulutest/resources_linux.o: modules/ulutest/resources_linux.cpp
-	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-b/ulutest/ulu.o: modules/ulutest/ulu.cpp
-	g++ -o $@ -c $< -fpic $(CPPFLAGS)
-b/ulutest/ltest.o: b/ulutest/ltest.luac
-	# objcopy -I binary -O elf64-x86-64 --redefine-syms=modules/ulutest/syminfo $< $@
-	objcopy -I binary -O elf64-x86-64\
-		--redefine-sym _binary_b_ulutest_ltest_luac_start=ltest_start\
-		--redefine-sym _binary_b_ulutest_ltest_luac_end=ltest_end $< $@
-	nm $@ > $(@:.o=.symbols)
-b/ulutest/ltest.luac: modules/ulutest/ltest.lua
-	luac -o $@ $<
+ulutest/ulutest.so:
+	make -C ulutest
 
 # ============================================================
 

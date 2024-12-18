@@ -1,9 +1,9 @@
 
 local bpattern={
-    ["/"]=";b/?.so",
-    ["\\"]=";b\\?.dll",
+    ["/"]="b/?.so;ulutest/?.so;",
+    ["\\"]="b\\?.dll;ulutest\\?.dll;",
 }
-package.cpath=package.cpath..(bpattern[package.config:sub(1,1)] or "")
+package.cpath=(bpattern[package.config:sub(1,1)] or "") .. package.cpath
 
 local ok,vec3=pcall(require, "m1")
 

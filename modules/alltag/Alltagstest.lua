@@ -1,4 +1,10 @@
 
+local bpattern={
+    ["/"]="ulutest/?.so;",
+    ["\\"]="ulutest\\?.dll;",
+}
+package.cpath=(bpattern[package.config:sub(1,1)] or "") .. package.cpath
+
 local ok,alltag=pcall(require, "alltag")
 
 if not ok then
