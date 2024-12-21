@@ -24,6 +24,8 @@ buildsys/VS17/example_a*/
 buildsys/VS17/example_m*/
 buildsys/VS17/x64
 buildsys/VS17/Win32
+buildsys/VS17/Debug
+buildsys/VS17/Release
 buildsys/VS17/packages
 buildsys/VS17/*.result
 buildsys/*/*.user
