@@ -127,13 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test module 'alltag'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat Alltagstest</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\alltag.dll;%(AdditionalInputs)</AdditionalInputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
-    </CustomBuild>
     <CustomBuild Include="..\..\LuaAideTest.exe">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test library 'LuaAide.lib'.</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makehelper.bat LuaAideTest99</Command>
@@ -156,9 +149,9 @@
     </CustomBuild>
     <CustomBuild Include="..\generic\summarise_tests.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\TestSummary.lua).</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lua ..\generic\summarise_tests.lua ..\..\TestSummary.lua Alltagstest.result LuaAideTest.result m1test.result m2test.result</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lua ..\generic\summarise_tests.lua ..\..\TestSummary.lua LuaAideTest.result m1test.result m2test.result</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\TestSummary.lua</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Alltagstest.result;LuaAideTest.result;m1test.result;m2test.result;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result;m1test.result;m2test.result;%(AdditionalInputs)</AdditionalInputs>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
