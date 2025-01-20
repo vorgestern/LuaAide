@@ -198,7 +198,8 @@ int formatany(lua_State*L)
     LuaStack Q(L);
     vector<string>result;
     const auto numargs=height(Q);
-    for (auto n=1u; n<=numargs; ++n)
+    if (numargs==0) result.push_back("nil");
+    else for (auto n=1u; n<=numargs; ++n)
     {
         Q<<LuaValue(n);
         format1(L, result, 0, 0);
