@@ -8,11 +8,11 @@ BT       := buildsys/gcc/bt
 
 all: prerequisites dir libLuaAide.a LuaAideTest b/a1 b/a2 b/a3 b/a4 b/m1.so b/m2.so b/m3.so ulutest/ulutest.so
 clean:
-	@rm -rf b/* $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
+	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
 prerequisites:
 	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
-	@mkdir -p buildsys/gcc/bt
+	@mkdir -p b buildsys/gcc/bt
 test: TestSummary.lua
 	@lua $< --print
 
