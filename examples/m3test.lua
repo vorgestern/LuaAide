@@ -30,7 +30,7 @@ local function CASE(name)
     end
 end
 
-ULU.RUN (
+ULU.RUN {
     CASE "Exported by module m3" {
         TT("version",   function(T) T:ASSERT_EQ("string", type(m3.version)) end),
         TT("origin",    function(T) T:ASSERT_EQ("string", type(m3.origin)) end),
@@ -77,4 +77,4 @@ ULU.RUN (
             T:ASSERT_EQ(5, #Values)
         end)
     }
-)
+}

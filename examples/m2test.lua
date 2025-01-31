@@ -30,7 +30,7 @@ local function TCASE(name)
     end
 end
 
-ULU.RUN (
+ULU.RUN {
     TCASE "Exported functions" {
         TT("now", function(T) T:ASSERT_EQ(type(m2.now), "function") end),
         TT("sleep_ms", function(T) T:ASSERT_EQ(type(m2.sleep_ms), "function") end)
@@ -71,4 +71,4 @@ ULU.RUN (
             -- so unsurprisingly it computes 1020ms execution time for this test.
         end),
     }
-)
+}

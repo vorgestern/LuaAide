@@ -23,7 +23,7 @@ end
 
 local TT=ULU.TT
 
-ULU.RUN(
+ULU.RUN {
 
 {
     name="Construction",
@@ -109,4 +109,4 @@ ULU.RUN(
     end),
 }
 
-)
+}
