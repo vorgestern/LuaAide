@@ -30,6 +30,7 @@ b/%.o: src/%.cpp $(XHEADER)
 LuaAideTest: src/testmain.cpp $(XFILES:%=$(BT)/%.o)
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
+
 $(BT)/%.o: src/%.cpp $(XHEADER)
 	@echo $<
 	@g++ -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1
@@ -57,3 +58,8 @@ $(BT)/m2test.result: examples/m2test.lua b/m2.so
 	@lua $< > $@
 TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/m1test.result $(BT)/m2test.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^
+
+# ============================================================
+
+lspcommands:
+	@bear -- make -B all

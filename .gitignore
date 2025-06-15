@@ -2,11 +2,13 @@
 b/*
 bt/*
 buildsys/gcc/bt/*
+.cache/*
 *.a
 *.so
 *.gch
 *.geany
 LuaAideTest
+compile_commands.json
 
 *.exe
 *.lib
