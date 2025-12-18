@@ -1,6 +1,7 @@
 
 #include <LuaAide.h>
 #include <iostream>
+#include <cstdint>
 
 // Example module m3 for extending scripts:
 // Expose an opaque 'enum' to Lua.
