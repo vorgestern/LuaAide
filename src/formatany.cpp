@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <array>
+#include <iostream>
 
 using namespace std;
 
@@ -80,6 +81,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     }
     string indent(4*level, ' ');
     const auto t=Q.typeat(-1);
+    const auto valueindex=Q.index(-1);
     switch (t)
     {
         case LuaType::TNIL:
@@ -188,10 +190,21 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 // Allgemeine Tabelle
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
-                for (LuaIterator I(Q); next(I); ++I)
+                vector<string>Keys;
+                for (LuaIterator I(Q); next(I); ++I) Keys.push_back(Q.tostring(-2));
+                sort(Keys.begin(), Keys.end());
+                // cout<<"Ausgabe Tabelle; Keys:\n";
+                // for (auto&k: Keys) cout<<"\t"<<k<<"\n";
+                // cout<<"Stack zu Beginn:\n"<<Q;
+                size_t itindex=0;
+                for (const auto&key: Keys)
                 {
-                    if ((unsigned)I>1) result.back().append(",");
+                    ++itindex;
+                    Q<<key<<valueindex<<LuaField(key);
+                    Q<<luaswap; Q.drop(1);
+                    // cout<<"index "<<itindex<<":\n"<<Q;
                     const auto jkey=Q.index(-2); // , jvalue=Q.index(-1);
+                    if (itindex>1) result.back().append(",");
                     if (Q.hasintat(-2))
                     {
                         char pad[100];
@@ -323,6 +336,18 @@ TEST_F(FormatAnyEnv, String4Bracket3)
     ASSERT_EQ(R"__(return [==[print '
 ]=]
 ]]']==])__", Q.tostring(-1))<<Q;
+}
+
+TEST_F(FormatAnyEnv, OrderIsPredictable)
+{
+    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    Q<<unordered_map<string,string> {{"x", "21"}, {"y", "22"}, {"z", "23"}}; ASSERT_EQ(2, height(Q));
+    Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
+    ASSERT_EQ(R"__(return {
+    x="21",
+    y="22",
+    z="23"
+})__", Q.tostring(-1))<<Q;
 }
 
 #endif
