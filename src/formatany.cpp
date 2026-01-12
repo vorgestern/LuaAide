@@ -1,5 +1,8 @@
 
 #include <LuaAide.h>
+#include <string>
+#include <string_view>
+#include <array>
 
 using namespace std;
 
@@ -24,8 +27,31 @@ static tuple<size_t, size_t, long long>keynum(lua_State*L)
 
 const string quot="\"";
 const string kk1="[[", kk2="]]";
-const string kkk1="[=[", kkk2="]=]";
 const auto brklen=120u;
+
+static const size_t compute_bracketlevel(string_view X)
+{
+    const array<string,12> A={
+        "]]",
+        "]=]",
+        "]==]",
+        "]===]",
+        "]====]",
+        "]=====]",
+        "]======]",
+        "]=======]",
+        "]========]",
+        "]=========]",
+        "]==========]",
+        "]===========]"
+    };
+    for (auto j=0u; j<A.size(); ++j)
+    {
+        const auto wo=X.find(A[j]);
+        if (wo==X.npos) return j;
+    }
+    return A.size();
+}
 
 static void format1(lua_State*L, vector<string>&result, int level, int usedlevel)
 {
@@ -86,7 +112,12 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             {
                 if (s.find_first_of('\n')!=s.npos || s.find_first_of('"')!=s.npos)
                 {
-                    if (s.find_first_of("]]")!=s.npos) return kkk1+s+kkk2;
+                    const auto level=compute_bracketlevel(s);
+                    if (level>0)
+                    {
+                        const string eq(level, '=');
+                        return "["+eq+"["+s+"]"+eq+"]";
+                    }
                     else return kk1+s+kk2;
                 }
                 else return quot+s+quot;
@@ -259,12 +290,39 @@ TEST_F(FormatAnyEnv, String3Quote)
     ASSERT_EQ("return [[ab \"cd\" ef]]", Q.tostring(-1))<<Q;
 }
 
+TEST_F(FormatAnyEnv, BracketLevel)
+{
+    ASSERT_EQ(0, compute_bracketlevel("[ [\n] ]"));
+    ASSERT_EQ(0, compute_bracketlevel("[=[\n]=]"));
+    ASSERT_EQ(1, compute_bracketlevel("[[1\n]]"));
+    ASSERT_EQ(1, compute_bracketlevel("[==[[[1\n]]==]"));
+    ASSERT_EQ(2, compute_bracketlevel("[=[[\n]]=]"));
+}
+
 TEST_F(FormatAnyEnv, String4Bracket1)
 {
     auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
     Q<<"print '\n]]\n'";                            ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [=[print '\n]]\n']=]", Q.tostring(-1))<<Q;
+}
+
+TEST_F(FormatAnyEnv, String4Bracket2)
+{
+    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    Q<<"print '\n]=]\n'";                           ASSERT_EQ(2, height(Q));
+    Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
+    ASSERT_EQ("return [[print '\n]=]\n']]", Q.tostring(-1))<<Q;
+}
+
+TEST_F(FormatAnyEnv, String4Bracket3)
+{
+    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    Q<<"print '\n]=]\n]]'";                         ASSERT_EQ(2, height(Q));
+    Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
+    ASSERT_EQ(R"__(return [==[print '
+]=]
+]]']==])__", Q.tostring(-1))<<Q;
 }
 
 #endif
