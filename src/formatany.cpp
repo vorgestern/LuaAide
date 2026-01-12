@@ -24,6 +24,7 @@ static tuple<size_t, size_t, long long>keynum(lua_State*L)
 
 const string quot="\"";
 const string kk1="[[", kk2="]]";
+const string kkk1="[=[", kkk2="]=]";
 const auto brklen=120u;
 
 static void format1(lua_State*L, vector<string>&result, int level, int usedlevel)
@@ -83,7 +84,11 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
             auto s=Q.tostring(-1);
             auto neu=[](string s)->string
             {
-                if (s.find_first_of('\n')!=s.npos || s.find_first_of('"')!=s.npos) return kk1+s+kk2;
+                if (s.find_first_of('\n')!=s.npos || s.find_first_of('"')!=s.npos)
+                {
+                    if (s.find_first_of("]]")!=s.npos) return kkk1+s+kkk2;
+                    else return kk1+s+kk2;
+                }
                 else return quot+s+quot;
             }(s);
             if (result.size()>0) result.back().append(neu);
@@ -252,6 +257,14 @@ TEST_F(FormatAnyEnv, String3Quote)
     Q<<"ab \"cd\" ef";                              ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [[ab \"cd\" ef]]", Q.tostring(-1))<<Q;
+}
+
+TEST_F(FormatAnyEnv, String4Bracket1)
+{
+    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    Q<<"print '\n]]\n'";                            ASSERT_EQ(2, height(Q));
+    Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
+    ASSERT_EQ("return [=[print '\n]]\n']=]", Q.tostring(-1))<<Q;
 }
 
 #endif

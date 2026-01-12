@@ -1,6 +1,6 @@
 
 local summary={
-    {name='LuaAideTest', passed=53, failed=0, failedtests={}},
+    {name='LuaAideTest', passed=54, failed=0, failedtests={}},
     {name='m1test', passed=11, failed=0, failedtests={}},
     {name='m2test', passed=7, failed=0, failedtests={}}
 }
