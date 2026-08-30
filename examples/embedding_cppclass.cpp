@@ -2,19 +2,17 @@
 #include <LuaAide.h>
 #include <iostream>
 
-// Example 'a4' for embedding Lua:
-// Userdata
+// Example of embedding C++ classes
 // Make C++ class DemoClass available to Lua scripts.
 
-// - defineclass creates Metatable (global 'mtdemo')
-//   and Constructor (global 'newdemo')
-// - Inline script create instance and prints it.
+// - defineclass creates Metatable (global 'mtdemo') and constructor (global 'newdemo')
+// - Inline script creates instance and prints it.
 
 using namespace std;
 
 int panichandler(lua_State*L)
 {
-    printf("Lua Panik\n");
+    printf("Lua Panic\n");
     LuaStack Q(L);
     throw runtime_error(Q.errormessage());
     return 0;

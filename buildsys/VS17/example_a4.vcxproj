@@ -51,11 +51,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>a4</TargetName>
+    <TargetName>embedding_cppclass</TargetName>
   </PropertyGroup>
 
   <ItemGroup>
-    <ClCompile Include="..\..\examples\a4.cpp" />
+    <ClCompile Include="..\..\examples\embedding_cppclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">
