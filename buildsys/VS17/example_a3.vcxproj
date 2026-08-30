@@ -51,11 +51,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>a3</TargetName>
+    <TargetName>lightuserdata</TargetName>
   </PropertyGroup>
 
   <ItemGroup>
-    <ClCompile Include="..\..\examples\a3.cpp" />
+    <ClCompile Include="..\..\examples\lightuserdata.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">

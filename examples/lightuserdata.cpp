@@ -2,9 +2,10 @@
 #include <LuaAide.h>
 #include <iostream>
 
-// Example 'a3' for embedding Lua:
+// Example for embedding Lua:
 // Light Userdata
-// "Printing and comparing is pretty much all userdata are good for."
+
+// "Printing and comparing is pretty much all userdata are good for."       -- Somewhere on the internet
 // Comparing allows for table lookup though.
 
 using namespace std;
