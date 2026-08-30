@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-// Example 'a1' for embedding Lua:
+// Examples for embedding Lua:
 
 using namespace std;
 

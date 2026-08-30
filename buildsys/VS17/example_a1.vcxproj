@@ -51,10 +51,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>a1</TargetName>
+    <TargetName>simplescripts</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\a1.cpp" />
+    <ClCompile Include="..\..\examples\simplescripts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">
