@@ -5,11 +5,11 @@ local bpattern={
 }
 package.cpath=(bpattern[package.config:sub(1,1)] or "") .. package.cpath
 
-local ok,m2=pcall(require, "m2")
+local ok,ts=pcall(require, "timestamp")
 
 if not ok then
-    error("\n\tThis is a test suite for module 'm2'."..
-    "\n\tHowever, require 'm2' failed."..
+    error("\n\tThis is a test suite for module 'timestamp'."..
+    "\n\tHowever, require 'ts' failed."..
     "\n\tBuild it right here.")
 end
 
@@ -32,25 +32,25 @@ end
 
 ULU.RUN {
     TCASE "Exported functions" {
-        TT("now", function(T) T:ASSERT_EQ(type(m2.now), "function") end),
-        TT("sleep_ms", function(T) T:ASSERT_EQ(type(m2.sleep_ms), "function") end)
+        TT("now", function(T) T:ASSERT_EQ(type(ts.now), "function") end),
+        TT("sleep_ms", function(T) T:ASSERT_EQ(type(ts.sleep_ms), "function") end)
     },
     TCASE "Timestamp" {
-        TT("has metatable", function(T) T:ASSERT(getmetatable(m2.now())) end),
-        TT("is printable", function(T) T:ASSERT(getmetatable(m2.now()).__name) end),
+        TT("has metatable", function(T) T:ASSERT(getmetatable(ts.now())) end),
+        TT("is printable", function(T) T:ASSERT(getmetatable(ts.now()).__name) end),
         TT("difference is defined", function(T)
-            local a=m2.now(); T:ASSERT(a)
-            local b=m2.now(); T:ASSERT(b)
+            local a=ts.now(); T:ASSERT(a)
+            local b=ts.now(); T:ASSERT(b)
             T:ASSERT_EQ("number", type(b-a)) end),
     },
     TCASE "Millisecond resolution" {
         TT("sleeping 100ms", function(T)
-            -- This test is autocratic in that it evaluates m2.now vs m2.sleep.
-            local ta=m2.now()
-            m2.sleep_ms(500)
-            local tb=m2.now()
-            m2.sleep_ms(100)
-            local tc=m2.now()
+            -- This test is autocratic in that it evaluates ts.now vs ts.sleep.
+            local ta=ts.now()
+            ts.sleep_ms(500)
+            local tb=ts.now()
+            ts.sleep_ms(100)
+            local tc=ts.now()
             local dcb=tc-tb
             T:ASSERT(tb-ta>0, "should be 500 ms.")
             T:ASSERT(tc-tb>0, "should be 100 ms.")
@@ -61,13 +61,13 @@ ULU.RUN {
     TCASE "Megamicrosleep" {
         TT("WorksOnMyMachine", function(T)
             local ta=os.time()
-            m2.sleep_ms(510)
+            ts.sleep_ms(510)
             local tb=os.time()
-            m2.sleep_ms(510)
+            ts.sleep_ms(510)
             local tc=os.time()
             T:EXPECT(os.difftime(tb,ta)==0 or os.difftime(tc, tb)==0)
             T:EXPECT_EQ(1, os.difftime(tc, ta))
-            -- Ulutest uses the same mechanism for measuring time as this example (m2),
+            -- Ulutest uses the same mechanism for measuring time as this example (ts),
             -- so unsurprisingly it computes 1020ms execution time for this test.
         end),
     }

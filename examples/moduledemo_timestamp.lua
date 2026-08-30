@@ -5,7 +5,7 @@ local bpattern={
 }
 package.cpath=package.cpath..(bpattern[package.config:sub(1,1)] or "")
 
-local X=require "m2"
+local X=require "timestamp"
 
 local t1=X.now();
 X.sleep_ms(1501)

@@ -3,9 +3,9 @@
 #include <chrono>
 #include <thread>
 
-// Example module m2 for extending scripts:
+// Example module for extending scripts:
 // Expose type 'timestamp' to Lua.
-// m2test.lua and m2demo.lua demonstrate its use.
+// moduletest_timestamp.lua and moduledemo_timestamp.lua demonstrate its use.
 
 using namespace std;
 using namespace std::chrono_literals;
@@ -70,7 +70,7 @@ extern "C" int sleep_ms(lua_State*L)
 
 } // anon
 
-extern "C" int luaopen_m2(lua_State*L)
+extern "C" int luaopen_timestamp(lua_State*L)
 {
     LuaStack Q(L);
 
@@ -84,7 +84,7 @@ extern "C" int luaopen_m2(lua_State*L)
     mtpointer=lua_topointer(L, -1);
     Q       >>LuaField(mtname);
 
-    // Return module table for 'require "m2"':
+    // Return module table for 'require "timestamp"':
     Q   <<newtable
         <<"https://github.com/vorgestern/LuaAide">>LuaField("origin")
         <<"0.1">>LuaField("version")
