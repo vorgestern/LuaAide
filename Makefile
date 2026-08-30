@@ -8,7 +8,7 @@ BT       := buildsys/gcc/bt
 
 all: prerequisites dir libLuaAide.a LuaAideTest \
         b/simplescripts b/errorhandling b/lightuserdata b/embedding_cppclass \
-        b/vec3.so b/timestamp.so b/m3.so ulutest/ulutest.so
+        b/vec3.so b/timestamp.so b/colorenum.so ulutest/ulutest.so
 clean:
 	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
 prerequisites:
@@ -52,16 +52,11 @@ b/embedding_cppclass: examples/embedding_cppclass.cpp libLuaAide.a $(XHEADER)
 	@echo $<
 	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
 
-b/a%: examples/a%.cpp libLuaAide.a $(XHEADER)
-	@echo $<
-	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
-
 b/vec3.so: examples/module_vec3.cpp libLuaAide.a $(HEADER)
 	g++ -shared -fpic -o $@ $^ $(CPPFLAGS) $(CXXFLAGS)
 b/timestamp.so: examples/module_timestamp.cpp libLuaAide.a $(HEADER)
 	g++ -shared -fpic -o $@ $^ $(CPPFLAGS) $(CXXFLAGS)
-
-b/m%.so: examples/m%.cpp libLuaAide.a $(HEADER)
+b/colorenum.so: examples/module_colorenum.cpp libLuaAide.a $(HEADER)
 	g++ -shared -fpic -o $@ $^ $(CPPFLAGS) $(CXXFLAGS)
 
 # ============================================================
@@ -77,7 +72,9 @@ $(BT)/moduletest_vec3.result: examples/moduletest_vec3.lua b/vec3.so
 	@lua $< > $@
 $(BT)/moduletest_timestamp.result: examples/moduletest_timestamp.lua b/timestamp.so
 	@lua $< > $@
-TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/moduletest_vec3.result $(BT)/moduletest_timestamp.result
+$(BT)/moduletest_colorenum.result: examples/moduletest_colorenum.lua b/colorenum.so
+	@lua $< > $@
+TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/moduletest_vec3.result $(BT)/moduletest_timestamp.result $(BT)/moduletest_colorenum.result
 	@lua buildsys/generic/summarise_tests.lua $@ $^
 
 # ============================================================

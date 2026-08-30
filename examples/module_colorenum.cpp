@@ -3,9 +3,9 @@
 #include <iostream>
 #include <cstdint>
 
-// Example module m3 for extending scripts:
-// Expose an opaque 'enum' to Lua.
-// m3test.lua demonstrates its use.
+// Example module of extending scripts:
+// Expose an opaque 'colorenum' to Lua.
+// moduletest_colorenum.lua demonstrates its use.
 
 using namespace std;
 
@@ -65,7 +65,7 @@ static void neu(lua_State*L, colortype value)
     *neu=value;
 }
 
-extern "C" int luaopen_m3(lua_State*L)
+extern "C" int luaopen_colorenum(lua_State*L)
 {
     LuaStack Q(L);
 
@@ -83,7 +83,7 @@ extern "C" int luaopen_m3(lua_State*L)
     Q<<LuaValue(LUA_REGISTRYINDEX)<<LuaField(mtname);
     auto mt=Q.index(-1);
 
-    // Return module table for 'require "m3"':
+    // Return module table for 'require "colorenum"':
     Q   <<newtable
             <<"https://github.com/vorgestern/LuaAide/examples/m3">>LuaField("origin")
             <<"0.1">>LuaField("version");
