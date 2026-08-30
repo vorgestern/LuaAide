@@ -193,9 +193,6 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 vector<string>Keys;
                 for (LuaIterator I(Q); next(I); ++I) Keys.push_back(Q.tostring(-2));
                 sort(Keys.begin(), Keys.end());
-                // cout<<"Ausgabe Tabelle; Keys:\n";
-                // for (auto&k: Keys) cout<<"\t"<<k<<"\n";
-                // cout<<"Stack zu Beginn:\n"<<Q;
                 size_t itindex=0;
                 for (const auto&key: Keys)
                 {
@@ -233,6 +230,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                         Q.drop(1);
                     }
                     format1(L, result, level+1, usedlevel+1);
+                    Q.drop(2);
                 }
                 result.push_back(indent+"}");
             }

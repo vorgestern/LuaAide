@@ -56,7 +56,7 @@ enum class LuaMetaMethod:unsigned {
     gc,
     close,
     mode,
-    name                   
+    name
 };
 std::string_view tostring(LuaMetaMethod);
 
