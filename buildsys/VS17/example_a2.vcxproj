@@ -49,10 +49,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>a2</TargetName>
+    <TargetName>errorhandling</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\a2.cpp" />
+    <ClCompile Include="..\..\examples\errorhandling.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">

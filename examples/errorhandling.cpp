@@ -4,8 +4,7 @@
 
 using namespace std;
 
-// Example 'a2' for embedding Lua:
-// Error handling, Closures
+// Example of error handling and closures.
 
 int panichandler(lua_State*L)
 {
