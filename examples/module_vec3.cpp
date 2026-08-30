@@ -2,9 +2,9 @@
 #include <LuaAide.h>
 #include <iostream>
 
-// Example module m1 for extending scripts:
+// Example module for extending scripts:
 // Expose type 'vec3' to Lua.
-// m1test.lua demonstrates its use.
+// moduletest_vec3.lua demonstrates its use.
 
 // Handlungsbedarf:
 // + Verbirg mtvec3 (LuaRegValue(tag))
@@ -157,7 +157,7 @@ static int mysubtract(lua_State*L)
 
 using namespace Vec3;
 
-extern "C" int luaopen_m1(lua_State*L)
+extern "C" int luaopen_vec3(lua_State*L)
 {
     LuaStack Q(L);
     Q   <<newtable

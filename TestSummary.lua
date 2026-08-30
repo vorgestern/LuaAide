@@ -1,7 +1,7 @@
 
 local summary={
     {name='LuaAideTest', passed=58, failed=0, failedtests={}},
-    {name='m1test', passed=11, failed=0, failedtests={}},
+    {name='moduletest_vec3', passed=11, failed=0, failedtests={}},
     {name='m2test', passed=7, failed=0, failedtests={}}
 }
 

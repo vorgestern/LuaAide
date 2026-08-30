@@ -1,11 +1,19 @@
 
+--[[
+Run this test individually with
+        make
+        lua examples/moduletest_vec3.lua
+or as part of the entire test suite with
+        make test
+--]]
+
 local bpattern={
     ["/"]="b/?.so;ulutest/?.so;",
     ["\\"]="b\\?.dll;ulutest\\?.dll;",
 }
 package.cpath=(bpattern[package.config:sub(1,1)] or "") .. package.cpath
 
-local ok,vec3=pcall(require, "m1")
+local ok,vec3=pcall(require, "vec3")
 
 if not ok then
     error("\n\tThis is a test suite for 'm1'."..
