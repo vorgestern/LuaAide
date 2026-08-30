@@ -5,6 +5,8 @@
 using namespace std;
 
 // Example of error handling and closures.
+// The closure 'Closuredemo' contains a (Lua-) compiletime-error and a runtime-error.
+// Remove them following the error-messages and see the program run to the end.
 
 int panichandler(lua_State*L)
 {
@@ -50,7 +52,7 @@ int main_throwing(lua_State*L)
     {
         Q<<21<<22<<23;
         Q<<make_pair("Closuredemo", LuaCode(R"xxx(
-            function translate(A, M
+            function translate(A, M                                                                          -- Missing ')' will cause a compile time error. Repair it to find the next error.
                 local R={}
                 for _,e in ipairs(A) do table.insert(R, M[e] or e) end
                 return R
@@ -58,7 +60,7 @@ int main_throwing(lua_State*L)
             Closures={
                 fleissig=function(A) return translate(A, {Hier="Dort", wohnen="arbeiten", ["Schlümpfe"]="Zwerge"}) end,
                 faul=function(A)
-                    error "faul!"
+                    error "faul!"                                                                            -- This will cause a runtime error. Comment out to see this program finish properly.
                     return translate(A, {Hier="Wo", wohnen="schlafen", ["Schlümpfe"]="Heinzelmännchen"})
                 end
             }
