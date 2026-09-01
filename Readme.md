@@ -28,7 +28,7 @@ Provide a C++ substitute for Lua's C-API that is more expressive and easier to u
 demomodule.cpp: compile/link to demomodule.so or demomodule.dll
 
     namespace {
-        // These functions are implemented elsewhere in this Module:
+        // These functions are implemented elsewhere in this module:
         extern "C" int pwd(lua_Stack*);
         extern "C" int cd(lua_Stack*);
     }
@@ -60,19 +60,9 @@ expose types from C/C++ to Lua scripts.
 
 # How to build
 
-## First take care of submodules ..
-
-Checkout recursively
+## First clone including submodules ..
 
     git clone --recurse-submodules --remote-submodules https://github.com/vorgestern/luaaide.git
-
-or init recursively
-
-    git submodule init
-    git submodule update
-    cd ulutest
-    git submodule init
-    git submodule update
 
 ## .. then on Linux
 - Install requirements as you see fit. An additional requirement for Linux is objcopy (for tests).
@@ -81,7 +71,6 @@ or init recursively
 - make
 - *optional*: make test
 - Install manually by copying libLuaAide.a and include/LuaAide.h where they belong.
-- *optional*: Copy demo alltag.so so it's found by Lua-scripts (LUA_CPATH or LUA_CPATH_5_4)
 
 ## .. else on Windows
 - Edit buildsys/VS17/Lua.props to point to your Lua-Installation:
@@ -172,7 +161,7 @@ or `auto Q=LuaStack::New(true, nullptr);`.
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
 - Combine LuaCode with a name in a std::pair to get better error messages.
     ```
-    \#include \<LuaAide.h\>
+    #include <LuaAide.h>
     using namespace std;
 
     int main_throwing(lua_State*L)
@@ -216,10 +205,10 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     ```
     // This script will cause a runtime-error, because table.concat cannot handle
     // elements of type boolean.
-    const auto rc=Q<<make_pair("Demo", LuaCode(R"xx(
+    const auto rc=Q<<make_pair("Demo", LuaCode(R"__(
         local a={...}
         return table.concat(a, ", ")
-    )xx"))<<21<<22<<true<<false>>1;
+    )__"))<<21<<22<<true<<false>>1;
     if (rc!=LUA_OK)
     {
         const auto message=Q.tostring(-1);
