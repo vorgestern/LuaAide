@@ -1,6 +1,7 @@
 
 #include <LuaAide.h>
 #include <iostream>
+#include "helper.h"
 
 using namespace std;
 
@@ -209,7 +210,7 @@ string_view tostring(LuaMetaMethod m)
         "__gc",                  // gc,
         "__close",               // close,
         "__mode",                // mode,
-        "__name"                 // name                   
+        "__name"                 // name
     };
     const auto index=static_cast<unsigned>(m);
     if (m<=LuaMetaMethod::name) return names[index];

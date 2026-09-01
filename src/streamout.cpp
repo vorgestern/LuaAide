@@ -1,6 +1,7 @@
 
 #include <ostream>
 #include <LuaAide.h>
+#include "helper.h"
 
 using namespace std;
 
