@@ -6,9 +6,9 @@ CXXFLAGS := --std=c++20 -Wall -Werror
 BT       := buildsys/gcc/bt
 .PHONY: clean dir prerequisites test
 
-all: prerequisites dir libLuaAide.a LuaAideTest \
+all: prerequisites dir libLuaAide.a ulutest/ulutest.so LuaAideTest \
         b/simplescripts b/errorhandling b/lightuserdata b/embedding_cppclass \
-        b/vec3.so b/timestamp.so b/colorenum.so ulutest/ulutest.so
+        b/vec3.so b/timestamp.so b/colorenum.so
 clean:
 	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
 prerequisites:

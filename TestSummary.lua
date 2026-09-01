@@ -1,9 +1,9 @@
 
 local summary={
-    {name='LuaAideTest', passed=50, failed=0, failedtests={}},
+    {name='LuaAideTest', passed=58, failed=0, failedtests={}},
     {name='moduletest_vec3', passed=11, failed=0, failedtests={}},
-    {name='moduletest_timestamp', passed=0, failed=0, failedtests={}},
-    {name='moduletest_colorenum', passed=0, failed=0, failedtests={}}
+    {name='moduletest_timestamp', passed=7, failed=0, failedtests={}},
+    {name='moduletest_colorenum', passed=6, failed=0, failedtests={}}
 }
 
     print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
