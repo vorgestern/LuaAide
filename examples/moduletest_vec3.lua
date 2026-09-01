@@ -16,8 +16,8 @@ package.cpath=(bpattern[package.config:sub(1,1)] or "") .. package.cpath
 local ok,vec3=pcall(require, "vec3")
 
 if not ok then
-    error("\n\tThis is a test suite for 'm1'."..
-    "\n\tHowever, require 'm1' failed."..
+    error("\n\tThis is a test suite for module 'vec3'."..
+    "\n\tHowever, require 'vec3' failed."..
     "\n\tBuild it right here.")
 end
 
@@ -26,7 +26,7 @@ local ok,ULU=pcall(require, "ulutest")
 if not ok then
     error("\n\tThis is a Unit Test implemented with 'ulutest'."..
     "\n\tHowever, require 'ulutest' failed."..
-    "\n\tBuild it from luaaide.git.")
+    "\n\tBuild it in submodule 'ulutest' right here.")
 end
 
 local TT=ULU.TT

@@ -4,7 +4,7 @@
 #include <thread>
 
 // Example module for extending scripts:
-// Expose type 'timestamp' to Lua.
+// Expose type 'highresclk::time_point' to Lua.
 // moduletest_timestamp.lua and moduledemo_timestamp.lua demonstrate its use.
 
 using namespace std;

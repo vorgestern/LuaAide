@@ -49,8 +49,10 @@ demo.lua: use as ```lua demo.lua```
     print("demomodule version", X.version)
     ..
 
-## Exposing C++ Types
-(examples/m1.cpp, examples/m1test.lua)
+## Exposing C/C++ Types
+
+Examples/module_vec3.cpp, examples/module_timestamp.lua, examples/module_colorenum.cpp demonstrate how to
+expose types from C/C++ to Lua scripts.
 
 # Requirements
 + C++ 20
@@ -243,4 +245,3 @@ Throw a conventional Lua-Error, let Lua handle it:
 
     LuaStack Q=...;
     cout<<Q;
-

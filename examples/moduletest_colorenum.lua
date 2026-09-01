@@ -18,7 +18,7 @@ local ok,ULU=pcall(require, "ulutest")
 if not ok then
     error("\n\tThis is a Unit Test implemented with 'ulutest'."..
     "\n\tHowever, require 'ulutest' failed."..
-    "\n\tBuild it as a submodule right here.")
+    "\n\tBuild it in submodule 'ulutest' right here.")
 end
 
 local TT=ULU.TT
