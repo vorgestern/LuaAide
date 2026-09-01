@@ -85,21 +85,21 @@ public:
 };
 
 enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code
-template<typename I, distinct_pushable d>struct Distinct { I value; };
-typedef Distinct<size_t, distinct_pushable::a> LuaArray;
-typedef Distinct<size_t, distinct_pushable::s> LuaStruct;
-typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as> LuaTable;
-typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te> LuaElement; // tablepos, elementindex
-typedef Distinct<unsigned, distinct_pushable::u> LuaUpValue;
-typedef Distinct<int, distinct_pushable::v> LuaValue;
-typedef Distinct<const void*, distinct_pushable::r> LuaRegValue;
-typedef Distinct<const void*, distinct_pushable::lud> LuaLightUserData;
-typedef Distinct<std::string_view, distinct_pushable::g> LuaGlobal;
-typedef Distinct<std::string_view, distinct_pushable::f> LuaField;
-typedef Distinct<std::string_view, distinct_pushable::dc> LuaDotCall;
-typedef Distinct<std::string_view, distinct_pushable::gc> LuaGlobalCall;
+template<typename I, distinct_pushable d> struct Distinct { I value; };
+typedef Distinct<size_t, distinct_pushable::a>                             LuaArray;
+typedef Distinct<size_t, distinct_pushable::s>                             LuaStruct;
+typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
+typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
+typedef Distinct<unsigned, distinct_pushable::u>                           LuaUpValue;
+typedef Distinct<int, distinct_pushable::v>                                LuaValue;
+typedef Distinct<const void*, distinct_pushable::r>                        LuaRegValue;
+typedef Distinct<const void*, distinct_pushable::lud>                      LuaLightUserData;
+typedef Distinct<std::string_view, distinct_pushable::g>                   LuaGlobal;
+typedef Distinct<std::string_view, distinct_pushable::f>                   LuaField;
+typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDotCall;
+typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
-typedef Distinct<std::string_view, distinct_pushable::co> LuaCode;
+typedef Distinct<std::string_view, distinct_pushable::co>                  LuaCode;
 
 // So erzeugt man eine Closure:
 // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename");
