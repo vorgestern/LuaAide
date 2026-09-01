@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ac06b50e-4d6a-4a61-ab34-b13d62552c2a}</ProjectGuid>
-    <RootNamespace>vec3</RootNamespace>
+    <ProjectGuid>{CDA51A68-48E4-4991-A432-78250D9B4986}</ProjectGuid>
+    <RootNamespace>colorenum</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -62,26 +62,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>vec3</TargetName>
+    <TargetName>colorenum</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\b\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>EXAMPLEM1_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXAMPLEM3_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">module_vec3.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">module_colorenum.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <ClCompile Include="..\..\examples\module_vec3.cpp" />
+    <ClCompile Include="..\..\examples\module_colorenum.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="module_vec3.def" />
+    <None Include="module_colorenum.def" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">

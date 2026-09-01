@@ -1,0 +1,4 @@
+LIBRARY colorenum
+VERSION 0.9
+EXPORTS
+luaopen_colorenum

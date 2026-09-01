@@ -9,7 +9,7 @@ local ok,ts=pcall(require, "timestamp")
 
 if not ok then
     error("\n\tThis is a test suite for module 'timestamp'."..
-    "\n\tHowever, require 'ts' failed."..
+    "\n\tHowever, require 'timestamp' failed."..
     "\n\tBuild it right here.")
 end
 

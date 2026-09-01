@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{14A878CA-4A89-4E07-929D-7B847F60F07E}</ProjectGuid>
-    <RootNamespace>examplem2</RootNamespace>
+    <RootNamespace>timestamp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -62,7 +62,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <TargetName>m2</TargetName>
+    <TargetName>timestamp</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\b\</OutDir>
@@ -73,15 +73,15 @@
     </ClCompile>
     <Link>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">m2.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">module_timestamp.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <ClCompile Include="..\..\examples\m2.cpp" />
+    <ClCompile Include="..\..\examples\module_timestamp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="m2.def" />
+    <None Include="module_timestamp.def" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="LuaAide.vcxproj">

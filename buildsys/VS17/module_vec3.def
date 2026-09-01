@@ -1,0 +1,4 @@
+LIBRARY vec3
+VERSION 0.9
+EXPORTS
+luaopen_vec3

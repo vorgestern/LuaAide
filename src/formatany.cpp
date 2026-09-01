@@ -4,6 +4,7 @@
 #include <string_view>
 #include <array>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 

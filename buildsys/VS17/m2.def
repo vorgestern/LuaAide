@@ -1,4 +1,0 @@
-LIBRARY m2
-VERSION 0.9
-EXPORTS
-luaopen_m2
