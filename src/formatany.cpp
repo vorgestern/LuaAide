@@ -349,6 +349,30 @@ TEST_F(FormatAnyEnv, KeyNumbers)
     EXPECT_EQ(-1,maxindex);
 }
 
+TEST_F(FormatAnyEnv, KeyNumbersEdgecases)
+{
+    Q1<<LuaCode(R"___(
+        local eins={}
+        local e={1}
+        return {
+            21, 22, 23,
+            a=31, b=32, c=33,
+            [3.1415926]="pi7", [3.1415926535]="pi10",
+            ["abc def"]="String mit Leerzeichen",
+            ["abc\ndef"]="String mit Zeilenschaltung",
+            [true]="bool (true)",
+            [false]="bool (false)",
+            [e]="list (1)",
+            [{1, 2}]="list (1, 2)",
+            [eins]="list eins"
+        }
+)___")>>1;
+    const auto [numk,numi,maxindex]=keynum(Q1);
+    EXPECT_EQ(12,numk);
+    EXPECT_EQ(3,numi);
+    EXPECT_EQ(3,maxindex);
+}
+
 TEST_F(FormatAnyEnv, OrderIsPredictable)
 {
     auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
