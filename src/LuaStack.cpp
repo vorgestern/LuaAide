@@ -834,6 +834,21 @@ TEST_F(StackEnv, LuaIterator)
     ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
 }
 
+TEST_F(StackEnv, LuaIteratorBreak)
+{
+    Q<<lualist<<121<<122<<123<<124<<125;
+
+    for (LuaIterator J(Q); next(J); ++J)
+    {
+        auto j=(unsigned)J;
+        if (j==2) break;
+        ASSERT_EQ(120+j, Q.toint(-1));
+    }
+
+    ASSERT_EQ(1, height(Q))<<"Breaking out of the loop must take the looping variables off the stack.";
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+}
+
 TEST_F(StackEnv, AsString)
 {
     Q<<true;

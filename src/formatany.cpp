@@ -337,6 +337,18 @@ TEST_F(FormatAnyEnv, String4Bracket3)
 ]]']==])__", Q.tostring(-1))<<Q;
 }
 
+TEST_F(FormatAnyEnv, KeyNumbers)
+{
+    Q1<<newtable
+        <<1>>LuaField("x")
+        <<2>>LuaField("y")
+        <<3>>LuaField("z");
+    const auto [numk,numi,maxindex]=keynum(Q1);
+    EXPECT_EQ(3,numk);
+    EXPECT_EQ(0,numi);
+    EXPECT_EQ(-1,maxindex);
+}
+
 TEST_F(FormatAnyEnv, OrderIsPredictable)
 {
     auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));

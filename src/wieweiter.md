@@ -1,10 +1,10 @@
 
-Fehlerbehandlung
+## Fehlerbehandlung
 1. _ Lege vor lua_error eine Stringdarstellung des Stacks global ab.<br/>
      Bearbeite alle Vorkommen von lua_error() und >>luaerror.<br/>
      Beachte: lua_error leert den Stack bis auf die Fehlermeldung.
 
-Weiter
+## Weiter
 1. _ Steuere die Objekterstellung mit objcopy so, dass unabhängig vom Zielpfad immer der gewählte Name verwendet wird.
 1. _ Fehlendes Konzept: Metatable
 1. _ Fehlendes Konzept: Userdata
@@ -17,3 +17,28 @@ Weiter
      zurückgibt? Mindestens müssten LuaStack und LuaCall virtuelle Methoden haben.
      Das scheint mir im Moment unverhältnismäßig.
 1. _ Schaffe einen C++ Zugang zu formatany. Bisher gibt es nur einen für Lua.
+
+# Transitions
+
+    LuaStack --> LuaCall                <<LuaCode
+                                        <<lua_CFunction
+                                        <<LuaColonCall
+                                        <<LuaDotCall
+                                        <<LuaGlobalCall
+                                        <<LuaClosure
+
+     LuaStack --> LuaList               <<LuaListStart
+
+     LuaCall --> LuaStack               >>LuaGlobal                 alle unerwünscht?
+                                        >>LuaField
+                                        >>LuaElement
+                                        >>LuaRegValue
+
+     LuaCall --> LuaList                --
+
+     LuaList --> LuaCall                --
+
+## Usecases Probleme
+
+     Q<<lualist<<1<<2<<LuaCode<<args>>1<<4<<lualistend;               klappt nicht, weil nach dem Abschluss von LuaCall kein LusList mehr vorliegt.
+        Liste          Code           Stack ?

@@ -295,42 +295,44 @@ public:
 };
 
 /*
-    LuaIterator realisiert eine Schleife über die Elemente des obersten Objekts auf dem Stack.
-    Das Äquivalent in Lua ist
-        for key,value in pairs(X) do end
-    So benutzt man LuaIterator
-        LuaStack LS(...);
-        for (LuaIterator K(LS); next(K); ++K)
+    Loop over elements of topmost object.
+    Equivalent to
+        for key,value in pairs(X) do ... end
+    How to use:
+        LuaStack Q(...);
+        for (LuaIterator K(Q); next(K); ++K)
         {
-            (unsigned)K ist der einsbasierte Index.
-            Bei Stack[-2] liegt key.
-            Bei Stack[-1] liegt value.
+            (unsigned)K                 onebased index
+            Stack[-2]                   key
+            Stack[-1]                   value
+            ...
         }
 */
 class LuaIterator
 {
-    lua_State*L{nullptr};
-    unsigned index{1}; //!< Index in Lua-Zählweise
-    friend bool next(LuaIterator&X) //!< Erwartet den bisherigen Index auf dem Stack, inkrementiert ihn und legt den zugehörigen Wert auf den Stack
+    lua_State*L {nullptr};
+    unsigned index {1};             //!< Onebased index
+    friend bool next(LuaIterator&X) //!< Expect current index on the stack. Increment it and push corresponding value.
     {
-        return lua_next(X.L, -2)!=0;
+        if (lua_next(X.L, -2)!=0) return true;
+        else
+        {
+            X.index=0;
+            return false;
+        }
     }
 public:
-    LuaIterator(LuaStack&S): L(S)
-    {
-        // Lege nil als ungültigen Index als Startwert auf dem Stack.
-        lua_pushnil(L);  // first key
-    }
+    LuaIterator(LuaStack&S): L(S){ lua_pushnil(L); }
    ~LuaIterator()
     {
-        // Nimm den Index wieder vom Stack, den der Konstruktor abgelegt hat.
-    //  lua_pop(L,1);
+        // Index>0: Loop was left by break.
+        if (index>0) lua_pop(L, 2);
     }
     operator unsigned(){ return index; }
     unsigned operator++()
     {
         lua_pop(L, 1);
-        return++index;
+        return ++index;
     }
 };
 
