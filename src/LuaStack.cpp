@@ -273,6 +273,13 @@ LuaCall LuaStack::operator<<(const LuaCode&C)
     return LuaCall(L);
 }
 
+LuaCall LuaStack::operator<<(const LuaFuncValue F)
+{
+    *this<<LuaValue(F.value);
+    auto a=index(-1);
+    return LuaCall(L, a);
+}
+
 LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
 {
     auto [tag,C]=X;
@@ -735,6 +742,21 @@ TEST_F(StackEnv, LuaColonCallNotAMethod)
     ASSERT_TRUE(Q.hasstringat(-1));
     const string errmsg=Q.tostring(-1);
     ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
+}
+
+TEST_F(StackEnv, LuaFuncValue)
+{
+    Q.clear();
+    // Define a function.
+    Q<<LuaCode(R"___(
+        return function(a) return tostring(a)..","..tostring(a) end
+    )___")>>1;
+    auto func=Q.index(-1);
+    // Push some random things on the stack on top of it,
+    // then call the function with argument 123.
+    Q<<21<<22<<23<<LuaFuncValue(stackindex(func))<<123>>1;
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_EQ("123,123", Q.tostring(-1));
 }
 
 TEST_F(StackEnv, LuaRegValue)

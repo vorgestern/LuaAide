@@ -84,7 +84,7 @@ public:
     LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
 };
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue
 template<typename I, distinct_pushable d> struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a>                             LuaArray;
 typedef Distinct<size_t, distinct_pushable::s>                             LuaStruct;
@@ -100,6 +100,7 @@ typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDo
 typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
 typedef Distinct<std::string_view, distinct_pushable::co>                  LuaCode;
+typedef Distinct<int, distinct_pushable::vf>                               LuaFuncValue; // represents function on the stack
 
 // So erzeugt man eine Closure:
 // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename");
@@ -166,6 +167,7 @@ public:
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);
+    LuaCall  operator<<(const LuaFuncValue);
 
     LuaList operator<<(LuaListStart);
 
