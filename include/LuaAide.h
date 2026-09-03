@@ -9,6 +9,8 @@
 #include <lua.hpp>
 
 int formatany(lua_State*);
+int keys(lua_State*);
+int sortedkeys(lua_State*);
 int keyescape(lua_State*);
 
 class LuaStack;
