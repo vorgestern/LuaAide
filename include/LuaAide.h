@@ -11,7 +11,9 @@
 int formatany(lua_State*);
 int keys(lua_State*);
 int sortedkeys(lua_State*);
+int sortedkeys_neu(lua_State*);
 int keyescape(lua_State*);
+int cmp_ab(lua_State*);
 
 class LuaStack;
 class LuaCall;

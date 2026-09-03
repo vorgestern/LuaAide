@@ -107,6 +107,76 @@ int sortedkeys(lua_State*L)
     return 1;
 }
 
+int cmp_ab(lua_State*L)
+{
+    LuaStack Q(L);
+    auto Ta=Q.typeat(-2), Tb=Q.typeat(-1);
+    if (Ta!=Tb)
+    {
+        Q<<((int)Ta<(int)Tb?true:false);
+        return 1;
+    }
+    switch (Ta)
+    {
+        case LuaType::TBOOLEAN:
+        {
+            // The generic compare function does not take kindly to bools,
+            // so we compare them ourselves.
+            Q<<(Q.tobool(-2)?false:true);
+            return 1;
+        }
+        // case LuaType::TNUMBER:
+        // {
+        //     auto a=Q.todouble(-2), b=Q.todouble(-1);
+        //     Q<<(a<b?true:false);
+        //     return 1;
+        // }
+        // case LuaType::TSTRING:
+        // {
+        //     const auto a=Q.tostring(-2), b=Q.tostring(-1);
+        //     Q<<(a<b?true:false);
+        //     return 1;
+        // }
+        default:
+        {
+            // Everything else can be handled by lua_compare.
+            Q<<(lua_compare(L, -2, -1, LUA_OPLT)==1?true:false);
+            return 1;
+        }
+    }
+    return 1;
+}
+
+int sortedkeys_neu(lua_State*L)
+{
+    LuaStack Q(L);
+    if (height(Q)<1)
+    {
+        Q<<"Error: sortedkeys requires one argument (table)">>luaerror;
+        return 0;
+    }
+    if (Q.typeat(-1)!=LuaType::TTABLE)
+    {
+        Q<<lualist<<lualistend;
+        return 1;
+    }
+    // There is a table at the top of the stack.
+    // Collect the keys in a newly created table.
+    Q<<lualist<<lualistend;
+    Q.swap();
+    const auto Keylist=Q.index(-2);
+    for (LuaIterator J(Q); next(J); ++J)
+    {
+        // [key, item]
+        Q<<LuaValue(-2)>>LuaElement({stackindex(Keylist), (unsigned)J}); // Add key to Keylist.
+    }
+
+    Q<<LuaGlobal("table")<<LuaDotCall("sort")<<Keylist<<cmp_ab>>0;
+
+    Q<<Keylist;
+    return 1;
+}
+
 // ============================================================================
 
 #ifdef UNITTEST
