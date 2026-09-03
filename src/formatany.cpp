@@ -192,7 +192,12 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
                 vector<string>Keys;
-                for (LuaIterator I(Q); next(I); ++I) Keys.push_back(Q.tostring(-2));
+                for (LuaIterator I(Q); next(I); ++I)
+                {
+                    Q<<LuaValue(-2);
+                    Keys.push_back(Q.tostring(-1));
+                    Q.drop(1);
+                }
                 sort(Keys.begin(), Keys.end());
                 size_t itindex=0;
                 for (const auto&key: Keys)
