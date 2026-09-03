@@ -36,78 +36,7 @@ int keys(lua_State*L)
     return 1;
 }
 
-static int cmp1(lua_State*L)
-{
-    LuaStack Q(L);
-    auto K1=Q.index(-2), K2=Q.index(-1);
-    Q<<LuaElement({stackindex(K1), 1});
-    Q<<LuaElement({stackindex(K2), 1});
-    const auto ks1=Q.tostring(-2), ks2=Q.tostring(-1);
-    // const auto cmp=lua_compare(Q, -2, -1, LUA_OPLT);
-    Q<<(ks1<ks2?true:false);
-    return 1;
-}
-
-int sortedkeys(lua_State*L)
-{
-    LuaStack Q(L);
-    if (height(Q)<1)
-    {
-            Q<<"Error: sortedkeys requires one argument (table)">>luaerror;
-            return 0;
-    }
-    if (Q.typeat(-1)!=LuaType::TTABLE)
-    {
-            Q<<lualist<<lualistend;
-            return 1;
-    }
-    // There is a table at the top of the stack.
-    // Collect the keys in a newly created table.
-    Q<<lualist<<lualistend;
-    Q.swap();
-    const auto Keylist=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)
-    {
-        // [key, item]
-        Q<<lualist<<lualistend; // AB={key//string, key}
-        auto Key=Q.index(-3), AB=Q.index(-1);
-
-        Q<<LuaGlobalCall("tostring")<<Key>>1;
-        Q>>LuaElement({stackindex(AB), 1});
-
-        Q<<Key>>LuaElement({stackindex(AB), 2});
-
-        Q<<AB>>LuaElement({stackindex(Keylist), (unsigned)J}); // Add AB to Keylist.
-
-        Q.drop(1);
-    }
-
-    Q<<LuaGlobal("table")<<LuaDotCall("sort")<<Keylist<<cmp1>>0;
-
-    if (true)
-    {
-        Q<<lualist<<lualistend;
-        Q.swap();
-
-        auto Result=Q.index(-2);
-        for (LuaIterator J(Q); next(J); ++J)
-        {
-            // -2: key
-            // -1: item
-            Q.dup(-2);
-            Q>>LuaElement({stackindex(Result), (unsigned)J});
-        }
-
-        Q<<Result;
-    }
-    else
-    {
-        Q<<Keylist;
-    }
-    return 1;
-}
-
-int cmp_ab(lua_State*L)
+static int cmp_ab(lua_State*L)
 {
     LuaStack Q(L);
     auto Ta=Q.typeat(-2), Tb=Q.typeat(-1);
@@ -147,7 +76,7 @@ int cmp_ab(lua_State*L)
     return 1;
 }
 
-int sortedkeys_neu(lua_State*L)
+int sortedkeys(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)<1)
@@ -166,11 +95,10 @@ int sortedkeys_neu(lua_State*L)
     Q.swap();
     const auto Keylist=Q.index(-2);
     for (LuaIterator J(Q); next(J); ++J)
-    {
-        // [key, item]
         Q<<LuaValue(-2)>>LuaElement({stackindex(Keylist), (unsigned)J}); // Add key to Keylist.
-    }
 
+    // Sort the keys generically, supplying a compare-function that can handle
+    // random combinations of data types.
     Q<<LuaGlobal("table")<<LuaDotCall("sort")<<Keylist<<cmp_ab>>0;
 
     Q<<Keylist;
