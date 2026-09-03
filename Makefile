@@ -1,5 +1,5 @@
 
-XFILES   := LuaCall LuaStack formatany keyescape streamout
+XFILES   := LuaCall LuaStack formatany keyescape streamout keys
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
