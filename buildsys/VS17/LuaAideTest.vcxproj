@@ -69,6 +69,15 @@
     <ClCompile Include="..\..\src\LuaStack.cpp" />
     <ClCompile Include="..\..\src\LuaCall.cpp" />
     <ClCompile Include="..\..\src\streamout.cpp" />
+    <ClCompile Include="..\..\src\apply.cpp" />
+    <ClCompile Include="..\..\src\map.cpp" />
+    <ClCompile Include="..\..\src\keys.cpp" />
+    <ClCompile Include="..\..\src\formatany.cpp" />
+    <ClCompile Include="..\..\src\keyescape.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\LuaAide.h" />
+    <ClInclude Include="..\..\src\helper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

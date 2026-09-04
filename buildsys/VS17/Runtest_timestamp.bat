@@ -11,4 +11,4 @@ set REPOROOT=%MAKEDIR%\..\..
 ver > nul
 
 cd %REPOROOT%
-lua examples/moduletest_timestamp.lua > %MAKEDIR%\m2test.result
+lua examples/moduletest_timestamp.lua > %MAKEDIR%\moduletest_timestamp.result

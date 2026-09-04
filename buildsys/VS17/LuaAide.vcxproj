@@ -83,9 +83,13 @@
     <ClCompile Include="..\..\src\streamout.cpp" />
     <ClCompile Include="..\..\src\formatany.cpp" />
     <ClCompile Include="..\..\src\keyescape.cpp" />
+    <ClCompile Include="..\..\src\apply.cpp" />
+    <ClCompile Include="..\..\src\map.cpp" />
+    <ClCompile Include="..\..\src\keys.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\LuaAide.h" />
+    <ClInclude Include="..\..\src\helper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
