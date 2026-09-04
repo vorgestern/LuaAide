@@ -136,7 +136,7 @@ TEST_F(KeysEnv, sortedkeys)
 {
     Q<<LuaCode("return {21,a=1,b=2,22,23,[true]=101,c=3}")>>1;
     ASSERT_EQ(1, height(Q));
-    Q<<keys<<LuaValue(-2)>>1;
+    Q<<sortedkeys<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {
