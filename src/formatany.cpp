@@ -5,6 +5,7 @@
 #include <array>
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 
 using namespace std;
 
@@ -191,37 +192,32 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 // Allgemeine Tabelle
                 if (result.size()>0) result.back().append("{");
                 else result.push_back("{");
-                vector<string>Keys;
-                for (LuaIterator I(Q); next(I); ++I)
-                {
-                    Q<<LuaValue(-2);
-                    Keys.push_back(Q.tostring(-1));
-                    Q.drop(1);
-                }
-                sort(Keys.begin(), Keys.end());
                 size_t itindex=0;
-                for (const auto&key: Keys)
+
+                Q<<sortedkeys<<valueindex>>1;
+                auto Table=valueindex;
+                for (LuaIterator J(Q); next(J); ++J)
                 {
+                    const auto h1=height(Q);
                     ++itindex;
-                    Q<<key<<valueindex<<LuaField(key);
-                    Q<<luaswap; Q.drop(1);
-                    // cout<<"index "<<itindex<<":\n"<<Q;
-                    const auto jkey=Q.index(-2); // , jvalue=Q.index(-1);
                     if (itindex>1) result.back().append(",");
-                    if (Q.hasintat(-2))
+
+                    // format key, then call format1 to handle the value
+                    const auto jkey=Q.index(-1);
+                    if (Q.hasintat(stackindex(jkey)))
                     {
                         char pad[100];
                         snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
                         result.push_back(indent1+"["+pad+"]=");
                     }
-                    else if (Q.hasnumberat(-2))
+                    else if (Q.hasnumberat(stackindex(jkey)))
                     {
                         Q<<LuaValue(stackindex(jkey));
                         const string a=Q.tostring(-1);
                         Q.drop(1);
                         result.push_back(indent1+"["+a+"]=");
                     }
-                    else if (Q.hasstringat(-2))
+                    else if (Q.hasstringat(stackindex(jkey)))
                     {
                         Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
                         const string a=Q.tostring(-1);
@@ -232,11 +228,14 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                     {
                         Q<<LuaGlobalCall("tostring")<<LuaValue(stackindex(jkey))>>1;
                         const string repr=Q.asstring(-1);
-                        result.push_back(indent1+"["+repr+"]=");
                         Q.drop(1);
+                        result.push_back(indent1+"["+repr+"]=");
                     }
+                    lua_gettable(L, stackindex(Table));
                     format1(L, result, level+1, usedlevel+1);
-                    Q.drop(2);
+
+                    const auto h2=height(Q);
+                    assert(h1==h2);
                 }
                 result.push_back(indent+"}");
             }
@@ -388,6 +387,19 @@ TEST_F(FormatAnyEnv, OrderIsPredictable)
     y="22",
     z="23"
 })__", Q.tostring(-1))<<Q;
+}
+
+TEST_F(FormatAnyEnv, SerialiseMixedTable)
+{
+    auto F=Q1<<formatany;
+    Q1<<lualist<<21;
+    Q1<<22>>LuaField("a");
+    F>>1; // formatany {21, a=22}
+    ASSERT_EQ(1, height(Q1))<<Q1;
+    ASSERT_EQ(R"__(return {
+    [1]=21,
+    a=22
+})__", Q1.tostring(-1));
 }
 
 #endif

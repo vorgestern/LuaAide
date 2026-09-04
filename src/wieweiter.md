@@ -16,7 +16,10 @@
 1. _ Was muss man tun, damit LuaStack<<myfunc<<lualist<<21<<22<<23<<lualistend einen LuaCall (myfunc)
      zurückgibt? Mindestens müssten LuaStack und LuaCall virtuelle Methoden haben.
      Das scheint mir im Moment unverhältnismäßig.
-1. _ Schaffe einen C++ Zugang zu formatany. Bisher gibt es nur einen für Lua.
+1. + Schaffe einen C++ Zugang zu formatany. Bisher gibt es nur einen für Lua.
+1. _ Bilde lua_gettable(L, stackindex(Table)) ab. Es dient dem Zugriff auf ein Tabellenelement
+     mit einem Schlüssel beliebigen Typs ('LuaKey'). Evtl sollte dafür der Typ absindex sichtbar
+     gemacht werden. Dann kann man sowas wie pushable<absindex> LuaKey einführen.
 
 # Transitions
 
