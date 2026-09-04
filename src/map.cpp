@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int map(lua_State*L)
+int LuaAide::map(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)==0) return 0;
