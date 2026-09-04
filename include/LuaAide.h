@@ -15,7 +15,8 @@ int keyescape(lua_State*);
 
 namespace LuaAide
 {
-    int map(lua_State*);
+    int map(lua_State*);   // mapped=map(list, func)
+    int apply(lua_State*); // apply(list, func)
 }
 
 class LuaStack;
