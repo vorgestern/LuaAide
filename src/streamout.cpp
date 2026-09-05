@@ -42,7 +42,7 @@ namespace {
     {
         LuaStack Q=State(X);
         const auto index=Index(X);
-        const string Indent('\t', X.level);
+        const string Indent(X.level, '\t');
         if (height(Q)<1) return out<<Indent<<"<empty>";
         else switch (Q.typeat(index))
         {
