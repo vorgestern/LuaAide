@@ -194,11 +194,10 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 else result.push_back("{");
                 size_t itindex=0;
 
-                Q<<sortedkeys<<valueindex>>1;
-                auto Table=valueindex;
+                const auto Table=valueindex;
+                Q<<sortedkeys<<Table>>1;
                 for (LuaIterator J(Q); next(J); ++J)
                 {
-                    const auto h1=height(Q);
                     ++itindex;
                     if (itindex>1) result.back().append(",");
 
@@ -231,12 +230,15 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                         Q.drop(1);
                         result.push_back(indent1+"["+repr+"]=");
                     }
-                    lua_gettable(L, stackindex(Table));
-                    format1(L, result, level+1, usedlevel+1);
 
-                    const auto h2=height(Q);
-                    assert(h1==h2);
+                    Q.dup();                                        // [argument, index J, key, key]
+                    lua_gettable(L, stackindex(Table));             // [argument, index J, key, Table[key]]
+
+                    format1(L, result, level+1, usedlevel+1);                    // [index J, key, Table[key]]
+
+                    Q.drop(1);                                                   // [argument, index J, key]
                 }
+                Q.drop(1);
                 result.push_back(indent+"}");
             }
             return;
