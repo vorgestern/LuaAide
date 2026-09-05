@@ -223,6 +223,26 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                         Q.drop(1);
                         result.push_back(indent1+a+"=");
                     }
+                    else if (Q.hastableat(stackindex(jkey)))
+                    {
+                        Q<<"Table keys of type table cannot be serialised.">>luaerror;
+                    }
+                    else if (Q.hasuserdataat(stackindex(jkey)))
+                    {
+                        Q<<"Table keys of type userdata cannot be serialised.">>luaerror;
+                    }
+                    else if (Q.haslightuserdataat(stackindex(jkey)))
+                    {
+                        Q<<"Table keys of type lightuserdata cannot be serialised.">>luaerror;
+                    }
+                    else if (Q.hasfunctionat(stackindex(jkey)))
+                    {
+                        Q<<"Table keys of type function cannot be serialised.">>luaerror;
+                    }
+                    else if (Q.hasthreadat(stackindex(jkey)))
+                    {
+                        Q<<"Table keys of type thread cannot be serialised.">>luaerror;
+                    }
                     else
                     {
                         Q<<LuaGlobalCall("tostring")<<LuaValue(stackindex(jkey))>>1;
