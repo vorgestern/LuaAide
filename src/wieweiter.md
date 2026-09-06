@@ -17,6 +17,8 @@
      zurückgibt? Mindestens müssten LuaStack und LuaCall virtuelle Methoden haben.
      Das scheint mir im Moment unverhältnismäßig.
 1. _ Schaffe einen C++ Zugang zu formatany. Bisher gibt es nur einen für Lua.
+1. _ make install
+1. _ premake5
 
 # Transitions
 

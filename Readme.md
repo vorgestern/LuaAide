@@ -2,7 +2,6 @@
 # Purpose & Status
 Provide a C++ substitute for Lua's C-API that is more expressive and easier to use.
 
-## Status:
 - Works as documented
 - Purpose more or less fulfilled
 - User will occasionally use Lua API directly to fill gaps in the usecases covered by LuaAide.
@@ -14,21 +13,28 @@ Provide a C++ substitute for Lua's C-API that is more expressive and easier to u
 + **Exposing** C++ Types and functions to Lua scripts
 
 ## Embedding Lua
+Use Lua in your application for a variety of purposes: To make it scriptable,
+to implement a configuration format, to offer a plugin-interface, to use the
+Lua-format for data input/output and so forth.
 
     #include <LuaAide.h>
-    auto Q=LuaStack::New(true, nullptr);
-    Q<<LuaCode("local a,b=...; return a+b")<<21<<22>>1;
-    printf("C++ code receives 21+22=%d\n", Q.toint(-1));
+    auto Q=LuaStack::New(true, nullptr);                         // Initialise Lua.
+    Q<<LuaCode("local a,b=...; return a+b")<<21<<22>>1;          // Execute a piece of Lua code, passing arguments and ..
+    printf("C++ code receives 21+22=%d\n", Q.toint(-1));         // .. receiving result on the stack.
 
-    const std::vector<std::string> A {"Hoppla", "a list", "of strings"};
-    Q<<LuaCode(R"xx(return table.concat(..., "\n"))xx")<<A>>1;
-    const std::string Aconcat(Q.tostring(-1)); // == "Hoppla\na list\nof strings"
+    const std::vector<std::string> A {"Hoppla", "a list", "of strings"};         // Use Lua's table.concat to ..
+    Q<<LuaCode(R"__(return table.concat(..., "\n"))__")<<A>>1;                   // concatenate C++ strings.
+    const std::string A1(Q.tostring(-1));    // == "Hoppla\na list\nof strings"
 
 ## Extending scripts
-demomodule.cpp: compile/link to demomodule.so or demomodule.dll
+Use C++ to create modules that can be loaded into Lua scripts, benefitting from
+performance, static typing, access to C/C++ libraries etc.
+
+Example demomodule.cpp: compile/link to demomodule.so or demomodule.dll
 
     namespace {
-        // These functions are implemented elsewhere in this module:
+        // These functions are implemented elsewhere in this module.
+        // They are exposed to the Lua runtime in luaopen_demomodule.
         extern "C" int pwd(lua_Stack*);
         extern "C" int cd(lua_Stack*);
     }
@@ -43,16 +49,18 @@ demomodule.cpp: compile/link to demomodule.so or demomodule.dll
         return 1;
     }
 
-demo.lua: use as ```lua demo.lua```
+Use demomodule from a script:
 
-    local X=require "demomodule"
-    print("demomodule version", X.version)
+    local demo=require "demomodule"
+    print("demomodule version", demo.version)
     ..
 
 ## Exposing C/C++ Types
+Take advantage of C++ strong typing by implementing specific types in C++
+and exposing them to Lua as modules.
 
-Examples/module_vec3.cpp, examples/module_timestamp.lua, examples/module_colorenum.cpp demonstrate how to
-expose types from C/C++ to Lua scripts.
+Several examples are included in the examples folder:
+module_vec3.cpp, module_timestamp.lua, module_colorenum.cpp
 
 # Requirements
 + C++ 20
@@ -65,21 +73,20 @@ expose types from C/C++ to Lua scripts.
     git clone --recurse-submodules --remote-submodules https://github.com/vorgestern/luaaide.git
 
 ## .. then on Linux
-- Install requirements as you see fit. An additional requirement for Linux is objcopy (for tests).
-  Check with ```make prerequisites```.
 - Adapt Makefile if Lua is not at default location.
-- make
-- *optional*: make test
-- Install manually by copying libLuaAide.a and include/LuaAide.h where they belong.
+- Run ```make```
+- Run ```make test``` (*optional*)
+  This executes ./LuaAideTest (tests of the static library) and test scripts for the example modules.
+- Install LuaAide manually by copying libLuaAide.a and include/LuaAide.h where they belong.
 
 ## .. else on Windows
 - Edit buildsys/VS17/Lua.props to point to your Lua-Installation:
   * **AdditionalIncludeDirectories**: Include the directory that contains lua.hpp.
-  * **AdditionalDependencies** Include the import library for Lua 5.4.
-  * **AdditionalLibraryDirectories** Include the directory where the import library is located.
+  * **AdditionalLibraryDirectories**: Include the directory where the import library is located.
+  * **AdditionalDependencies**: Include the import library for Lua 5.4.
 - LuaAide.lib (Release|Win32) will be built in the root directory, others under buildsys/VS17.
-  Select a different Konfiguration|Platform in buildsys/VS17/LuaAide.props.
-- Build with Visual Studio 2022 (VS17) by launching buildsys/VS17/LuaAide.sln
+  Select a different Configuration|Platform in buildsys/VS17/LuaAide.props.
+- Build with Visual Studio 2022 (VS17) or later by launching buildsys/VS17/LuaAide.sln
 
 # How to use
 
@@ -115,18 +122,15 @@ or `auto Q=LuaStack::New(true, nullptr);`.
 ## Calling Lua functions
 
     using namespace std;
-    Q<<lua_error<<"This was not expected">>0;       // Equiv. of 'error "This was not expected"'
-                                                    // lua_error is part of the Lua API.
+    Q<<"This was not expected">>luaerror;           // Equiv. of 'error "This was not expected"'
 
     vector<string> A={"a", "b", "c"};
     Q<<formatany<<A>>1;                             // formatany is part of LuaAide.
-    auto str=Q.tostring(-1);                        // It converts any value to a string;
-
-## Creating functions on the stack
+    auto str=Q.tostring(-1);                        // It converts (nearly) any value to a string.
 
 ## Creating closures
 
-    int join(lua_State*L)                                   // demofunction: table.concat with upvalue sep
+    int join(lua_State*L)                                   // demofunction: table.concat with separator in upvalue
     {
         LuaStack Q(L);
         Q   <<LuaGlobal("table")<<LuaDotCall("concat")      // local arg=...
@@ -141,10 +145,6 @@ or `auto Q=LuaStack::New(true, nullptr);`.
         print(KommaJoin(A))                                 // prints "a, b, c"
         print(HyphJoin(A))                                  // prints "a-b-c"
     )__")>>0;
-
-## Running inline scripts
-
-## Embedding instances of C++ classes
 
 ## Calling functions from the Lua runtime
 
@@ -168,13 +168,13 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     {
         LuaStack Q=L;
         // Executing this Script will fail because a parenthesis is not closed.
-        Q<<make_pair("FunctioningLuaCompiletimeFailureDemo", LuaCode(R"xxx(
+        Q<<make_pair("FunctioningLuaCompiletimeFailureDemo", LuaCode(R"___(
             function map(A, M
                 local R={}
                 for _,e in ipairs(A) do table.insert(R, M[e] or e) end
                 return R
             end
-        )xxx"))>>0;
+        )___"))>>0;
     }
 
     int panichandler(lua_State*L)
@@ -198,17 +198,17 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     ```
 
 ### Handling runtime-errors in an application that embeds Lua
-- Throw conventional Lua-errors where applicable. Have it translated into
+- Throw conventional Lua-errors where applicable. Have them translated to
   a C++ runtime exception as shown above.
 - Handle unexpected results from script execution by checking the return value:
 
     ```
     // This script will cause a runtime-error, because table.concat cannot handle
     // elements of type boolean.
-    const auto rc=Q<<make_pair("Demo", LuaCode(R"__(
+    const auto rc=Q<<make_pair("Demo", LuaCode(R"___(
         local a={...}
         return table.concat(a, ", ")
-    )__"))<<21<<22<<true<<false>>1;
+    )___"))<<21<<22<<true<<false>>1;
     if (rc!=LUA_OK)
     {
         const auto message=Q.tostring(-1);
