@@ -4,15 +4,13 @@ XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
 CXXFLAGS := --std=c++20 -Wall -Werror
 BT       := buildsys/gcc/bt
-.PHONY: clean dir prerequisites test
+.PHONY: clean dir test
 
-all: prerequisites dir libLuaAide.a ulutest/ulutest.so LuaAideTest \
+all: dir libLuaAide.a ulutest/ulutest.so LuaAideTest \
         b/simplescripts b/errorhandling b/lightuserdata b/embedding_cppclass \
         b/vec3.so b/timestamp.so b/colorenum.so
 clean:
 	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
-prerequisites:
-	@which objcopy > /dev/null || echo "objcopy not installed (required to build ulutest)" || false
 dir:
 	@mkdir -p b buildsys/gcc/bt
 test: TestSummary.lua
