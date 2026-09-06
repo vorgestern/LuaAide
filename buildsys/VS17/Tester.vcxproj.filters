@@ -7,25 +7,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\LuaAideTest.exe">
-      <Filter>Quelldateien</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\modules\alltag\Alltagstest.lua">
-      <Filter>Quelldateien</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\generic\summarise_tests.lua">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\examples\m1test.lua">
+    <CustomBuild Include="Runtest_colorenum.bat">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\examples\m2test.lua">
+    <CustomBuild Include="Runtest_LuaAide.bat">
       <Filter>Quelldateien</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="makehelper.bat">
+    <CustomBuild Include="Runtest_timestamp.bat">
       <Filter>Quelldateien</Filter>
-    </None>
+    </CustomBuild>
+    <CustomBuild Include="Runtest_vec3.bat">
+      <Filter>Quelldateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Runtests.bat">
+      <Filter>Quelldateien</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

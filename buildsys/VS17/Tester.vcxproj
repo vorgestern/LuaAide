@@ -110,7 +110,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -127,43 +127,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\LuaAideTest.exe">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test library 'LuaAide.lib'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Runtest_LuaAide.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result</Outputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
-    </CustomBuild>
-    <CustomBuild Include="..\..\examples\moduletest_vec3.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'vec3'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Runtest_vec3.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moduletest_vec3.result</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\vec3.dll;%(AdditionalInputs)</AdditionalInputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
-    </CustomBuild>
-    <CustomBuild Include="..\..\examples\moduletest_timestamp.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'timestamp'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Runtest_timestamp.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moduletest_timestamp.result</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\timestamp.dll;%(AdditionalInputs)</AdditionalInputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
-    </CustomBuild>
-    <CustomBuild Include="..\..\examples\moduletest_colorenum.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Test example module 'colorenum'.</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Runtest_colorenum.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moduletest_colorenum.result</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\b\colorenum.dll;%(AdditionalInputs)</AdditionalInputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
-    </CustomBuild>
-    <CustomBuild Include="..\generic\summarise_tests.lua">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Summarise tests (..\..\TestSummary.lua).</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lua ..\generic\summarise_tests.lua ..\..\TestSummary.lua LuaAideTest.result moduletest_vec3.result moduletest_timestamp.result moduletest_colorenum.result</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\TestSummary.lua</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LuaAideTest.result;moduletest_vec3.result;moduletest_timestamp.result;moduletest_colorenum.result;%(AdditionalInputs)</AdditionalInputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</TreatOutputAsContent>
+    <CustomBuild Include="Runtests.bat">
+      <Message>Run all tests.</Message>
+      <Command>Runtests.bat</Command>
+      <Outputs>..\..\TestSummary.lua</Outputs>
+      <AdditionalInputs>..\..\LuaAideTest.exe;..\..\b\vec3.dll;..\..\b\timestamp.dll;..\..\b\colorenum.dll;%(AdditionalInputs)</AdditionalInputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="makehelper.bat" />
+    <None Include="..\..\examples\moduletest_vec3.lua" />
+    <None Include="..\..\examples\moduletest_timestamp.lua" />
+    <None Include="..\..\examples\moduletest_colorenum.lua" />
+    <None Include="..\generic\summarise_tests.lua" />
+    <None Include="..\..\TestSummary.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

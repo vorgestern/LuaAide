@@ -40,7 +40,7 @@ local function main(ziel, args)
         end
     end
     local T=resformat(S)
-    io.output(ziel):write("\n", T, "\n\n", [[
+    io.output(ziel):write("\n", T, "\n\n", [=[
     print(string.format("%2s: %4s|%-4s %s (%s)", "#", "ok", "fail", "testname", "failed tests"))
     for j,r in ipairs(summary) do
         if r.filenotfound then
@@ -50,7 +50,15 @@ local function main(ziel, args)
             print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, F))
         end
     end
-]])
+
+    print [[
+
+To execute tests directly:
+.\LuaAideTest
+lua examples\moduletest_vec3.lua
+lua examples\moduletest_timestamp.lua
+lua examples\moduletest_colorenum.lua]]
+    ]=])
     io.close()
 end
 

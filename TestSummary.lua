@@ -1,6 +1,6 @@
 
 local summary={
-    {name='LuaAideTest', passed=66, failed=0, failedtests={}},
+    {name='LuaAideTest', passed=67, failed=0, failedtests={}},
     {name='moduletest_vec3', passed=11, failed=0, failedtests={}},
     {name='moduletest_timestamp', passed=7, failed=0, failedtests={}},
     {name='moduletest_colorenum', passed=6, failed=0, failedtests={}}
@@ -15,3 +15,12 @@ local summary={
             print(string.format("%2d: %4d|%-4d %s (%s)", j, r.passed, r.failed, r.name, F))
         end
     end
+
+    print [[
+
+To execute tests directly:
+.\LuaAideTest
+lua examples\moduletest_vec3.lua
+lua examples\moduletest_timestamp.lua
+lua examples\moduletest_colorenum.lua]]
+    

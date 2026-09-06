@@ -1,4 +1,0 @@
-LIBRARY alltag.dll
-VERSION 0.9
-EXPORTS
-luaopen_alltag
