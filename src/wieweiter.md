@@ -22,6 +22,9 @@
      gemacht werden. Dann kann man sowas wie pushable<absindex> LuaKey einführen.
 1. _ make install
 1. _ premake5
+1. _ rename rotate up dig und rotate down tuck.
+1. _ Alternative colon call:     Q<<"21 22 23"<<LuaColonCall("match")<<"(%d+) (%d+) (%d+)">>3;
+1. _ Alternative list creation:     Q<<21<<22<<23<<LuaList(3);
 
 # Transitions
 

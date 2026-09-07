@@ -984,6 +984,16 @@ TEST_F(StackEnv, FieldAssignmentF1)
     ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
 }
 
+TEST_F(StackEnv, ColonCall)
+{
+    ASSERT_EQ(0, height(Q));
+    // local a,b,c="21 22 23":match "(%d+) (%d+) (%d+)"
+    Q<<"21 22 23"<<"(%d+) (%d+) (%d+)"<<LuaColonCall("match", 1)>>3;
+    EXPECT_EQ("21", Q.tostring(-3));
+    EXPECT_EQ("22", Q.tostring(-2));
+    EXPECT_EQ("23", Q.tostring(-1));
+}
+
 TEST(LuaType, ToString)
 {
     EXPECT_EQ("none", tostring(LuaType::TNONE));

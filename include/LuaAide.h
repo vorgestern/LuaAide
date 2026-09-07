@@ -68,20 +68,10 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-//! Diese Klasse erleichtert den Aufruf einer Elementfunktion
-//! (in Lua wäre das z.B. X:MyFunction(self, a, b, c)),
-//! indem sie die Elementfunktion ermittelt und den Stack geeignet vorbereitet:
-//!
-//! Der Aufruf wird so realisiert:
-//! Stack<<X<<a<<b<<c<<LuaColonCall("MyFunction",3)>>1;
-//!
-//! Vor der Ausgabe von LuaColonCall() liegt auf dem Stack
-//! [X a b c]
-//! Nach der Ausgabe von LuaColonCall() (Stack<<X<<a<<b<<c<<LuaColonCall("MyFunction",3))
-//! liegt auf dem Stack
-//! [X:MyFunction X a b c],
-//! nach >>1 (wenn ein Rückgabewert erwartet wird)
-//! [result]
+// LuaColonCall helps calling a member function of the object on the stack.
+// This is the equivalent of result=X:mymethod(a,b,c).
+// How to use:
+// Stack<<X<<a<<b<<c<<LuaColonCall("mymethod",3)>>1;
 class LuaColonCall
 {
     friend class LuaStack;
