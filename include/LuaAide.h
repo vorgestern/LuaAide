@@ -82,6 +82,18 @@ public:
     LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
 };
 
+// LuaMethod helps calling a member function of the object on the stack.
+// This is the equivalent of result=X:mymethod(a,b,c).
+// How to use:
+// Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1;
+class LuaMethod
+{
+    friend class LuaStack;
+    const char*name{nullptr};
+public:
+    LuaMethod(const char s[]): name(s){}
+};
+
 enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue
 template<typename I, distinct_pushable d> struct Distinct { I value; };
 typedef Distinct<size_t, distinct_pushable::a>                             LuaArray;
@@ -162,6 +174,7 @@ public:
     LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
     LuaCall  operator<<(const LuaColonCall&);
+    LuaCall  operator<<(const LuaMethod&);
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);

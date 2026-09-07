@@ -252,6 +252,61 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
     }
 }
 
+LuaCall LuaStack::operator<<(const LuaMethod&C)
+{
+    printf("LuaMethod '%s'\n", C.name);
+    int st=0;
+    if (hastableat(-1))
+    {
+        printf("has table at -1\n");
+        st=1;
+    }
+    else printf("has no table at -1\n");
+    if (lua_getmetatable(L, -1))
+    {
+        printf("has metatable\n");
+        drop(1);
+        st=2;
+    }
+    else printf("has no table at -1\n");
+    if ((LuaType)luaL_getmetafield(L, -1, C.name)!=LuaType::TNIL)
+    {
+        printf("has metafield %s\n", C.name);
+        drop(1);
+    }
+    else printf("has no metafield\n");
+    if ((LuaType)lua_getfield(L, -1, C.name)!=LuaType::TNIL)
+    {
+        printf("A\n");
+        if (hasfunctionat(-1)) st=1;
+        else st=2;
+    }
+    else if ((LuaType)luaL_getmetafield(L, -1, C.name)!=LuaType::TNIL)
+    {
+        printf("B\n");
+        if (hasfunctionat(-1)) st=1;
+        else st=2;
+    }
+    printf("st=%d\n", st);
+    switch (st)
+    {
+        case 1:
+        {
+            swap();                         // [Funktion, X]
+            return LuaCall(L, index(-2));
+        }
+        case 0:
+        case 2:break;
+    }
+
+    char pad[100];
+    snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
+    const auto str=pad+asstring(-1);
+    drop(1);                                     // [X]
+    *this<<str<<LuaClosure {{errfunction, 1}};   // [X, errclosure]
+    return LuaCall(L, index(-1));
+}
+
 LuaCall LuaStack::operator<<(const LuaDotCall&C)
 {
     const int objectindex=-1;
@@ -992,6 +1047,30 @@ TEST_F(StackEnv, ColonCall)
     EXPECT_EQ("21", Q.tostring(-3));
     EXPECT_EQ("22", Q.tostring(-2));
     EXPECT_EQ("23", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, Method)
+{
+    ASSERT_EQ(0, height(Q));
+    // local a,b,c="21 22 23":match "(%d+) (%d+) (%d+)"
+    Q<<"21 22 23"<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
+    EXPECT_EQ("21", Q.tostring(-3));
+    EXPECT_EQ("22", Q.tostring(-2));
+    EXPECT_EQ("23", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, MethodDoesNotExist)
+{
+    ASSERT_EQ(0, height(Q));
+    // local a,b,c=21:match "(%d+) (%d+) (%d+)"
+    try {
+        Q<<21<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
+    }
+    catch (const runtime_error&E)
+    {
+        cout<<"runtime error: "<<E.what()<<"\n";
+    }
+    cout<<Q;
 }
 
 TEST(LuaType, ToString)
