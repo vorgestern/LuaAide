@@ -19,8 +19,7 @@ local summary={
     print [[
 
 To execute tests directly:
-.\LuaAideTest
-lua examples\moduletest_vec3.lua
-lua examples\moduletest_timestamp.lua
-lua examples\moduletest_colorenum.lua]]
-    
+    .\LuaAideTest
+    lua examples\moduletest_vec3.lua
+    lua examples\moduletest_timestamp.lua
+    lua examples\moduletest_colorenum.lua]]
