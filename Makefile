@@ -28,7 +28,7 @@ b/%.o: src/%.cpp $(XHEADER)
 
 # ============================================================
 
-LuaAideTest: src/testmain.cpp $(XFILES:%=$(BT)/%.o)
+LuaAideTest: src/testmain.cpp src/testpush.cpp $(XFILES:%=$(BT)/%.o)
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
