@@ -254,49 +254,13 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
 
 LuaCall LuaStack::operator<<(const LuaMethod&C)
 {
-    printf("LuaMethod '%s'\n", C.name);
-    int st=0;
-    if (hastableat(-1))
-    {
-        printf("has table at -1\n");
-        st=1;
-    }
-    else printf("has no table at -1\n");
-    if (lua_getmetatable(L, -1))
-    {
-        printf("has metatable\n");
-        drop(1);
-        st=2;
-    }
-    else printf("has no table at -1\n");
-    if ((LuaType)luaL_getmetafield(L, -1, C.name)!=LuaType::TNIL)
-    {
-        printf("has metafield %s\n", C.name);
-        drop(1);
-    }
-    else printf("has no metafield\n");
     if ((LuaType)lua_getfield(L, -1, C.name)!=LuaType::TNIL)
     {
-        printf("A\n");
-        if (hasfunctionat(-1)) st=1;
-        else st=2;
-    }
-    else if ((LuaType)luaL_getmetafield(L, -1, C.name)!=LuaType::TNIL)
-    {
-        printf("B\n");
-        if (hasfunctionat(-1)) st=1;
-        else st=2;
-    }
-    printf("st=%d\n", st);
-    switch (st)
-    {
-        case 1:
+        if (hasfunctionat(-1))
         {
-            swap();                         // [Funktion, X]
+            swap();
             return LuaCall(L, index(-2));
         }
-        case 0:
-        case 2:break;
     }
 
     char pad[100];
@@ -1052,17 +1016,15 @@ TEST_F(StackEnv, ColonCall)
 TEST_F(StackEnv, Method)
 {
     ASSERT_EQ(0, height(Q));
-    // local a,b,c="21 22 23":match "(%d+) (%d+) (%d+)"
     Q<<"21 22 23"<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
-    EXPECT_EQ("21", Q.tostring(-3));
-    EXPECT_EQ("22", Q.tostring(-2));
-    EXPECT_EQ("23", Q.tostring(-1));
+    ASSERT_EQ("21", Q.tostring(-3));
+    ASSERT_EQ("22", Q.tostring(-2));
+    ASSERT_EQ("23", Q.tostring(-1));
 }
 
 TEST_F(StackEnv, MethodDoesNotExist)
 {
     ASSERT_EQ(0, height(Q));
-    // local a,b,c=21:match "(%d+) (%d+) (%d+)"
     try {
         Q<<21<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
     }
@@ -1070,6 +1032,45 @@ TEST_F(StackEnv, MethodDoesNotExist)
     {
         cout<<"runtime error: "<<E.what()<<"\n";
     }
+    cout<<Q;
+}
+
+TEST_F(StackEnv, Method1)
+{
+    Q<<"21";
+    const auto t=(LuaType)luaL_getmetafield(Q, -1, "match");
+    cout<<"t="<<tostring(t)<<"\n";
+    cout<<Q;
+}
+
+TEST_F(StackEnv, Method2)
+{
+    Q<<"21";
+    const auto t=(LuaType)lua_getfield(Q, -1, "print"); // Überraschenderweise funktioniert lua_getfield, aber nicht luaL_getmetafield bei strings.
+    cout<<"t="<<tostring(t)<<"\n";
+    cout<<Q;
+}
+
+TEST_F(StackEnv, Method3)
+{
+    Q<<"21";
+    if (lua_getmetatable(Q, -1))
+    {
+        const auto t3=(LuaType)lua_getfield(Q, -2, "match"); // <== Frage den value ab, nicht direkt die Metatabelle!
+        cout<<"metatable.getfield(match)==>"<<tostring(t3)<<"\n";
+    }
+    else cout<<"string has no metatable\n";
+    // const auto t2=(LuaType)luaL_getmetafield(Q, -2, "match");
+    // cout<<"t1="<<t1<<"\n";
+    // cout<<"t2="<<tostring(t2)<<"\n";
+    cout<<Q;
+}
+
+TEST_F(StackEnv, Method4)
+{
+    Q<<21;
+    const auto t=lua_getmetatable(Q, -1);
+    cout<<"t="<<t<<"\n";
     cout<<Q;
 }
 
