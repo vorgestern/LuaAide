@@ -254,20 +254,80 @@ LuaCall LuaStack::operator<<(const LuaColonCall&C)
 
 LuaCall LuaStack::operator<<(const LuaMethod&C)
 {
-    if ((LuaType)lua_getfield(L, -1, C.name)!=LuaType::TNIL)
+    const auto t=typeat(-1);
+    switch (t)
     {
-        if (hasfunctionat(-1))
+        case LuaType::TTABLE:
+        case LuaType::TSTRING:
         {
-            swap();
-            return LuaCall(L, index(-2));
+            // [X]
+            if ((LuaType)lua_getfield(L, -1, C.name)!=LuaType::TNIL)
+            {
+                // [X, X.name]
+                if (hasfunctionat(-1))
+                {
+                    swap(); // [X.name, X]
+                    return LuaCall(L, index(-2));
+                }
+                else if (hasnilat(-1))
+                {
+                    char pad[1000];
+                    sprintf(pad, "LuaMethod: Field '%s' is not present.", C.name);
+                    *this<<pad;
+                }
+                else
+                {
+                    char pad[1000];
+                    LuaType tf=typeat(-1);
+                    // const auto tfs=tostring(tf);
+                    sprintf(pad, "LuaMethod: Field '%s' is not a function but a '%d'.", C.name, (int)tf);
+                    *this<<pad;
+                }
+            }
+            else
+            {
+                char pad[1000];
+                sprintf(pad, "LuaMethod: Field '%s' is not present.", C.name);
+                // printf("error 1: %s\n", pad);
+                *this<<pad;
+            }
+            break;
+        }
+        default:
+        {
+            // [X]
+            if (lua_getmetatable(L, -1))
+            {
+                // [X, mt]
+                if ((LuaType)lua_getfield(L, -1, C.name)!=LuaType::TNIL)
+                {
+                    // [X, mt, mt.name]
+                    if (hasfunctionat(-1))
+                    {
+                        *this<<luarot3; // [mt.name, X, mt]
+                        drop(1);
+                        return LuaCall(L, index(-2));
+                    }
+                }
+                else
+                {
+                    char pad[1000];
+                    sprintf(pad, "LuaMethod: Field '%s' is not present.", C.name);
+                    *this<<pad;
+                }
+            }
+            else
+            {
+                char pad[1000];
+                sprintf(pad, "LuaMethod(%s): '%d' cannot have fields.", C.name, (int)t);
+                *this<<pad;
+            }
         }
     }
 
-    char pad[100];
-    snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
-    const auto str=pad+asstring(-1);
-    drop(1);                                     // [X]
-    *this<<str<<LuaClosure {{errfunction, 1}};   // [X, errclosure]
+    // [X, errmsg]
+    *this<<LuaClosure {{errfunction, 1}}; // [X, errclosure]
+    // cout<<"Error closure created\n"<<*this<<"\n";
     return LuaCall(L, index(-1));
 }
 
