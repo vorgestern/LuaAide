@@ -233,32 +233,6 @@ string_view tostring(LuaMetaMethod m)
     return 0;
 }
 
-LuaCall LuaStack::operator<<(const LuaColonCall&C)
-{
-    // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgeführt werden.
-    //           C.name="Funktion"
-    //           C.numargs=3
-    // Auf dem Stack liegt zu Beginn: [X, a, b, c]
-    const auto object=index(-1-C.numargs);
-    lua_getfield(L, stackindex(object), C.name); // [X, a, b, c, Funktion]
-    if (hasfunctionat(-1))
-    {
-        lua_insert(L, stackindex(object)); // [Funktion, X, a, b, c]
-        // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
-        // Am Index object liegt inzwischen die Funktion.
-        return LuaCall(L, object);
-    }
-    else
-    {
-        char pad[100];
-        snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
-        const auto str=pad+asstring(-1);
-        drop(1);
-        *this<<str<<LuaClosure {{errfunction, 1}};
-        return LuaCall(L, index(-1));
-    }
-}
-
 LuaCall LuaStack::operator<<(const LuaMethod&C)
 {
     const auto t=typeat(-1);
@@ -810,7 +784,7 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - <<LuaClosure
 // + <<LuaCode
 // - <<lua_CFunction
-// + <<LuaColonCall
+// + <<LuaMethod
 // + <<LuaDotCall
 // - <<LuaGlobalCall
 // - <<LuaArray

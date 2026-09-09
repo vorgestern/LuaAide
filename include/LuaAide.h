@@ -69,20 +69,6 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-// LuaColonCall helps calling a member function of the object on the stack.
-// This is the equivalent of result=X:mymethod(a,b,c).
-// How to use:
-// Stack<<X<<a<<b<<c<<LuaColonCall("mymethod",3)>>1;
-class LuaColonCall
-{
-    friend class LuaStack;
-    const char*name{nullptr};
-    unsigned numargs{0};
-public:
-    LuaColonCall(const char s[]): name(s){}
-    LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
-};
-
 // LuaMethod helps calling a member function of the object on the stack.
 // This is the equivalent of result=X:mymethod(a,b,c).
 // How to use:
@@ -174,7 +160,6 @@ public:
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
-    LuaCall  operator<<(const LuaColonCall&);
     LuaCall  operator<<(const LuaMethod&);
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);

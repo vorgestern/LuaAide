@@ -9,10 +9,6 @@
 1. _ Fehlendes Konzept: Metatable
 1. _ Fehlendes Konzept: Userdata
 1. _ LuaStack<<lambda und LuaStack<<std::function<>. Ist das sinnvoll?
-1. _ Implementiere LuaColonCall analog zu anderen Funktionsaufrufen```
-     Stack<<Objekt<<LuaColonCall(methodname)<<arg1<<arg2>>1;``` statt wie überliefert```
-     Stack<<Objekt<<arg1<<arg2<<LuaColonCall(methodname)>>1;``` Die Anzahl
-     der Argumente muss dann nicht mehr angegeben werden.
 1. _ Was muss man tun, damit LuaStack<<myfunc<<lualist<<21<<22<<23<<lualistend einen LuaCall (myfunc)
      zurückgibt? Mindestens müssten LuaStack und LuaCall virtuelle Methoden haben.
      Das scheint mir im Moment unverhältnismäßig.
@@ -23,14 +19,14 @@
 1. _ make install
 1. _ premake5
 1. _ rename rotate up dig und rotate down tuck.
-1. _ Alternative colon call:     Q<<"21 22 23"<<LuaColonCall("match")<<"(%d+) (%d+) (%d+)">>3;
+1. + Alternative colon call:     Q<<"21 22 23"<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
 1. _ Alternative list creation:     Q<<21<<22<<23<<LuaList(3);
 
 # Transitions
 
     LuaStack --> LuaCall                <<LuaCode
                                         <<lua_CFunction
-                                        <<LuaColonCall
+                                        <<LuaMethod
                                         <<LuaDotCall
                                         <<LuaGlobalCall
                                         <<LuaClosure

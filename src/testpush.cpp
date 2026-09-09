@@ -54,37 +54,6 @@ TEST_F(StackEnv, LuaDotCall)
     ASSERT_EQ("x=alpha", Q.tostring(-1));
 }
 
-TEST_F(StackEnv, LuaColonCall)
-{
-    Q<<LuaCode(R"xxx(
-        local mt={
-            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
-        }
-        mt.__index=mt
-        A=setmetatable({x="alpha"}, mt)
-    )xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo", 1)>>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("x=alpha, a=beta", Q.tostring(-1));
-}
-
-TEST_F(StackEnv, LuaColonCallNotAMethod)
-{
-    Q<<LuaCode(R"xxx(
-        local mt={
-            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
-        }
-        mt.__index=mt
-        A=setmetatable({x="alpha"}, mt)
-    )xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo_nixda", 1)>>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
-    const string errmsg=Q.tostring(-1);
-    ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
-}
-
 TEST_F(StackEnv, LuaFuncValue)
 {
     Q.clear();
@@ -323,16 +292,6 @@ TEST_F(StackEnv, FieldAssignmentF1)
     ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
     ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
     ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
-}
-
-TEST_F(StackEnv, ColonCall)
-{
-    ASSERT_EQ(0, height(Q));
-    // local a,b,c="21 22 23":match "(%d+) (%d+) (%d+)"
-    Q<<"21 22 23"<<"(%d+) (%d+) (%d+)"<<LuaColonCall("match", 1)>>3;
-    EXPECT_EQ("21", Q.tostring(-3));
-    EXPECT_EQ("22", Q.tostring(-2));
-    EXPECT_EQ("23", Q.tostring(-1));
 }
 
 // ====================================================================
