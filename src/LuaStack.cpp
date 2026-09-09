@@ -279,7 +279,6 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 {
                     drop(1);
                     const auto tm=(LuaType)luaL_getmetafield(L, -1, C.name);
-//                  printf("=== field '%s' ist nil, metafield ist '%s'\n", C.name, tostring99(tm).data());
                     switch (tm)
                     {
                         case LuaType::TFUNCTION:
@@ -289,10 +288,10 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                         }
                         default:
                         {
+                            drop(2);
                             char pad[1000];
                             auto tfs=tostring99(tm);
                             sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
-                            drop(2);
                             *this<<pad;
                             break;
                         }
@@ -301,10 +300,11 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 }
                 default:
                 {
+                    // [X, field]
+                    drop(2);
                     char pad[1000];
                     auto tfs=tostring99(t);
                     sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
-                    drop(2);
                     *this<<pad;
                     break;
                 }
@@ -317,35 +317,30 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
             if (lua_getmetatable(L, -1))
             {
                 // [X, mt]
-                if (const auto tf=(LuaType)lua_getfield(L, -1, C.name); tf!=LuaType::TNIL)
+                const auto tf=(LuaType)lua_getfield(L, -1, C.name); // [X, mt, mt.name]
+                switch (tf)
                 {
-                    // [X, mt, mt.name]
-                    if (hasfunctionat(-1))
+                    case LuaType::TFUNCTION:
                     {
                         *this<<luarot3; // [mt.name, X, mt]
-                        drop(1);
+                        drop(1);        // [mt.name, X]
                         return LuaCall(L, index(-2));
                     }
-                    else
+                    default:
                     {
-                        char pad[1000];
-                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tostring99(tf).data(), C.name);
+                        // [X, mt, mt.name]
                         drop(3);
+                        char pad[1000];
+                        const auto tfs=tostring99(tf);
+                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.name);
                         *this<<pad;
                     }
-                }
-                else
-                {
-                    // [X, mt, nil]
-                    char pad[1000];
-                    sprintf(pad, "Attempt to call a nil value (LuaMethod '%s').", C.name);
-                    drop(3);
-                    *this<<pad;
                 }
             }
             else
             {
                 // [X]
+                drop(1);
                 char pad[1000];
                 const auto ts=tostring99(t);
                 sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.name);
@@ -354,18 +349,9 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
         }
     }
 
-    // [X, errmsg]
-    if (false)
-    {
-        *this<<LuaClosure {{errfunction, 1}}; // [X, errclosure]
-        cout<<"Error closure created\n"<<*this<<"\n";
-        return LuaCall(L, index(-1));
-    }
-    else
-    {
-        lua_error(L);
-        return LuaCall(L, index(-1));
-    }
+    // [errmsg]
+    lua_error(L);
+    return LuaCall(L, index(-1));
 }
 
 LuaCall LuaStack::operator<<(const LuaDotCall&C)

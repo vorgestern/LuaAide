@@ -72,6 +72,7 @@ void cases_table(lua_State*L, int opt)
                         cout<<"Stack:\n"<<Q<<"\n";
                         break;
                 }
+                default: printf("opt=%d not covered.\n", opt+10);
         }
 }
 
@@ -88,10 +89,11 @@ void cases_string(lua_State*L, int opt)
                         cout<<"Stack:\n"<<Q<<"\n";
                         break;
                 }
+                default: printf("opt=%d not covered.\n", opt+20);
         }
 }
 
-void cases_int(lua_State*L, int opt)
+void cases_number(lua_State*L, int opt)
 {
         LuaStack Q=L;
         switch (opt)
@@ -104,6 +106,7 @@ void cases_int(lua_State*L, int opt)
                         cout<<"Stack:\n"<<Q<<"\n";
                         break;
                 }
+                default: printf("opt=%d not covered.\n", opt+30);
         }
 }
 
@@ -142,6 +145,7 @@ void cases_userdata(lua_State*L, int opt)
                         Q<<Userdata<<LuaMethod("print")>>0;
                         break;
                 }
+                default: printf("opt=%d not covered.\n", opt+40);
         }
 }
 
@@ -151,7 +155,7 @@ int main_throwing(lua_State*L, int opt)
 
         if      (opt>=10 && opt<20) cases_table(Q, opt-10);
         else if (opt>=20 && opt<30) cases_string(Q, opt-20);
-        else if (opt>=30 && opt<40) cases_string(Q, opt-30);
+        else if (opt>=30 && opt<40) cases_number(Q, opt-30);
         else if (opt>=40 && opt<50) cases_userdata(Q, opt-40);
         else switch (opt)
         {
@@ -164,6 +168,20 @@ int main_throwing(lua_State*L, int opt)
                                 Q<<"LuaMethod: Field 'print' is not present.";
                                 lua_error(Q);
                         }
+                        break;
+                }
+
+                case 140:
+                {
+                        printf("userdata 140\n");
+                        [[maybe_unused]] auto*v=lua_newuserdatauv(Q, sizeof(void*), 0);
+                        Q>>LuaGlobal("xyz");
+                        Q<<LuaCode(R"___(
+                                print("userdata 140 (Lua)")
+                                print(string.format("xyz: %s %s", xyz, xyz.print))
+                                print("userdata 140 (Lua) done")
+                        )___")>>0;
+                        printf("userdata 140 done\n");
                         break;
                 }
 
