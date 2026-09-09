@@ -335,13 +335,21 @@ TEST_F(StackEnv, ColonCall)
     EXPECT_EQ("23", Q.tostring(-1));
 }
 
-TEST_F(StackEnv, Method)
+// ====================================================================
+
+TEST_F(StackEnv, MethodOfString)
 {
     ASSERT_EQ(0, height(Q));
     Q<<"21 22 23"<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
     ASSERT_EQ("21", Q.tostring(-3));
     ASSERT_EQ("22", Q.tostring(-2));
     ASSERT_EQ("23", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, MethodOfStringDoesNotExist)
+{
+    ASSERT_EQ(0, height(Q));
+    ASSERT_THROW(Q<<"21 22 23"<<LuaMethod("print")>>0, runtime_error)<<"Nach dem Aufruf:\n"<<Q<<"\n";
 }
 
 TEST_F(StackEnv, MethodDoesNotExist)

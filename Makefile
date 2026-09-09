@@ -9,7 +9,8 @@ BT       := buildsys/gcc/bt
 
 all: dir libLuaAide.a ulutest/ulutest.so LuaAideTest \
         b/simplescripts b/errorhandling b/lightuserdata b/embedding_cppclass \
-        b/vec3.so b/timestamp.so b/colorenum.so
+        b/vec3.so b/timestamp.so b/colorenum.so \
+	b/hilf1
 clean:
 	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
 dir:
@@ -80,3 +81,7 @@ TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/moduletest_vec3.result $(BT)/mod
 
 lspcommands:
 	@bear -- make -B all
+
+b/hilf1: examples/hilf1.cpp libLuaAide.a $(XHEADER)
+	@echo $<
+	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4

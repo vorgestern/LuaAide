@@ -50,6 +50,7 @@ enum class LuaType:int {
     TTHREAD
 };
 std::string_view tostring(LuaType);
+std::string_view tostring99(LuaType);
 
 enum class LuaMetaMethod:unsigned {
     tostring,
