@@ -58,7 +58,7 @@ To execute tests directly:
 lua examples\moduletest_vec3.lua
 lua examples\moduletest_timestamp.lua
 lua examples\moduletest_colorenum.lua]]
-    ]=])
+]=])
     io.close()
 end
 
