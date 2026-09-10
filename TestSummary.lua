@@ -1,6 +1,6 @@
 
 local summary={
-    {name='LuaAideTest', passed=75, failed=0, failedtests={}},
+    {name='LuaAideTest', passed=81, failed=0, failedtests={}},
     {name='moduletest_vec3', passed=11, failed=0, failedtests={}},
     {name='moduletest_timestamp', passed=7, failed=0, failedtests={}},
     {name='moduletest_colorenum', passed=6, failed=0, failedtests={}}

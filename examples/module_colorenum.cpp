@@ -26,7 +26,7 @@ const void*mtpointer=nullptr; // identify metatable via lua_topointer()
 bool iscolortype(lua_State*L, int index)
 {
     LuaStack Q(L);
-    if (Q.hasat(LuaType::TUSERDATA, index)) return false;
+    if (!Q.hasat(LuaType::TUSERDATA, index)) return false;
     if (!lua_getmetatable(L, index)) return false;
     const void*p=lua_topointer(L, -1);
     Q.drop(1);
