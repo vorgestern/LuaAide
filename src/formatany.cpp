@@ -223,7 +223,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                             }
                             break;
                         }
-                        case LuaType::TSTRING: // else if (Q.hasstringat(stackindex(jkey)))
+                        case LuaType::TSTRING:
                         {
                             Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
                             const string a=Q.tostring(-1);

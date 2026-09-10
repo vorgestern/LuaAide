@@ -399,7 +399,7 @@ LuaStack&LuaStack::operator<<(const unordered_map<string,string>&X)
 string LuaStack::errormessage()
 {
     if (height(*this)<1) return "No error message available (stack empty)";
-    else if (!hasstringat(-1)) return "No error message available (not a string)";
+    else if (!hasat(LuaType::TSTRING, -1)) return "No error message available (not a string)";
     auto msg=tostring(-1);
     drop(1);
     return msg;
@@ -475,10 +475,11 @@ LuaCall LuaStack::operator[](LuaMetaMethod m)
 #ifdef UNITTEST
 #include <gtest/gtest.h>
 
-bool nilat(LuaStack&Q, int index){ return Q.hasat(LuaType::TNIL, index); }
-bool boolat(LuaStack&Q, int index){ return Q.hasat(LuaType::TBOOLEAN, index); }
-bool funcat(LuaStack&Q, int index){ return Q.hasat(LuaType::TFUNCTION, index); }
-bool tableat(LuaStack&Q, int index){ return Q.hasat(LuaType::TTABLE, index); }
+static bool nilat(LuaStack&Q, int index){ return Q.hasat(LuaType::TNIL, index); }
+static bool boolat(LuaStack&Q, int index){ return Q.hasat(LuaType::TBOOLEAN, index); }
+static bool funcat(LuaStack&Q, int index){ return Q.hasat(LuaType::TFUNCTION, index); }
+static bool tableat(LuaStack&Q, int index){ return Q.hasat(LuaType::TTABLE, index); }
+static bool stringat(LuaStack&Q, int index){ return Q.hasat(LuaType::TSTRING, index); }
 
 static int panichandler(lua_State*L)
 {
@@ -639,17 +640,17 @@ TEST_F(StackEnv, HasStringAt)
     // weil die Konvertierbarkeit gewährleistet ist.
     Q<<true<<"abc"<<true<<true;
     ASSERT_EQ(4, height(Q));
-    EXPECT_FALSE(Q.hasstringat(-5));
-    EXPECT_FALSE(Q.hasstringat(-4));
-    EXPECT_TRUE( Q.hasstringat(-3));
-    EXPECT_FALSE(Q.hasstringat(-2));
-    EXPECT_FALSE(Q.hasstringat(-1));
-    EXPECT_FALSE(Q.hasstringat( 0));
-    EXPECT_FALSE(Q.hasstringat( 1));
-    EXPECT_TRUE( Q.hasstringat( 2));
-    EXPECT_FALSE(Q.hasstringat( 3));
-    EXPECT_FALSE(Q.hasstringat( 4));
-    EXPECT_FALSE(Q.hasstringat( 5));
+    EXPECT_FALSE(stringat(Q, -5));
+    EXPECT_FALSE(stringat(Q, -4));
+    EXPECT_TRUE( stringat(Q, -3));
+    EXPECT_FALSE(stringat(Q, -2));
+    EXPECT_FALSE(stringat(Q, -1));
+    EXPECT_FALSE(stringat(Q,  0));
+    EXPECT_FALSE(stringat(Q,  1));
+    EXPECT_TRUE( stringat(Q,  2));
+    EXPECT_FALSE(stringat(Q,  3));
+    EXPECT_FALSE(stringat(Q,  4));
+    EXPECT_FALSE(stringat(Q,  5));
 }
 
 TEST_F(StackEnv, HasBoolAt)
@@ -750,9 +751,9 @@ TEST_F(StackEnv, LuaStackAbsindex)
     Q<<21<<22<<23<<"hoppla";
     const auto Hoppla=Q.index(-1);
     Q<<101<<102<<103;
-    ASSERT_TRUE(Q.hasstringat(stackindex(Hoppla)));
+    ASSERT_TRUE(stringat(Q, stackindex(Hoppla)));
     Q.drop(3);
-    ASSERT_TRUE(Q.hasstringat(stackindex(Hoppla)));
+    ASSERT_TRUE(stringat(Q, stackindex(Hoppla)));
     Q.drop(1)<<true<<"hoppla woanders";
     ASSERT_TRUE(boolat(Q, stackindex(Hoppla)));
 }
@@ -797,7 +798,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - >>LuaError
 //
 // + posvalid
-// + hasstringat
 // + hasintat
 //
 // - tostring

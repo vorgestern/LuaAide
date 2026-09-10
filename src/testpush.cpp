@@ -22,6 +22,8 @@ protected:
     void TearDown() override { Q.Close(); }
 };
 
+static bool stringat(LuaStack&Q, int index){ return Q.hasat(LuaType::TSTRING, index); }
+
 TEST_F(StackEnv, LuaCode)
 {
     Q<<LuaCode("return 21");
@@ -38,7 +40,7 @@ TEST_F(StackEnv, LuaGlobal)
     Q<<LuaGlobal("b")<<LuaGlobal("a");
     ASSERT_TRUE(Q.hasintat(-1));
     ASSERT_EQ(21, Q.toint(-1));
-    ASSERT_TRUE(Q.hasstringat(-2));
+    ASSERT_TRUE(stringat(Q, -2));
     ASSERT_EQ("hoppla", Q.tostring(-2));
 }
 
@@ -51,7 +53,7 @@ TEST_F(StackEnv, LuaDotCall)
     )xxx")>>0;
     Q.clear();
     Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("x=alpha", Q.tostring(-1));
 }
 
@@ -88,11 +90,11 @@ TEST_F(StackEnv, LuaElement)
     Q<<vector<string> {"A", "B", "C", "D"};
     ASSERT_EQ(1, height(Q));
     Q<<LuaElement {{-1, 2}};
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("B", Q.tostring(-1));
     Q.drop(1);
     Q<<LuaElement {{-1, 4}};
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("D", Q.tostring(-1));
     Q.drop(1);
     Q<<LuaElement {{-1, 5}};
@@ -102,7 +104,7 @@ TEST_F(StackEnv, LuaElement)
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
     ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 1}}));
     ASSERT_EQ(2, height(Q));
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     Q.drop(1);
 }
 

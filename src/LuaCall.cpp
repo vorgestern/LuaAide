@@ -97,6 +97,8 @@ int LuaCall::operator>>(std::pair<int,int>X)
 #ifdef UNITTEST
 #include <gtest/gtest.h>
 
+static bool stringat(LuaStack&Q, int index){ return Q.hasat(LuaType::TSTRING, index); }
+
 class CallEnv: public ::testing::Test
 {
 protected:
@@ -141,7 +143,7 @@ TEST_F(CallEnv, CallInt)
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==22)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==23)<<Q;
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==24)<<Q;
-    ASSERT_TRUE(Q.hasstringat(-1))<<Q;
+    ASSERT_TRUE(stringat(Q, -1))<<Q;
     ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
 }
 
@@ -166,7 +168,7 @@ TEST_F(CallEnv, CallIntError)
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==21);
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==23);
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
@@ -181,7 +183,7 @@ TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==21);
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
     ASSERT_TRUE(Q.hasintat(-2) && Q.toint(-2)==23);
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"function gehtnicht(x) return demoerror(x+100)...\"]:1: in function 'gehtnicht'", Q.tostring(-1));
 }
 
@@ -192,7 +194,7 @@ TEST_F(CallEnv, CallPair)
     Q<<demofunc<<LuaValue(-2)>>make_pair(3, 2);     ASSERT_EQ(2, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-2))<<Q;
     ASSERT_EQ(24, Q.toint(-2))<<Q;
-    ASSERT_TRUE(Q.hasstringat(-1))<<Q;
+    ASSERT_TRUE(stringat(Q, -1))<<Q;
     ASSERT_EQ("hoppla", Q.tostring(-1))<<Q;
 }
 
@@ -213,7 +215,7 @@ TEST_F(CallEnv, CallPairError)
     Q<<21<<22<<23;                                              ASSERT_EQ(3, height(Q));
     const auto rc=Q<<demoerror<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
                                                                 ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
 }
 
@@ -228,7 +230,7 @@ TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
     )xxx"))>>0;                                             ASSERT_EQ(0, height(Q));
     const auto rc=Q<<LuaGlobalCall("gehtnicht")<<21>>2;     ASSERT_EQ(LUA_ERRRUN, rc);
                                                             ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasstringat(-1));
+    ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("demoerror\nstack traceback:\n\t[string \"myscript\"]:3: in function 'gehtnicht'", Q.tostring(-1));
 }
 

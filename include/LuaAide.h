@@ -190,12 +190,6 @@ public:
     bool hasat(LuaType t, int pos){ return posvalid(pos) && static_cast<LuaType>(lua_type(L, pos))==t; }
     bool hasintat(int pos){ return lua_isinteger(L, pos)!=0; }
 
-#if 1
-    bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
-#else
-    // Use hasat(Type, pos) instead.
-#endif
-
     std::string tostring(int pos);
     bool tobool(int pos){ return lua_toboolean(L, pos)!=0; }
     long long toint(int pos){ return lua_tointeger(L, pos); }
