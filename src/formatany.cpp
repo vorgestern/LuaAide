@@ -204,52 +204,73 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
 
                     // format key, then call format1 to handle the value
                     const auto jkey=Q.index(-1);
-                    if (Q.hasintat(stackindex(jkey)))
+                    switch (Q.typeat(stackindex(jkey)))
                     {
-                        char pad[100];
-                        snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
-                        result.push_back(indent1+"["+pad+"]=");
-                    }
-                    else if (Q.hasnumberat(stackindex(jkey)))
-                    {
-                        Q<<LuaValue(stackindex(jkey));
-                        const string a=Q.tostring(-1);
-                        Q.drop(1);
-                        result.push_back(indent1+"["+a+"]=");
-                    }
-                    else if (Q.hasstringat(stackindex(jkey)))
-                    {
-                        Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
-                        const string a=Q.tostring(-1);
-                        Q.drop(1);
-                        result.push_back(indent1+a+"=");
-                    }
-                    else if (Q.hastableat(stackindex(jkey)))
-                    {
-                        Q<<"Table keys of type table cannot be serialised.">>luaerror;
-                    }
-                    else if (Q.hasuserdataat(stackindex(jkey)))
-                    {
-                        Q<<"Table keys of type userdata cannot be serialised.">>luaerror;
-                    }
-                    else if (Q.haslightuserdataat(stackindex(jkey)))
-                    {
-                        Q<<"Table keys of type lightuserdata cannot be serialised.">>luaerror;
-                    }
-                    else if (Q.hasfunctionat(stackindex(jkey)))
-                    {
-                        Q<<"Table keys of type function cannot be serialised.">>luaerror;
-                    }
-                    else if (Q.hasthreadat(stackindex(jkey)))
-                    {
-                        Q<<"Table keys of type thread cannot be serialised.">>luaerror;
-                    }
-                    else
-                    {
-                        Q<<LuaGlobalCall("tostring")<<LuaValue(stackindex(jkey))>>1;
-                        const string repr=Q.asstring(-1);
-                        Q.drop(1);
-                        result.push_back(indent1+"["+repr+"]=");
+                        case LuaType::TNUMBER:
+                        {
+                            if (Q.hasintat(stackindex(jkey)))
+                            {
+                                char pad[100];
+                                snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
+                                result.push_back(indent1+"["+pad+"]=");
+                            }
+                            else if (Q.hasnumberat(stackindex(jkey)))
+                            {
+                                Q<<LuaValue(stackindex(jkey));
+                                const string a=Q.tostring(-1);
+                                Q.drop(1);
+                                result.push_back(indent1+"["+a+"]=");
+                            }
+                            break;
+                        }
+                        case LuaType::TSTRING: // else if (Q.hasstringat(stackindex(jkey)))
+                        {
+                            Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
+                            const string a=Q.tostring(-1);
+                            Q.drop(1);
+                            result.push_back(indent1+a+"=");
+                            break;
+                        }
+                        case LuaType::TTABLE: // else if (Q.hastableat(stackindex(jkey)))
+                        {
+                            Q<<"Table keys of type table cannot be serialised.">>luaerror;
+                            break;
+                        }
+                        case LuaType::TUSERDATA: // else if (Q.hasuserdataat(stackindex(jkey)))
+                        {
+                            Q<<"Table keys of type userdata cannot be serialised.">>luaerror;
+                            break;
+                        }
+                        case LuaType::TLIGHTUSERDATA: // else if (Q.haslightuserdataat(stackindex(jkey)))
+                        {
+                            Q<<"Table keys of type lightuserdata cannot be serialised.">>luaerror;
+                            break;
+                        }
+                        case LuaType::TFUNCTION: // else if (Q.hasfunctionat(stackindex(jkey)))
+                        {
+                            Q<<"Table keys of type function cannot be serialised.">>luaerror;
+                            break;
+                        }
+                        case LuaType::TTHREAD: // else if (Q.hasthreadat(stackindex(jkey)))
+                        {
+                            Q<<"Table keys of type thread cannot be serialised.">>luaerror;
+                            break;
+                        }
+                        case LuaType::TBOOLEAN:
+                        {
+                            const string repr=Q.tobool(stackindex(jkey))?"true":"false";
+                            result.push_back(indent1+"["+repr+"]=");
+                            break;
+                        }
+                        case LuaType::TNIL:
+                        {
+                            result.push_back(indent1+"[nil]=");
+                            break;
+                        }
+                        case LuaType::TNONE:
+                        {
+                            break;
+                        }
                     }
 
                     Q.dup();                                        // [argument, index J, key, key]
@@ -306,6 +327,48 @@ protected:
     void SetUp() override { Q1=LuaStack::New(true, nullptr); }
     void TearDown() override { Q1.Close(); }
 };
+
+TEST_F(FormatAnyEnv, Nil)
+{
+    Q1<<formatany<<luanil>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return nil", Q1.tostring(-1))<<Q1;
+}
+
+TEST_F(FormatAnyEnv, BoolFalse)
+{
+    Q1<<formatany<<false>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return false", Q1.tostring(-1))<<Q1;
+}
+
+TEST_F(FormatAnyEnv, BoolTrue)
+{
+    Q1<<formatany<<true>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return true", Q1.tostring(-1))<<Q1;
+}
+
+TEST_F(FormatAnyEnv, Int)
+{
+    Q1<<formatany<<21>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return 21", Q1.tostring(-1))<<Q1;
+}
+
+TEST_F(FormatAnyEnv, IntNegative)
+{
+    Q1<<formatany<<-21>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return -21", Q1.tostring(-1))<<Q1;
+}
+
+TEST_F(FormatAnyEnv, Float)
+{
+    Q1<<formatany<<3.1415926>>1;
+    ASSERT_EQ(1, height(Q1));
+    ASSERT_EQ("return 3.14159", Q1.tostring(-1))<<Q1;
+}
 
 TEST_F(FormatAnyEnv, String1Regular)
 {
