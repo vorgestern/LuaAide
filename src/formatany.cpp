@@ -236,22 +236,22 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                             Q<<"Table keys of type table cannot be serialised.">>luaerror;
                             break;
                         }
-                        case LuaType::TUSERDATA: // else if (Q.hasuserdataat(stackindex(jkey)))
+                        case LuaType::TUSERDATA:
                         {
                             Q<<"Table keys of type userdata cannot be serialised.">>luaerror;
                             break;
                         }
-                        case LuaType::TLIGHTUSERDATA: // else if (Q.haslightuserdataat(stackindex(jkey)))
+                        case LuaType::TLIGHTUSERDATA:
                         {
                             Q<<"Table keys of type lightuserdata cannot be serialised.">>luaerror;
                             break;
                         }
-                        case LuaType::TFUNCTION: // else if (Q.hasfunctionat(stackindex(jkey)))
+                        case LuaType::TFUNCTION:
                         {
                             Q<<"Table keys of type function cannot be serialised.">>luaerror;
                             break;
                         }
-                        case LuaType::TTHREAD: // else if (Q.hasthreadat(stackindex(jkey)))
+                        case LuaType::TTHREAD:
                         {
                             Q<<"Table keys of type thread cannot be serialised.">>luaerror;
                             break;

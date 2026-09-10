@@ -25,7 +25,7 @@ protected:
 TEST_F(StackEnv, LuaCode)
 {
     Q<<LuaCode("return 21");
-    ASSERT_TRUE(Q.hasfunctionat(-1));
+    ASSERT_TRUE(Q.hasat(LuaType::TFUNCTION, -1));
     LuaCall(Q)>>1;
     ASSERT_TRUE(Q.hasintat(-1));
     ASSERT_EQ(21, Q.toint(-1));
@@ -96,7 +96,7 @@ TEST_F(StackEnv, LuaElement)
     ASSERT_EQ("D", Q.tostring(-1));
     Q.drop(1);
     Q<<LuaElement {{-1, 5}};
-    ASSERT_TRUE(Q.hasnilat(-1));
+    ASSERT_TRUE(Q.hasat(LuaType::TNIL, -1));
     Q.drop(1);
     ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hastableat(-1));

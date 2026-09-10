@@ -27,7 +27,7 @@ int democlosure(lua_State*L)
         Q.dup(-1);
         lua_gettable(L, stackindex(Map));                    // Result, Map, Arg, key, value, Map[value]
         // Result[J]=Map[value] or value
-        if (Q.hasnilat(-1)) Q.drop(1).dup(-1);               // Result, Map, Arg, key, value, value
+        if (Q.hasat(LuaType::TNIL, -1)) Q.drop(1).dup(-1);   // Result, Map, Arg, key, value, value
         lua_seti(L, stackindex(Result), (unsigned)J);        // Result, Map, Arg, key, value
     }                                                        // Result, Map, Arg
     Q.drop(2);                                               // Result

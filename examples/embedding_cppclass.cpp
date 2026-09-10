@@ -44,7 +44,7 @@ static int mynew(lua_State*L)
 static int myfinaliser(lua_State*L)
 {
     LuaStack Q(L);
-    if (Q.hasheavyuserdataat(-1))
+    if (Q.hasat(LuaType::TUSERDATA, -1))
     {
         auto X=Q.touserdata<DemoClass**>(-1);
         printf("finaliser deletes %p\n", *X);
@@ -57,7 +57,7 @@ static int myfinaliser(lua_State*L)
 static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
-    if (Q.hasheavyuserdataat(-1))
+    if (Q.hasat(LuaType::TUSERDATA, -1))
     {
         auto X=Q.touserpointer<DemoClass>(-1);
         char pad[100];

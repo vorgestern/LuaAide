@@ -46,7 +46,7 @@ static double getelement(LuaStack&Q, int index, int e, const char name[])
 static V argvector(lua_State*L, int index)
 {
     LuaStack  Q(L);
-    if (Q.hasheavyuserdataat(index))
+    if (Q.hasat(LuaType::TUSERDATA, index))
     {
         auto X=Q.touserpointer<V>(index);
         return*X;
@@ -96,7 +96,7 @@ static int mynew(lua_State*L)
 static int myfinaliser(lua_State*L)
 {
     LuaStack Q(L);
-    if (Q.hasheavyuserdataat(-1))
+    if (Q.hasat(LuaType::TUSERDATA, -1))
     {
         auto X=Q.touserpointer<V**>(-1);
         // printf("finaliser deletes %p\n", X);
@@ -109,7 +109,7 @@ static int myfinaliser(lua_State*L)
 static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
-    if (Q.hasheavyuserdataat(-1))
+    if (Q.hasat(LuaType::TUSERDATA, -1))
     {
         auto*X=Q.touserpointer<V>(-1);
         char pad[100];

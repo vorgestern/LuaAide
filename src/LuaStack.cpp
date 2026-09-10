@@ -475,6 +475,10 @@ LuaCall LuaStack::operator[](LuaMetaMethod m)
 #ifdef UNITTEST
 #include <gtest/gtest.h>
 
+bool nilat(LuaStack&Q, int index){ return Q.hasat(LuaType::TNIL, index); }
+bool boolat(LuaStack&Q, int index){ return Q.hasat(LuaType::TBOOLEAN, index); }
+bool funcat(LuaStack&Q, int index){ return Q.hasat(LuaType::TFUNCTION, index); }
+
 static int panichandler(lua_State*L)
 {
     LuaStack Q(L);
@@ -601,14 +605,14 @@ TEST_F(StackEnv, HasNilAt)
 {
     Q<<21<<LuaNil()<<22;
     ASSERT_EQ(3, height(Q));
-    ASSERT_FALSE(Q.hasnilat(-4));
-    ASSERT_FALSE(Q.hasnilat(-3));
-    ASSERT_TRUE( Q.hasnilat(-2));
-    ASSERT_FALSE(Q.hasnilat(-1));
-    ASSERT_FALSE(Q.hasnilat( 1));
-    ASSERT_TRUE( Q.hasnilat( 2));
-    ASSERT_FALSE(Q.hasnilat( 3));
-    ASSERT_FALSE(Q.hasnilat( 4));
+    ASSERT_FALSE(nilat(Q, -4));
+    ASSERT_FALSE(nilat(Q, -3));
+    ASSERT_TRUE( nilat(Q, -2));
+    ASSERT_FALSE(nilat(Q, -1));
+    ASSERT_FALSE(nilat(Q,  1));
+    ASSERT_TRUE( nilat(Q,  2));
+    ASSERT_FALSE(nilat(Q,  3));
+    ASSERT_FALSE(nilat(Q,  4));
 }
 
 TEST_F(StackEnv, PosValid)
@@ -651,19 +655,19 @@ TEST_F(StackEnv, HasBoolAt)
 {
     Q<<-21.2<<false<<"abc"<<true<<luanil;
     ASSERT_EQ(5, height(Q));
-    EXPECT_FALSE(Q.hasboolat(-6));
-    EXPECT_FALSE(Q.hasboolat(-5));
-    EXPECT_TRUE (Q.hasboolat(-4));
-    EXPECT_FALSE(Q.hasboolat(-3));
-    EXPECT_TRUE (Q.hasboolat(-2));
-    EXPECT_FALSE(Q.hasboolat(-1));
-    EXPECT_FALSE(Q.hasboolat( 0));
-    EXPECT_FALSE(Q.hasboolat( 1));
-    EXPECT_TRUE (Q.hasboolat( 2));
-    EXPECT_FALSE(Q.hasboolat( 3));
-    EXPECT_TRUE (Q.hasboolat( 4));
-    EXPECT_FALSE(Q.hasboolat( 5));
-    EXPECT_FALSE(Q.hasboolat( 6));
+    EXPECT_FALSE(boolat(Q, -6));
+    EXPECT_FALSE(boolat(Q, -5));
+    EXPECT_TRUE (boolat(Q, -4));
+    EXPECT_FALSE(boolat(Q, -3));
+    EXPECT_TRUE (boolat(Q, -2));
+    EXPECT_FALSE(boolat(Q, -1));
+    EXPECT_FALSE(boolat(Q,  0));
+    EXPECT_FALSE(boolat(Q,  1));
+    EXPECT_TRUE (boolat(Q,  2));
+    EXPECT_FALSE(boolat(Q,  3));
+    EXPECT_TRUE (boolat(Q,  4));
+    EXPECT_FALSE(boolat(Q,  5));
+    EXPECT_FALSE(boolat(Q,  6));
 }
 
 TEST_F(StackEnv, HasIntAt)
@@ -706,38 +710,38 @@ TEST_F(StackEnv, HasFunctionAt)
 {
     Q<<true<<dummyfunc<<true<<true;
     ASSERT_EQ(4, height(Q));
-    EXPECT_FALSE(Q.hasfunctionat(-5));
-    EXPECT_FALSE(Q.hasfunctionat(-4));
-    EXPECT_TRUE( Q.hasfunctionat(-3));
-    EXPECT_FALSE(Q.hasfunctionat(-2));
-    EXPECT_FALSE(Q.hasfunctionat(-1));
-    EXPECT_FALSE(Q.hasfunctionat( 0));
-    EXPECT_FALSE(Q.hasfunctionat( 1));
-    EXPECT_TRUE( Q.hasfunctionat( 2));
-    EXPECT_FALSE(Q.hasfunctionat( 3));
-    EXPECT_FALSE(Q.hasfunctionat( 4));
-    EXPECT_FALSE(Q.hasfunctionat( 5));
+    EXPECT_FALSE(funcat(Q, -5));
+    EXPECT_FALSE(funcat(Q, -4));
+    EXPECT_TRUE( funcat(Q, -3));
+    EXPECT_FALSE(funcat(Q, -2));
+    EXPECT_FALSE(funcat(Q, -1));
+    EXPECT_FALSE(funcat(Q,  0));
+    EXPECT_FALSE(funcat(Q,  1));
+    EXPECT_TRUE( funcat(Q,  2));
+    EXPECT_FALSE(funcat(Q,  3));
+    EXPECT_FALSE(funcat(Q,  4));
+    EXPECT_FALSE(funcat(Q,  5));
 }
 
 TEST_F(StackEnv, HasThreadAt)
 {
     lua_pushthread(Q);
     ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasthreadat(-1));
+    ASSERT_TRUE(Q.hasat(LuaType::TTHREAD, -1));
 }
 
-TEST_F(StackEnv, HasUserdataAt1)
+TEST_F(StackEnv, HasLightUserdataAt1)
 {
     Q<<LuaLightUserData(0);
     ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasuserdataat(-1));
+    ASSERT_TRUE(Q.hasat(LuaType::TLIGHTUSERDATA, -1));
 }
 
 TEST_F(StackEnv, HasUserdataAt2)
 {
     lua_newuserdatauv(Q, sizeof(void*), 0);
     ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasuserdataat(-1));
+    ASSERT_TRUE(Q.hasat(LuaType::TUSERDATA, -1));
 }
 
 TEST_F(StackEnv, LuaStackAbsindex)
@@ -749,7 +753,7 @@ TEST_F(StackEnv, LuaStackAbsindex)
     Q.drop(3);
     ASSERT_TRUE(Q.hasstringat(stackindex(Hoppla)));
     Q.drop(1)<<true<<"hoppla woanders";
-    ASSERT_TRUE(Q.hasboolat(stackindex(Hoppla)));
+    ASSERT_TRUE(boolat(Q, stackindex(Hoppla)));
 }
 
 // Teststatus LuaStack:
@@ -792,14 +796,9 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - >>LuaError
 //
 // + posvalid
-// + hasnilat
 // + hasstringat
-// + hasboolat
 // + hasintat
 // + hastableat
-// + hasfunctionat
-// + hasthreadat
-// + hasuserdataat
 //
 // - tostring
 // - tobool
