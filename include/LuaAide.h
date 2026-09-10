@@ -50,6 +50,7 @@ enum class LuaType:int {
     TTHREAD
 };
 std::string_view tostring(LuaType);
+std::string_view tostring99(LuaType);
 
 enum class LuaMetaMethod:unsigned {
     tostring,
@@ -68,28 +69,16 @@ enum class LuaMetaMethod:unsigned {
 };
 std::string_view tostring(LuaMetaMethod);
 
-//! Diese Klasse erleichtert den Aufruf einer Elementfunktion
-//! (in Lua wäre das z.B. X:MyFunction(self, a, b, c)),
-//! indem sie die Elementfunktion ermittelt und den Stack geeignet vorbereitet:
-//!
-//! Der Aufruf wird so realisiert:
-//! Stack<<X<<a<<b<<c<<LuaColonCall("MyFunction",3)>>1;
-//!
-//! Vor der Ausgabe von LuaColonCall() liegt auf dem Stack
-//! [X a b c]
-//! Nach der Ausgabe von LuaColonCall() (Stack<<X<<a<<b<<c<<LuaColonCall("MyFunction",3))
-//! liegt auf dem Stack
-//! [X:MyFunction X a b c],
-//! nach >>1 (wenn ein Rückgabewert erwartet wird)
-//! [result]
-class LuaColonCall
+// LuaMethod helps calling a member function of the object on the stack.
+// This is the equivalent of result=X:mymethod(a,b,c).
+// How to use:
+// Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1;
+class LuaMethod
 {
     friend class LuaStack;
     const char*name{nullptr};
-    unsigned numargs{0};
 public:
-    LuaColonCall(const char s[]): name(s){}
-    LuaColonCall(const char s[], unsigned na): name(s), numargs(na){}
+    LuaMethod(const char s[]): name(s){}
 };
 
 enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue
@@ -171,7 +160,7 @@ public:
     LuaCall  operator<<(const LuaCode&);
     LuaCall  operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall  operator<<(lua_CFunction);
-    LuaCall  operator<<(const LuaColonCall&);
+    LuaCall  operator<<(const LuaMethod&);
     LuaCall  operator<<(const LuaDotCall&);
     LuaCall  operator<<(const LuaGlobalCall&);
     LuaCall  operator<<(const LuaClosure&);

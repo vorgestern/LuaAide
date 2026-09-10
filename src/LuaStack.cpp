@@ -194,6 +194,11 @@ string_view tostring(LuaType t)
     else return "none";
 }
 
+string_view tostring99(LuaType t)
+{
+    return tostring(t);
+}
+
 string_view tostring(LuaMetaMethod m)
 {
     static const string_view names[]=
@@ -219,37 +224,108 @@ string_view tostring(LuaMetaMethod m)
 
 // *********************************************************************
 
-static int errfunction(lua_State*L)
+[[maybe_unused]] static int errfunction(lua_State*L)
 {
     LuaStack Q(L);
-    Q<<LuaUpValue(1)>>luaerror;
+    // Q<<LuaUpValue(1)>>luaerror;
+    Q<<LuaUpValue(1);
+    lua_error(L);
     return 0;
 }
 
-LuaCall LuaStack::operator<<(const LuaColonCall&C)
+LuaCall LuaStack::operator<<(const LuaMethod&C)
 {
-    // Beispiel: Es soll der Aufruf X:Funktion(a, b, c); ausgeführt werden.
-    //           C.name="Funktion"
-    //           C.numargs=3
-    // Auf dem Stack liegt zu Beginn: [X, a, b, c]
-    const auto object=index(-1-C.numargs);
-    lua_getfield(L, stackindex(object), C.name); // [X, a, b, c, Funktion]
-    if (hasfunctionat(-1))
+    const auto t=typeat(-1);
+    switch (t)
     {
-        lua_insert(L, stackindex(object)); // [Funktion, X, a, b, c]
-        // Dieser Konstruktor ist uns durch die Freundschaftsbeziehung zugänglich.
-        // Am Index object liegt inzwischen die Funktion.
-        return LuaCall(L, object);
+        case LuaType::TTABLE:
+        case LuaType::TSTRING:
+        {
+            const auto t=(LuaType)lua_getfield(L, -1, C.name); // [X, field]
+            switch (t)
+            {
+                case LuaType::TFUNCTION:
+                {
+                    swap(); // [function, X]
+                    return LuaCall(L, index(-2));
+                }
+                case LuaType::TNIL:
+                {
+                    drop(1);
+                    const auto tm=(LuaType)luaL_getmetafield(L, -1, C.name);
+                    switch (tm)
+                    {
+                        case LuaType::TFUNCTION:
+                        {
+                            swap(); // [X.name, X]
+                            return LuaCall(L, index(-2));
+                        }
+                        default:
+                        {
+                            drop(2);
+                            char pad[1000];
+                            auto tfs=tostring99(tm);
+                            sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                            *this<<pad;
+                            break;
+                        }
+                    }
+                    break;
+                }
+                default:
+                {
+                    // [X, field]
+                    drop(2);
+                    char pad[1000];
+                    auto tfs=tostring99(t);
+                    sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                    *this<<pad;
+                    break;
+                }
+            }
+            break;
+        }
+        default:
+        {
+            // [X]
+            if (lua_getmetatable(L, -1))
+            {
+                // [X, mt]
+                const auto tf=(LuaType)lua_getfield(L, -1, C.name); // [X, mt, mt.name]
+                switch (tf)
+                {
+                    case LuaType::TFUNCTION:
+                    {
+                        *this<<luarot3; // [mt.name, X, mt]
+                        drop(1);        // [mt.name, X]
+                        return LuaCall(L, index(-2));
+                    }
+                    default:
+                    {
+                        // [X, mt, mt.name]
+                        drop(3);
+                        char pad[1000];
+                        const auto tfs=tostring99(tf);
+                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                        *this<<pad;
+                    }
+                }
+            }
+            else
+            {
+                // [X]
+                drop(1);
+                char pad[1000];
+                const auto ts=tostring99(t);
+                sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.name);
+                *this<<pad;
+            }
+        }
     }
-    else
-    {
-        char pad[100];
-        snprintf(pad, sizeof(pad), "%s is not a method but ", C.name);
-        const auto str=pad+asstring(-1);
-        drop(1);
-        *this<<str<<LuaClosure {{errfunction, 1}};
-        return LuaCall(L, index(-1));
-    }
+
+    // [errmsg]
+    lua_error(L);
+    return LuaCall(L, index(-1));
 }
 
 LuaCall LuaStack::operator<<(const LuaDotCall&C)
@@ -680,326 +756,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
     ASSERT_TRUE(Q.hasboolat(stackindex(Hoppla)));
 }
 
-TEST_F(StackEnv, LuaCode)
-{
-    Q<<LuaCode("return 21");
-    ASSERT_TRUE(Q.hasfunctionat(-1));
-    LuaCall(Q)>>1;
-    ASSERT_TRUE(Q.hasintat(-1));
-    ASSERT_EQ(21, Q.toint(-1));
-}
-
-TEST_F(StackEnv, LuaGlobal)
-{
-    Q<<LuaCode(R"xxx(a=21 b="hoppla")xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("b")<<LuaGlobal("a");
-    ASSERT_TRUE(Q.hasintat(-1));
-    ASSERT_EQ(21, Q.toint(-1));
-    ASSERT_TRUE(Q.hasstringat(-2));
-    ASSERT_EQ("hoppla", Q.tostring(-2));
-}
-
-TEST_F(StackEnv, LuaDotCall)
-{
-    Q<<LuaCode(R"xxx(
-        A={
-            demo=function(x) return string.format("x=%s", x) end
-        }
-    )xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("x=alpha", Q.tostring(-1));
-}
-
-TEST_F(StackEnv, LuaColonCall)
-{
-    Q<<LuaCode(R"xxx(
-        local mt={
-            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
-        }
-        mt.__index=mt
-        A=setmetatable({x="alpha"}, mt)
-    )xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo", 1)>>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("x=alpha, a=beta", Q.tostring(-1));
-}
-
-TEST_F(StackEnv, LuaColonCallNotAMethod)
-{
-    Q<<LuaCode(R"xxx(
-        local mt={
-            demo=function(self, a) return string.format("x=%s, a=%s", self.x, a) end
-        }
-        mt.__index=mt
-        A=setmetatable({x="alpha"}, mt)
-    )xxx")>>0;
-    Q.clear();
-    Q<<LuaGlobal("A")<<"beta"<<LuaColonCall("demo_nixda", 1)>>1;
-    ASSERT_TRUE(Q.hasstringat(-1));
-    const string errmsg=Q.tostring(-1);
-    ASSERT_TRUE(errmsg.starts_with("demo_nixda is not a method but nil"));
-}
-
-TEST_F(StackEnv, LuaFuncValue)
-{
-    Q.clear();
-    // Define a function.
-    Q<<LuaCode(R"___(
-        return function(a) return tostring(a)..","..tostring(a) end
-    )___")>>1;
-    auto func=Q.index(-1);
-    // Push some random things on the stack on top of it,
-    // then call the function with argument 123.
-    Q<<21<<22<<23<<LuaFuncValue(stackindex(func))<<123>>1;
-    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_EQ("123,123", Q.tostring(-1));
-}
-
-TEST_F(StackEnv, LuaRegValue)
-{
-    static const char modname[]="demo";
-    ASSERT_EQ(0, height(Q));
-    Q<<212223>>LuaRegValue(modname);
-    ASSERT_EQ(0, height(Q));
-    Q<<LuaRegValue(modname);
-    ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hasintat(-1));
-    ASSERT_EQ(212223, Q.toint(-1));
-}
-
-TEST_F(StackEnv, LuaElement)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<vector<string> {"A", "B", "C", "D"};
-    ASSERT_EQ(1, height(Q));
-    Q<<LuaElement {{-1, 2}};
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("B", Q.tostring(-1));
-    Q.drop(1);
-    Q<<LuaElement {{-1, 4}};
-    ASSERT_TRUE(Q.hasstringat(-1));
-    ASSERT_EQ("D", Q.tostring(-1));
-    Q.drop(1);
-    Q<<LuaElement {{-1, 5}};
-    ASSERT_TRUE(Q.hasnilat(-1));
-    Q.drop(1);
-    ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hastableat(-1));
-    ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 1}}));
-    ASSERT_EQ(2, height(Q));
-    ASSERT_TRUE(Q.hasstringat(-1));
-    Q.drop(1);
-}
-
-TEST_F(StackEnv, LuaElementSet)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<LuaArray(10);
-    ASSERT_EQ(1, height(Q));
-    Q   <<"hoppla">>LuaElement {{-2, 5}}
-        <<21>>LuaElement {{-2, 1}}
-        <<22>>LuaElement {{-2, 2}}
-        <<23>>LuaElement {{-2, 3}};
-    // [21,22,23,nil,"hoppla"]
-    ASSERT_EQ(1, height(Q));
-
-    lua_len(Q, -1);
-    ASSERT_EQ(2, height(Q));
-    ASSERT_EQ(5, Q.toint(-1));
-    Q.drop(1);
-
-    Q<<LuaElement {{-1, 3}};
-    ASSERT_EQ(2, height(Q));
-    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
-    ASSERT_EQ(23, Q.toint(-1));
-    Q.drop(1);
-
-    Q<<LuaElement {{-1, 5}};
-    ASSERT_EQ(2, height(Q));
-    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_EQ("hoppla", Q.tostring(-1));
-    Q.drop(1);
-    ASSERT_EQ(1, height(Q));
-}
-
-TEST_F(StackEnv, LuaList)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<lualist<<21<<22<<23;
-    ASSERT_EQ(1, height(Q));
-    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
-
-    Q<<LuaElement {{-1, 2}};
-    ASSERT_EQ(2, height(Q));
-    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
-    ASSERT_EQ(22, Q.toint(-1));
-}
-
-TEST_F(StackEnv, LuaIterator)
-{
-    Q<<lualist<<121<<122<<123<<124<<125;
-
-    for (LuaIterator J(Q); next(J); ++J)
-    {
-        auto j=(unsigned)J;
-        ASSERT_EQ(120+j, Q.toint(-1));
-    }
-
-    ASSERT_EQ(1, height(Q));
-    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
-    Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
-    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
-    ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
-}
-
-TEST_F(StackEnv, LuaIteratorBreak)
-{
-    Q<<lualist<<121<<122<<123<<124<<125;
-
-    for (LuaIterator J(Q); next(J); ++J)
-    {
-        auto j=(unsigned)J;
-        if (j==2) break;
-        ASSERT_EQ(120+j, Q.toint(-1));
-    }
-
-    ASSERT_EQ(1, height(Q))<<"Breaking out of the loop must take the looping variables off the stack.";
-    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
-}
-
-TEST_F(StackEnv, AsString)
-{
-    Q<<true;
-    ASSERT_EQ(LuaType::TBOOLEAN, Q.typeat(-1))<<Q;
-    ASSERT_EQ("true", Q.asstring(-1))<<Q;
-    Q.drop(1);
-
-    void*p=nullptr;
-
-    Q<<lua_error;
-    ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
-    Q.drop(1);
-
-    Q<<LuaLightUserData((void*)lua_error);
-    ASSERT_EQ(LuaType::TLIGHTUSERDATA, Q.typeat(-1));
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(%p)", &p))<<Q;
-    Q.drop(1);
-
-    Q<<luanil;
-    ASSERT_EQ(LuaType::TNIL, Q.typeat(-1))<<Q;
-    ASSERT_EQ("nil", Q.asstring(-1))<<Q;
-    Q.drop(1);
-
-    Q<<3.1415926;
-    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1))<<Q;
-    ASSERT_EQ("3.14159", Q.asstring(-1))<<Q;
-    Q.drop(1);
-
-    Q<<"hoppla";
-    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1))<<Q;
-    ASSERT_EQ("hoppla", Q.asstring(-1))<<Q;
-    Q.drop(1);
-
-    Q<<newtable;
-    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
-    Q.drop(1);
-
-    lua_pushthread(Q);
-    ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
-    Q.drop(1);
-
-    lua_newuserdatauv(Q, sizeof(void*), 0);
-    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1))<<Q;
-    ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
-    Q.drop(1);
-}
-
-TEST_F(StackEnv, ArgCheckTypeThrow)
-{
-    Q<<"abc";
-    EXPECT_THROW(Q.argcheck(-1, LuaType::TFUNCTION, "function"), std::runtime_error);
-}
-
-TEST_F(StackEnv, ArgCheckTypeNoThrow)
-{
-    Q<<"abc";
-    EXPECT_NO_THROW(Q.argcheck(-1, LuaType::TSTRING, {}));
-}
-
-TEST_F(StackEnv, ArgCheckCondThrow)
-{
-    Q<<"abc";
-    auto cond=[](LuaStack&, int)->bool{ return false; };
-    EXPECT_THROW(Q.argcheck(-1, cond, "fail whenever"), std::runtime_error);
-    // EXPECT_NO_THROW(Q.argcheck(-1, cond, "Das kann nicht klappen."));
-}
-
-TEST_F(StackEnv, ArgCheckCondNoThrow)
-{
-    Q<<"abc";
-    auto cond=[](LuaStack&, int)->bool{ return true; };
-    EXPECT_NO_THROW(Q.argcheck(-1, cond, "success guaranteed"));
-}
-
-TEST_F(StackEnv, FieldAssignment)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<newtable<<"alpha">=21;
-    Q<<"beta">=22;
-    Q<<"gamma">=23;
-    ASSERT_EQ(1, height(Q))<<Q;
-    Q<<LuaCode("x=...; return x.alpha, x.beta, x.gamma")<<LuaValue(-2)>>3;
-    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
-    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
-    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
-}
-
-TEST_F(StackEnv, FieldAssignmentF)
-{
-    ASSERT_EQ(0, height(Q));
-    Q<<newtable; Q.F("alpha",21).F("beta",22).F("gamma",23);
-    ASSERT_EQ(1, height(Q))<<Q;
-    Q<<LuaCode("x=...; return x.alpha, x.beta, x.gamma")<<LuaValue(-2)>>3;
-    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
-    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
-    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
-}
-
-TEST_F(StackEnv, FieldAssignmentF1)
-{
-    ASSERT_EQ(0, height(Q));
-    LuaLightUserData luvkey((void*)0x12345678);
-    Q<<newtable; Q.F("alpha",21).F("beta",22).F(luvkey,23);
-    ASSERT_EQ(1, height(Q))<<Q;
-    Q<<LuaCode("X,luvkey=...; return X.alpha, X.beta, X[luvkey]")<<LuaValue(-2)<<luvkey>>3;
-    ASSERT_TRUE(Q.hasintat(-3))<<Q; ASSERT_EQ(21, Q.toint(-3));
-    ASSERT_TRUE(Q.hasintat(-2))<<Q; ASSERT_EQ(22, Q.toint(-2));
-    ASSERT_TRUE(Q.hasintat(-1))<<Q; ASSERT_EQ(23, Q.toint(-1));
-}
-
-TEST(LuaType, ToString)
-{
-    EXPECT_EQ("none", tostring(LuaType::TNONE));
-    EXPECT_EQ("nil", tostring(LuaType::TNIL));
-    EXPECT_EQ("boolean", tostring(LuaType::TBOOLEAN));
-    EXPECT_EQ("lightuserdata", tostring(LuaType::TLIGHTUSERDATA));
-    EXPECT_EQ("number", tostring(LuaType::TNUMBER));
-    EXPECT_EQ("string", tostring(LuaType::TSTRING));
-    EXPECT_EQ("table", tostring(LuaType::TTABLE));
-    EXPECT_EQ("function", tostring(LuaType::TFUNCTION));
-    EXPECT_EQ("userdata", tostring(LuaType::TUSERDATA));
-    EXPECT_EQ("thread", tostring(LuaType::TTHREAD));
-    EXPECT_EQ("none", tostring(static_cast<LuaType>(-2)));
-    EXPECT_EQ("none", tostring(static_cast<LuaType>(9)));
-}
-
 // Teststatus LuaStack:
 // ====================
 // + version
@@ -1028,7 +784,7 @@ TEST(LuaType, ToString)
 // - <<LuaClosure
 // + <<LuaCode
 // - <<lua_CFunction
-// + <<LuaColonCall
+// + <<LuaMethod
 // + <<LuaDotCall
 // - <<LuaGlobalCall
 // - <<LuaArray

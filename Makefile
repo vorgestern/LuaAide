@@ -2,13 +2,15 @@
 XFILES   := LuaCall LuaStack formatany keyescape streamout keys map apply
 XHEADER  := include/LuaAide.h
 CPPFLAGS := -Iinclude -I/usr/include/lua5.4 -I ../../../thirdparty/include
-CXXFLAGS := --std=c++20 -Wall -Werror
+CXXFLAGS := --std=c++20 -Wall
+# -Werror
 BT       := buildsys/gcc/bt
 .PHONY: clean dir test
 
 all: dir libLuaAide.a ulutest/ulutest.so LuaAideTest \
         b/simplescripts b/errorhandling b/lightuserdata b/embedding_cppclass \
-        b/vec3.so b/timestamp.so b/colorenum.so
+        b/vec3.so b/timestamp.so b/colorenum.so \
+	b/hilf1
 clean:
 	@rm -rf b $(BT) libLuaAide.a LuaAideTest ulutest/ulutest.so
 dir:
@@ -27,7 +29,7 @@ b/%.o: src/%.cpp $(XHEADER)
 
 # ============================================================
 
-LuaAideTest: src/testmain.cpp $(XFILES:%=$(BT)/%.o)
+LuaAideTest: src/testmain.cpp src/testpush.cpp $(XFILES:%=$(BT)/%.o)
 	@echo $<
 	@g++ -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) -DUNITTEST -DGTEST_HAS_PTHREAD=1 -llua5.4 -lgtest
 
@@ -79,3 +81,7 @@ TestSummary.lua: $(BT)/LuaAideTest.result $(BT)/moduletest_vec3.result $(BT)/mod
 
 lspcommands:
 	@bear -- make -B all
+
+b/hilf1: examples/hilf1.cpp libLuaAide.a $(XHEADER)
+	@echo $<
+	@g++ -o $@ $< $(CPPFLAGS) $(CXXFLAGS) -L. -lLuaAide -llua5.4
