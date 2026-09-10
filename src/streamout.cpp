@@ -74,7 +74,7 @@ namespace {
                 {
                     if (num>0) out<<",";
                     // uses 'key' (at index -2) and 'value' (at index -1)
-                    if (Q.hasnumberat(-2))
+                    if (Q.hasat(LuaType::TNUMBER, -2))
                     {
                         const auto key=Q.toint(-2);
                         out<<"\n\t"<<Indent<<"["<<key<<"]=";

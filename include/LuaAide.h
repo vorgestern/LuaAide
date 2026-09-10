@@ -192,7 +192,6 @@ public:
 #if 1
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
     bool hasintat(int pos){ return lua_isinteger(L, pos)!=0; }
-    bool hasnumberat(int pos){ return lua_isnumber(L, pos)!=0; }
     bool hastableat(int pos){ return lua_istable(L, pos)!=0; }
 #else
     // Use hasat(Type, pos) instead.

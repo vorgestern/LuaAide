@@ -214,7 +214,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                                 snprintf(pad, sizeof(pad), "%lld", Q.toint(stackindex(jkey)));
                                 result.push_back(indent1+"["+pad+"]=");
                             }
-                            else if (Q.hasnumberat(stackindex(jkey)))
+                            else
                             {
                                 Q<<LuaValue(stackindex(jkey));
                                 const string a=Q.tostring(-1);
