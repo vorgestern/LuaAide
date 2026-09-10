@@ -2,6 +2,7 @@
 #include <LuaAide.h>
 
 using namespace std;
+using namespace LuaAide;
 
 int LuaAide::map(lua_State*L)
 {

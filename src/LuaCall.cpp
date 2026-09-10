@@ -2,6 +2,7 @@
 #include <LuaAide.h>
 
 using namespace std;
+using namespace LuaAide;
 
 LuaCall::LuaCall(lua_State*L): LuaStack(L), funcindex(index(-1)){}
 LuaCall::LuaCall(LuaStack&S): LuaStack(S), funcindex(index(-1)){}

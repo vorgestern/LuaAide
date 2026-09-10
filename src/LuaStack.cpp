@@ -4,6 +4,7 @@
 #include "helper.h"
 
 using namespace std;
+using namespace LuaAide;
 
 static bool mypcall(LuaStack&LS, int argc, char*argv[], const char tag[])
 {
@@ -50,7 +51,7 @@ static void myhandleload(LuaStack&LS, int rc1, const char tag[])
     }
 }
 
-unsigned version(const LuaStack&S)
+unsigned LuaAide::version(const LuaStack&S)
 {
     return static_cast<unsigned>(lua_version(S.L));
 }
@@ -174,7 +175,7 @@ string LuaStack::asstring(int pos)
     }
 }
 
-string_view tostring(LuaType t)
+string_view LuaAide::tostringview(LuaType t)
 {
     static string_view names[]=
     {
@@ -194,12 +195,7 @@ string_view tostring(LuaType t)
     else return "none";
 }
 
-string_view tostring99(LuaType t)
-{
-    return tostring(t);
-}
-
-string_view tostring(LuaMetaMethod m)
+string_view LuaAide::tostringview(LuaMetaMethod m)
 {
     static const string_view names[]=
     {
@@ -264,7 +260,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                         {
                             drop(2);
                             char pad[1000];
-                            auto tfs=tostring99(tm);
+                            auto tfs=tostringview(tm);
                             sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
                             *this<<pad;
                             break;
@@ -277,7 +273,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                     // [X, field]
                     drop(2);
                     char pad[1000];
-                    auto tfs=tostring99(t);
+                    auto tfs=tostringview(t);
                     sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
                     *this<<pad;
                     break;
@@ -305,7 +301,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                         // [X, mt, mt.name]
                         drop(3);
                         char pad[1000];
-                        const auto tfs=tostring99(tf);
+                        const auto tfs=tostringview(tf);
                         sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.name);
                         *this<<pad;
                     }
@@ -316,7 +312,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 // [X]
                 drop(1);
                 char pad[1000];
-                const auto ts=tostring99(t);
+                const auto ts=tostringview(t);
                 sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.name);
                 *this<<pad;
             }
@@ -452,7 +448,7 @@ void LuaStack::argcheck(int index, LuaType t, std::string_view hint)
 {
     if (typeat(index)!=t)
     {
-        if (hint.empty()) luaL_typeerror(L, index, ::tostring(t).data());
+        if (hint.empty()) luaL_typeerror(L, index, tostringview(t).data());
         else luaL_typeerror(L, index, hint.data());
     }
 }
@@ -464,7 +460,7 @@ void LuaStack::argcheck(int index, const std::function<bool(LuaStack&, int index
 
 LuaCall LuaStack::operator[](LuaMetaMethod m)
 {
-    const auto t=static_cast<LuaType>(luaL_getmetafield(L, -1, ::tostring(m).data()));
+    const auto t=static_cast<LuaType>(luaL_getmetafield(L, -1, ::tostringview(m).data()));
     if (t==LuaType::TNIL)
     {
         // Hier sollte eine Dummymethode auf den Stack gelegt werden, die beim Aufruf eine Fehlermeldung erzeugt.

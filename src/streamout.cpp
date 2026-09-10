@@ -4,6 +4,7 @@
 #include "helper.h"
 
 using namespace std;
+using namespace LuaAide;
 
 // #define LIMIT_DUMP_DEPTH 0
 #define LIMIT_DUMP_DEPTH 3
@@ -98,7 +99,7 @@ namespace {
 
 } // anon
 
-ostream&operator<<(ostream&out, const LuaStack&X)
+ostream&LuaAide::operator<<(ostream&out, const LuaStack&X)
 {
     const int h=height(X);
     out<<"Stack("<<h<<")={";

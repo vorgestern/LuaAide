@@ -9,6 +9,7 @@
 // - Inline script creates instance and prints it.
 
 using namespace std;
+using namespace LuaAide;
 
 int panichandler(lua_State*L)
 {

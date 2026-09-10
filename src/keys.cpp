@@ -2,6 +2,7 @@
 #include <LuaAide.h>
 
 using namespace std;
+using namespace LuaAide;
 
 int LuaAide::keys(lua_State*L)
 {

@@ -8,6 +8,7 @@
 // moduletest_colorenum.lua demonstrates its use.
 
 using namespace std;
+using namespace LuaAide;
 
 enum class colortype: uint16_t {
     LCT_GREY=0,         // grayscale: 1,2,4,8,16 bit

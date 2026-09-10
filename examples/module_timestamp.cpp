@@ -7,6 +7,7 @@
 // Expose type 'highresclk::time_point' to Lua.
 // moduletest_timestamp.lua and moduledemo_timestamp.lua demonstrate its use.
 
+using namespace LuaAide;
 using namespace std;
 using namespace std::chrono_literals;
 using highresclk=chrono::high_resolution_clock;

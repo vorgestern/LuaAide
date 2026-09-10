@@ -15,6 +15,7 @@
 // - Konzept für die Identifikation des Datentyps, der in userdata gekapselt ist.
 
 using namespace std;
+using namespace LuaAide;
 
 namespace { namespace Vec3 {
 

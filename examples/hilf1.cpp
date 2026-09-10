@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace LuaAide;
 
 [[maybe_unused]] static int panichandler(lua_State*L)
 {

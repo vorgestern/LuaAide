@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace LuaAide;
 
 int main(int argc, char*argv[])
 {
@@ -29,21 +30,21 @@ protected:
 TEST_F(Lua, Getmetafield)
 {
     Q.clear(); Q<<"21";
-    const auto t1=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"t1="<<tostring(t1)<<"\n"; // cout<<Q<<"\n";
+    const auto t1=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"t1="<<tostringview(t1)<<"\n"; // cout<<Q<<"\n";
     Q.clear(); Q<<21;
-    const auto t2=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"t2="<<tostring(t2)<<"\n"; // cout<<Q<<"\n";
+    const auto t2=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"t2="<<tostringview(t2)<<"\n"; // cout<<Q<<"\n";
 
     if (0==Q<<LuaCode("return {match=function() end}")>>1)
     {
-        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (1) metafield="<<tostring(t)<<"\n"; // cout<<Q<<"\n";
+        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (1) metafield="<<tostringview(t)<<"\n"; // cout<<Q<<"\n";
     }
     if (0==Q<<LuaCode("local mt={}; mt.__index=mt; return setmetatable({}, mt)")>>1)
     {
-        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (2) metafield="<<tostring(t)<<"\n"; // cout<<Q<<"\n";
+        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (2) metafield="<<tostringview(t)<<"\n"; // cout<<Q<<"\n";
     }
     if (0==Q<<LuaCode("local mt={match=function() end}; mt.__index=mt; return setmetatable({}, mt)")>>1)
     {
-        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (3) metafield="<<tostring(t)<<"\n"; // cout<<Q<<"\n";
+        const auto t=(LuaType)luaL_getmetafield(Q, -1, "match"); cout<<"table (3) metafield="<<tostringview(t)<<"\n"; // cout<<Q<<"\n";
     }
 }
 
@@ -60,7 +61,7 @@ TEST_F(Lua, GetfieldOfString)
     {
         // Function exists.
         const auto t=(LuaType)lua_getfield(Q, -1, "match");
-        ASSERT_EQ(LuaType::TFUNCTION, t)<<"string expected to have function 'match', but is "<<tostring(t)<<"\n."<<Q<<"\n";
+        ASSERT_EQ(LuaType::TFUNCTION, t)<<"string expected to have function 'match', but is "<<tostringview(t)<<"\n."<<Q<<"\n";
     }
     ASSERT_EQ(1, (Q.clear()<<"21", height(Q)));
     {

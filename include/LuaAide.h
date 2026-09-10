@@ -10,17 +10,13 @@
 
 namespace LuaAide
 {
-    int formatany(lua_State*);
-    int keys(lua_State*);
-    int sortedkeys(lua_State*);
-    int keyescape(lua_State*);
-    int map(lua_State*);   // mapped=map(list, func)
-    int apply(lua_State*); // apply(list, func)
-}
 
-class LuaStack;
-class LuaCall;
-class LuaList;
+int formatany(lua_State*);
+int keys(lua_State*);
+int sortedkeys(lua_State*);
+int keyescape(lua_State*);
+int map(lua_State*);   // mapped=map(list, func)
+int apply(lua_State*); // apply(list, func)
 
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
@@ -48,8 +44,7 @@ enum class LuaType:int {
     TUSERDATA,
     TTHREAD
 };
-std::string_view tostring(LuaType);
-std::string_view tostring99(LuaType);
+std::string_view tostringview(LuaType);
 
 enum class LuaMetaMethod:unsigned {
     tostring,
@@ -66,7 +61,15 @@ enum class LuaMetaMethod:unsigned {
     mode,
     name
 };
-std::string_view tostring(LuaMetaMethod);
+std::string_view tostringview(LuaMetaMethod);
+
+class LuaStack;
+class LuaCall;
+class LuaList;
+
+std::ostream&operator<<(std::ostream&, const LuaStack&);
+unsigned height(const LuaStack&);
+unsigned version(const LuaStack&);
 
 // LuaMethod helps calling a member function of the object on the stack.
 // This is the equivalent of result=X:mymethod(a,b,c).
@@ -232,7 +235,7 @@ public:
     void argcheck(int index, const std::function<bool(LuaStack&, int index)>&cond, std::string_view hint); // Expect argument to meet cond
 
     LuaCall operator[](LuaMetaMethod);
-    LuaStack&operator>>(LuaMetaMethod m){ lua_setfield(L, -2, ::tostring(m).data()); return*this; } // [table, value] ==> [table={..., method=value}]
+    LuaStack&operator>>(LuaMetaMethod m){ lua_setfield(L, -2, tostringview(m).data()); return*this; } // [table, value] ==> [table={..., method=value}]
 };
 
 class LuaCall: public LuaStack
@@ -333,5 +336,7 @@ public:
         return ++index;
     }
 };
+
+} // end of namespace LuaAide
 
 #endif

@@ -5,6 +5,7 @@
 #include "helper.h"
 
 using namespace std;
+using namespace LuaAide;
 
 static int panichandler(lua_State*L)
 {
@@ -328,7 +329,7 @@ TEST_F(StackEnv, Method1)
 {
     Q<<"21";
     const auto t=(LuaType)luaL_getmetafield(Q, -1, "match");
-    cout<<"t="<<tostring(t)<<"\n";
+    cout<<"t="<<tostringview(t)<<"\n";
     cout<<Q;
 }
 
@@ -336,7 +337,7 @@ TEST_F(StackEnv, Method2)
 {
     Q<<"21";
     const auto t=(LuaType)lua_getfield(Q, -1, "print"); // Überraschenderweise funktioniert lua_getfield, aber nicht luaL_getmetafield bei strings.
-    cout<<"t="<<tostring(t)<<"\n";
+    cout<<"t="<<tostringview(t)<<"\n";
     cout<<Q;
 }
 
@@ -346,12 +347,12 @@ TEST_F(StackEnv, Method3)
     if (lua_getmetatable(Q, -1))
     {
         const auto t3=(LuaType)lua_getfield(Q, -2, "match"); // <== Frage den value ab, nicht direkt die Metatabelle!
-        cout<<"metatable.getfield(match)==>"<<tostring(t3)<<"\n";
+        cout<<"metatable.getfield(match)==>"<<tostringview(t3)<<"\n";
     }
     else cout<<"string has no metatable\n";
     // const auto t2=(LuaType)luaL_getmetafield(Q, -2, "match");
     // cout<<"t1="<<t1<<"\n";
-    // cout<<"t2="<<tostring(t2)<<"\n";
+    // cout<<"t2="<<tostringview(t2)<<"\n";
     cout<<Q;
 }
 
@@ -365,16 +366,16 @@ TEST_F(StackEnv, Method4)
 
 TEST(LuaType, ToString)
 {
-    EXPECT_EQ("none", tostring(LuaType::TNONE));
-    EXPECT_EQ("nil", tostring(LuaType::TNIL));
-    EXPECT_EQ("boolean", tostring(LuaType::TBOOLEAN));
-    EXPECT_EQ("lightuserdata", tostring(LuaType::TLIGHTUSERDATA));
-    EXPECT_EQ("number", tostring(LuaType::TNUMBER));
-    EXPECT_EQ("string", tostring(LuaType::TSTRING));
-    EXPECT_EQ("table", tostring(LuaType::TTABLE));
-    EXPECT_EQ("function", tostring(LuaType::TFUNCTION));
-    EXPECT_EQ("userdata", tostring(LuaType::TUSERDATA));
-    EXPECT_EQ("thread", tostring(LuaType::TTHREAD));
-    EXPECT_EQ("none", tostring(static_cast<LuaType>(-2)));
-    EXPECT_EQ("none", tostring(static_cast<LuaType>(9)));
+    EXPECT_EQ("none", tostringview(LuaType::TNONE));
+    EXPECT_EQ("nil", tostringview(LuaType::TNIL));
+    EXPECT_EQ("boolean", tostringview(LuaType::TBOOLEAN));
+    EXPECT_EQ("lightuserdata", tostringview(LuaType::TLIGHTUSERDATA));
+    EXPECT_EQ("number", tostringview(LuaType::TNUMBER));
+    EXPECT_EQ("string", tostringview(LuaType::TSTRING));
+    EXPECT_EQ("table", tostringview(LuaType::TTABLE));
+    EXPECT_EQ("function", tostringview(LuaType::TFUNCTION));
+    EXPECT_EQ("userdata", tostringview(LuaType::TUSERDATA));
+    EXPECT_EQ("thread", tostringview(LuaType::TTHREAD));
+    EXPECT_EQ("none", tostringview(static_cast<LuaType>(-2)));
+    EXPECT_EQ("none", tostringview(static_cast<LuaType>(9)));
 }

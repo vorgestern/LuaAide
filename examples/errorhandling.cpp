@@ -3,6 +3,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace LuaAide;
 
 // Example of error handling and closures.
 // The closure 'Closuredemo' contains a (Lua-) compiletime-error and a runtime-error.

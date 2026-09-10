@@ -9,6 +9,7 @@
 // Comparing allows for table lookup though.
 
 using namespace std;
+using namespace LuaAide;
 
 int panichandler(lua_State*L)
 {
