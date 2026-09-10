@@ -99,7 +99,7 @@ TEST_F(StackEnv, LuaElement)
     ASSERT_TRUE(Q.hasat(LuaType::TNIL, -1));
     Q.drop(1);
     ASSERT_EQ(1, height(Q));
-    ASSERT_TRUE(Q.hastableat(-1));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
     ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 1}}));
     ASSERT_EQ(2, height(Q));
     ASSERT_TRUE(Q.hasstringat(-1));

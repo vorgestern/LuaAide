@@ -231,7 +231,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                             result.push_back(indent1+a+"=");
                             break;
                         }
-                        case LuaType::TTABLE: // else if (Q.hastableat(stackindex(jkey)))
+                        case LuaType::TTABLE:
                         {
                             Q<<"Table keys of type table cannot be serialised.">>luaerror;
                             break;

@@ -30,7 +30,7 @@ static int mynew(lua_State*L)
     auto P=reinterpret_cast<DemoClass**>(lua_newuserdatauv(L, sizeof(DemoClass*), 0));
     Q<<LuaGlobal("mtdemo");
     lua_setmetatable(L, -2);
-    if (Q.hastableat(-2))
+    if (Q.hasat(LuaType::TTABLE, -2))
     {
         const auto a=Q(LuaElement({-2, 1}))==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
         const auto b=Q(LuaElement({-2, 2}))==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);

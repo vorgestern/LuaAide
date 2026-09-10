@@ -188,11 +188,10 @@ public:
     bool posvalid(int pos){ return (pos>0)?(pos<=lua_gettop(L)):(pos<0)?(-pos<=lua_gettop(L)):false; }
     LuaType typeat(int pos){ return static_cast<LuaType>(lua_type(L, pos)); }
     bool hasat(LuaType t, int pos){ return posvalid(pos) && static_cast<LuaType>(lua_type(L, pos))==t; }
+    bool hasintat(int pos){ return lua_isinteger(L, pos)!=0; }
 
 #if 1
     bool hasstringat(int pos){ return posvalid(pos) && lua_isstring(L, pos)!=0; }
-    bool hasintat(int pos){ return lua_isinteger(L, pos)!=0; }
-    bool hastableat(int pos){ return lua_istable(L, pos)!=0; }
 #else
     // Use hasat(Type, pos) instead.
 #endif

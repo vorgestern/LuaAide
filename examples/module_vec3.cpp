@@ -51,7 +51,7 @@ static V argvector(lua_State*L, int index)
         auto X=Q.touserpointer<V>(index);
         return*X;
     }
-    if (Q.hastableat(index))
+    if (Q.hasat(LuaType::TTABLE, index))
     {
         const auto x=getelement(Q, index, 1, "x"),
                    y=getelement(Q, index, 2, "y"),

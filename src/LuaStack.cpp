@@ -478,6 +478,7 @@ LuaCall LuaStack::operator[](LuaMetaMethod m)
 bool nilat(LuaStack&Q, int index){ return Q.hasat(LuaType::TNIL, index); }
 bool boolat(LuaStack&Q, int index){ return Q.hasat(LuaType::TBOOLEAN, index); }
 bool funcat(LuaStack&Q, int index){ return Q.hasat(LuaType::TFUNCTION, index); }
+bool tableat(LuaStack&Q, int index){ return Q.hasat(LuaType::TTABLE, index); }
 
 static int panichandler(lua_State*L)
 {
@@ -568,7 +569,7 @@ TEST_F(StackEnv, VectorString)
     };
     // ASSERT_EQ(53, X[4].size());
     Q<<X;
-    ASSERT_EQ(1, height(Q)); ASSERT_TRUE(Q.hastableat(-1));
+    ASSERT_EQ(1, height(Q)); ASSERT_TRUE(tableat(Q, -1));
     ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 5}}));
     ASSERT_EQ(2, height(Q));
     size_t len;
@@ -691,17 +692,17 @@ TEST_F(StackEnv, HasTableAt)
 {
     Q<<true<<newtable<<true<<true;
     ASSERT_EQ(4, height(Q));
-    EXPECT_FALSE(Q.hastableat(-5));
-    EXPECT_FALSE(Q.hastableat(-4));
-    EXPECT_TRUE( Q.hastableat(-3));
-    EXPECT_FALSE(Q.hastableat(-2));
-    EXPECT_FALSE(Q.hastableat(-1));
-    EXPECT_FALSE(Q.hastableat( 0));
-    EXPECT_FALSE(Q.hastableat( 1));
-    EXPECT_TRUE( Q.hastableat( 2));
-    EXPECT_FALSE(Q.hastableat( 3));
-    EXPECT_FALSE(Q.hastableat( 4));
-    EXPECT_FALSE(Q.hastableat( 5));
+    EXPECT_FALSE(tableat(Q, -5));
+    EXPECT_FALSE(tableat(Q, -4));
+    EXPECT_TRUE( tableat(Q, -3));
+    EXPECT_FALSE(tableat(Q, -2));
+    EXPECT_FALSE(tableat(Q, -1));
+    EXPECT_FALSE(tableat(Q,  0));
+    EXPECT_FALSE(tableat(Q,  1));
+    EXPECT_TRUE( tableat(Q,  2));
+    EXPECT_FALSE(tableat(Q,  3));
+    EXPECT_FALSE(tableat(Q,  4));
+    EXPECT_FALSE(tableat(Q,  5));
 }
 
 static int dummyfunc(lua_State*){ return 0; }
@@ -798,7 +799,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // + posvalid
 // + hasstringat
 // + hasintat
-// + hastableat
 //
 // - tostring
 // - tobool
