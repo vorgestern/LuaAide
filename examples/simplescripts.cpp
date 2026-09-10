@@ -7,6 +7,7 @@
 // Examples for embedding Lua:
 
 using namespace std;
+using namespace LuaAide;
 
 int join(lua_State*L)
 {

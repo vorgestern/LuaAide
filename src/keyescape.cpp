@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int keyescape(lua_State*L)
+int LuaAide::keyescape(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)<1) return Q<<"keyescape: Argument (string) expected">>luaerror;

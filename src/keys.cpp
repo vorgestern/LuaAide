@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int keys(lua_State*L)
+int LuaAide::keys(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)<1)
@@ -70,7 +70,7 @@ static int cmp_ab(lua_State*L)
     return 1;
 }
 
-int sortedkeys(lua_State*L)
+int LuaAide::sortedkeys(lua_State*L)
 {
     LuaStack Q(L);
     if (height(Q)<1)
@@ -123,7 +123,7 @@ TEST_F(KeysEnv, keys)
 {
     Q<<LuaCode("return {21,a=1,b=2,22,23,[true]=101,c=3}")>>1;
     ASSERT_EQ(1, height(Q));
-    Q<<keys<<LuaValue(-2)>>1;
+    Q<<LuaAide::keys<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {
@@ -136,7 +136,7 @@ TEST_F(KeysEnv, sortedkeys)
 {
     Q<<LuaCode("return {21,a=1,b=2,22,23,[true]=101,c=3}")>>1;
     ASSERT_EQ(1, height(Q));
-    Q<<sortedkeys<<LuaValue(-2)>>1;
+    Q<<LuaAide::sortedkeys<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {

@@ -8,6 +8,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace LuaAide;
 
 static tuple<size_t, size_t, long long>keynum(lua_State*L)
 {
@@ -274,7 +275,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     }
 }
 
-int formatany(lua_State*L)
+int LuaAide::formatany(lua_State*L)
 {
     LuaStack Q(L);
     vector<string>result;

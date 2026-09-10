@@ -8,13 +8,12 @@
 #include <unordered_map>
 #include <lua.hpp>
 
-int formatany(lua_State*);
-int keys(lua_State*);
-int sortedkeys(lua_State*);
-int keyescape(lua_State*);
-
 namespace LuaAide
 {
+    int formatany(lua_State*);
+    int keys(lua_State*);
+    int sortedkeys(lua_State*);
+    int keyescape(lua_State*);
     int map(lua_State*);   // mapped=map(list, func)
     int apply(lua_State*); // apply(list, func)
 }
