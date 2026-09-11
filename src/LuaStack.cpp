@@ -1,6 +1,7 @@
 
 #include <LuaAide.h>
 #include <iostream>
+#include <cassert>
 #include "helper.h"
 
 using namespace std;
@@ -229,7 +230,7 @@ string_view LuaAide::tostringview(LuaMetaMethod m)
     return 0;
 }
 
-LuaCall LuaStack::operator<<(const LuaMethod&C)
+LuaCall LuaStack::pushmethod(const char name[])
 {
     const auto t=typeat(-1);
     switch (t)
@@ -237,7 +238,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
         case LuaType::TTABLE:
         case LuaType::TSTRING:
         {
-            const auto t=(LuaType)lua_getfield(L, -1, C.value.data()); // [X, field]
+            const auto t=(LuaType)lua_getfield(L, -1, name); // [X, field]
             switch (t)
             {
                 case LuaType::TFUNCTION:
@@ -248,7 +249,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 case LuaType::TNIL:
                 {
                     drop(1);
-                    const auto tm=(LuaType)luaL_getmetafield(L, -1, C.value.data());
+                    const auto tm=(LuaType)luaL_getmetafield(L, -1, name);
                     switch (tm)
                     {
                         case LuaType::TFUNCTION:
@@ -261,7 +262,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                             drop(2);
                             char pad[1000];
                             auto tfs=tostringview(tm);
-                            sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
+                            sprintf(pad, "Attempt to call a %s value (Method '%s').", tfs.data(), name);
                             *this<<pad;
                             break;
                         }
@@ -274,7 +275,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                     drop(2);
                     char pad[1000];
                     auto tfs=tostringview(t);
-                    sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
+                    sprintf(pad, "Attempt to call a %s value (Method '%s').", tfs.data(), name);
                     *this<<pad;
                     break;
                 }
@@ -287,7 +288,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
             if (lua_getmetatable(L, -1))
             {
                 // [X, mt]
-                const auto tf=(LuaType)lua_getfield(L, -1, C.value.data()); // [X, mt, mt.name]
+                const auto tf=(LuaType)lua_getfield(L, -1, name); // [X, mt, mt.name]
                 switch (tf)
                 {
                     case LuaType::TFUNCTION:
@@ -302,7 +303,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                         drop(3);
                         char pad[1000];
                         const auto tfs=tostringview(tf);
-                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
+                        sprintf(pad, "Attempt to index a %s value (Method '%s').", tfs.data(), name);
                         *this<<pad;
                     }
                 }
@@ -313,7 +314,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 drop(1);
                 char pad[1000];
                 const auto ts=tostringview(t);
-                sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.value.data());
+                sprintf(pad, "Attempt to index a %s value (Method '%s').", ts.data(), name);
                 *this<<pad;
             }
         }
@@ -322,6 +323,43 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
     // [errmsg]
     lua_error(L);
     return LuaCall(L, index(-1));
+}
+
+LuaCall LuaStack::operator<<(Callable X)
+{
+    switch (X.mecha)
+    {
+        case callmechanism::code_to_load:
+        {
+            assert(holds_alternative<string_view>(X.func));
+            return *this<<LuaCode(get<string_view>(X.func));
+        }
+        case callmechanism::value_on_stack:
+        {
+            assert(holds_alternative<absindex>(X.func));
+            auto&index=get<absindex>(X.func);
+            return LuaCall(*this, index);
+        }
+        case callmechanism::element_by_key:
+        {
+            // local result=Table[FuncKey](21,22,23)
+            // Stack<<FuncKey<<Callable<<21<<22<<23>>1;    ==>    Stack [result]
+            assert(holds_alternative<absindex>(X.func));
+            const auto Table=get<absindex>(X.func);
+            lua_gettable(L, stackindex(Table));
+            return LuaCall(*this, -1);
+        }
+        case callmechanism::method_by_name:
+        {
+            assert(holds_alternative<string_view>(X.func));
+            return pushmethod(get<string_view>(X.func).data());
+        }
+        default:
+        {
+            assert(false);
+            return LuaCall(*this, index(-1));
+        }
+    }
 }
 
 LuaCall LuaStack::operator<<(const LuaDotCall&C)
@@ -786,7 +824,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - <<LuaClosure
 // + <<LuaCode
 // - <<lua_CFunction
-// + <<LuaMethod
 // + <<LuaDotCall
 // - <<LuaGlobalCall
 // - <<LuaArray

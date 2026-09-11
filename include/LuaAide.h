@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <string>
+#include <variant>
 #include <lua.hpp>
 
 namespace LuaAide
@@ -95,12 +96,40 @@ typedef Distinct<const void*, distinct_pushable::lud>                      LuaLi
 typedef Distinct<std::string_view, distinct_pushable::g>                   LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f>                   LuaField;
 typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDotCall;
-typedef Distinct<std::string_view, distinct_pushable::me>                  LuaMethod;
+// typedef Distinct<std::string_view, distinct_pushable::me>                  LuaMethod;
 typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::string_view, distinct_pushable::co>                  LuaCode;
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
+
+enum class callmechanism {
+    value_on_stack,
+    method_by_name,
+    element_by_key,
+    code_to_load,
+};
+struct Callable
+{
+    callmechanism mecha;
+    std::variant<absindex,std::string_view> func;
+};
+inline Callable LuaMethod(std::string_view name) // replace LuaMethod
+{
+    return Callable {callmechanism::method_by_name, name};
+}
+inline Callable MyCode(std::string_view code) // replace LuaCode
+{
+    return Callable {callmechanism::code_to_load, code};
+}
+inline Callable MyFunc(absindex func) // replace LuaFuncValue
+{
+    return Callable {callmechanism::value_on_stack, func};
+}
+inline Callable MyElementFunction(absindex table) // replace LuaDotCall
+{
+    return Callable {callmechanism::element_by_key, table};
+}
 
 // Pushables:
 // LuaMethod
@@ -112,6 +141,8 @@ class LuaStack
     friend unsigned height(const LuaStack&S){ return lua_gettop(S.L); }
     friend unsigned version(const LuaStack&); // Lua 5.4.6 gibt 504 zurück.
     friend std::ostream&operator<<(std::ostream&, const LuaStack&);
+
+    LuaCall pushmethod(const char name[]);
 
 protected:
     lua_State*L{nullptr};
@@ -157,7 +188,7 @@ public:
     LuaCall operator<<(const LuaCode&);
     LuaCall operator<<(const std::pair<std::string_view, const LuaCode&>&); // chunkname first, chunk second
     LuaCall operator<<(lua_CFunction);
-    LuaCall operator<<(const LuaMethod&);
+    LuaCall operator<<(Callable);
     LuaCall operator<<(const LuaDotCall&);
     LuaCall operator<<(const LuaGlobalCall&);
     LuaCall operator<<(const LuaClosure&);       // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename"); ==> [Stack]
