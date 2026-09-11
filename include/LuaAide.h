@@ -122,17 +122,22 @@ Callable LuaCode(std::string_view code);
 Callable LuaCode(std::string_view name, std::string_view code);
 Callable LuaFuncValue(absindex func);
 Callable LuaElementCall(std::string_view funcname);
-Callable MyElementFunction(absindex table);
+Callable LuaCallElementOfTable(absindex table);
 
 // Pushables:
 // LuaMethod
-//      Call a member function of the object on the stack.
-//      Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1; ==> Stack [result]
+//     Call a member function of the object on the stack.
+//     Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1; ==> Stack [result]
 // LuaFuncValue
-//      Call a function on the stack.
-//      Equivalent to result=print(a,b,c):                     Stack<<LuaGlobal("print");
-//                                                             auto func=Stack.index(-1);
-//                                                             Stack<<LuaFuncValue(func)<<a<<b<<c>>1; ==> Stack [result]
+//     Call a function on the stack.
+//     Equivalent to result=print(a,b,c):                     Stack<<LuaGlobal("print");
+//                                                            auto func=Stack.index(-1);
+//                                                            Stack<<LuaFuncValue(func)<<a<<b<<c>>1; ==> Stack [result]
+// LuaCallElementOfTable
+//     Call a function contained in a table
+//     Equivalent of
+//         MyTable={print=function(...) ..... end}            Stack<<LuaGlobal("MyTable"); auto table=Q.index(-1);
+//         result=MyTable.print(21,22,23):                    Q<<"print"<<LuaCallElementOfTable(table);           ==> Stack [MyTable, result]
 
 class LuaStack
 {

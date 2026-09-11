@@ -353,8 +353,6 @@ LuaCall LuaStack::operator<<(Callable X)
         }
         case callmechanism::element_by_key:
         {
-            // local result=Table[FuncKey](21,22,23)
-            // Stack<<FuncKey<<Callable<<21<<22<<23>>1;    ==>    Stack [result]
             assert(holds_alternative<absindex>(X.func));
             const auto table=get<absindex>(X.func);
             lua_gettable(L, stackindex(table));
@@ -494,7 +492,7 @@ Callable LuaAide::LuaCode(std::string_view code){ return Callable {callmechanism
 Callable LuaAide::LuaCode(std::string_view name, std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(name, code)}; } // replace struct pair<name, LuaCode>
 Callable LuaAide::LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
 Callable LuaAide::LuaElementCall(std::string_view funcname){ return Callable {callmechanism::element_by_name, funcname}; } // replace struct LuaDotCall
-Callable LuaAide::MyElementFunction(absindex table){ return Callable {callmechanism::element_by_key, table}; } // replace LuaDotCall
+Callable LuaAide::LuaCallElementOfTable(absindex table){ return Callable {callmechanism::element_by_key, table}; } // replace LuaDotCall
 
 // ============================================================================
 
