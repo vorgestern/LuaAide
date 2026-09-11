@@ -4,6 +4,12 @@
 using namespace std;
 using namespace LuaAide;
 
+int LuaAide::idfunc(lua_State*L)
+{
+    LuaStack Q(L);
+    return height(Q);
+}
+
 int LuaAide::apply(lua_State*L)
 {
     LuaStack Q(L);

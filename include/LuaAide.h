@@ -9,6 +9,7 @@
 namespace LuaAide
 {
 
+int idfunc(lua_State*);
 int formatany(lua_State*);
 int keys(lua_State*);
 int sortedkeys(lua_State*);

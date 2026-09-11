@@ -87,3 +87,28 @@ TEST_F(Lua, GetfieldOfTable)
         ASSERT_EQ(LuaType::TNIL, t)<<"getfield should not find function 'match'.\n"<<Q<<"\n";
     }
 }
+
+TEST_F(Lua, Idfunc)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<LuaAide::idfunc<<21<<luanil<<23>>LUA_MULTRET;
+    ASSERT_EQ(3, height(Q));
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1)); ASSERT_EQ(23, Q.toint(-1));
+    ASSERT_EQ(LuaType::TNIL, Q.typeat(-2));
+    ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-3)); ASSERT_EQ(21, Q.toint(-3));
+}
+
+TEST_F(Lua, IdfuncReturnReferences)
+{
+    ASSERT_EQ(0, height(Q));
+    Q<<lualist<<21<<22<<23;
+    Q<<LuaAide::idfunc<<LuaValue(-2)>>1;
+    ASSERT_EQ(2, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-2));
+    const auto p1=lua_topointer(Q, -1), p2=lua_topointer(Q, -2);
+    ASSERT_TRUE(p2==p1)<<"Demonstrate, that pointer to returned value equals pointer to passed value.";
+    Q<<lualist<<21<<22<<23;
+    const auto p3=lua_topointer(Q, -1);
+    ASSERT_FALSE(p3==p1)<<"Demonstrate, that independently created tables have different pointers";
+}
