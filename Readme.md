@@ -133,7 +133,7 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     int join(lua_State*L)                                   // demofunction: table.concat with separator in upvalue
     {
         LuaStack Q(L);
-        Q   <<LuaGlobal("table")<<LuaDotCall("concat")      // local arg=...
+        Q   <<LuaGlobal("table")<<LuaElementCall("concat")      // local arg=...
             <<LuaValue(1)<<LuaUpValue(1)>>1;                // return table.concat(arg, up1)
         return 1;
     }
@@ -148,11 +148,11 @@ or `auto Q=LuaStack::New(true, nullptr);`.
 
 ## Calling functions from the Lua runtime
 
-    Q<<LuaGlobal("string")<<LuaDotCall("format")    // Pushes "vector=[21, 22, 23]" on to the stack.
+    Q<<LuaGlobal("string")<<LuaElementCall("format")    // Pushes "vector=[21, 22, 23]" on to the stack.
      <<"vector=[%s, %s, %s]"<<21<<22<<23>>1;
 
     Q<<lualist<<"First"<<"Second";                  // Pushes {"First", "Second"} on to the stack.
-    Q<<LuaGlobal("table")<<LuaDotCall("concat")
+    Q<<LuaGlobal("table")<<LuaElementCall("concat")
      <<LuaValue(-2)<<"+">>1;                        // Calls table.concat on the list, i.e. pushes
                                                     // "First+Second" on to the stack.
 

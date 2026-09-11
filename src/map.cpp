@@ -19,7 +19,7 @@ int LuaAide::map(lua_State*L)
         if (Q.hasat(LuaType::TNIL, -1))
         {
             auto item=Q.index(-2);
-            Q<<LuaGlobal("string")<<LuaDotCall("format")<<"map: function returns nil for element %d, which is: %s"<<(unsigned)J<<item>>1;
+            Q<<LuaGlobal("string")<<LuaElementCall("format")<<"map: function returns nil for element %d, which is: %s"<<(unsigned)J<<item>>1;
             Q>>luaerror;
         }
         Q>>LuaElement({stackindex(mappedlist), (unsigned)J}); // add result to mappedlist.

@@ -310,7 +310,7 @@ int LuaAide::formatany(lua_State*L)
         if (n<numargs && result.size()>0) result.back().append(", ");
         else if (n<numargs) result.push_back(", ");
     }
-    Q.drop(1)<<"return "<<LuaGlobal("table")<<LuaDotCall("concat")<<result<<"\n">>1;
+    Q.drop(1)<<"return "<<LuaGlobal("table")<<LuaElementCall("concat")<<result<<"\n">>1;
     lua_concat(Q, 2);
     return 1;
 }

@@ -489,6 +489,13 @@ LuaCall LuaStack::operator[](LuaMetaMethod m)
     return LuaCall(L, index(-2));
 }
 
+Callable LuaAide::LuaMethod(std::string_view name){ return Callable {callmechanism::method_by_name, name}; } // replace struct LuaMethod
+Callable LuaAide::LuaCode(std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(code, code)}; } // replace struct LuaCode, use code as name, better than nothing.
+Callable LuaAide::LuaCode(std::string_view name, std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(name, code)}; } // replace struct pair<name, LuaCode>
+Callable LuaAide::LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
+Callable LuaAide::LuaElementCall(std::string_view funcname){ return Callable {callmechanism::element_by_name, funcname}; } // replace struct LuaDotCall
+Callable LuaAide::MyElementFunction(absindex table){ return Callable {callmechanism::element_by_key, table}; } // replace LuaDotCall
+
 // ============================================================================
 
 #ifdef UNITTEST

@@ -44,7 +44,7 @@ TEST_F(StackEnv, LuaGlobal)
     ASSERT_EQ("hoppla", Q.tostring(-2));
 }
 
-TEST_F(StackEnv, LuaDotCall)
+TEST_F(StackEnv, LuaElementCall)
 {
     Q<<LuaCode(R"xxx(
         A={
@@ -52,7 +52,7 @@ TEST_F(StackEnv, LuaDotCall)
         }
     )xxx")>>0;
     Q.clear();
-    Q<<LuaGlobal("A")<<LuaDotCall("demo")<<"alpha">>1;
+    Q<<LuaGlobal("A")<<LuaElementCall("demo")<<"alpha">>1;
     ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("x=alpha", Q.tostring(-1));
 }
@@ -164,7 +164,7 @@ TEST_F(StackEnv, LuaIterator)
 
     ASSERT_EQ(1, height(Q));
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
-    Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<",">>1;
+    Q<<LuaGlobal("table")<<LuaElementCall("concat")<<LuaValue(-2)<<",">>1;
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
     ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
 }

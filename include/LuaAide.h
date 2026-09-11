@@ -117,15 +117,12 @@ struct Callable
     > func;
 };
 
-inline Callable LuaMethod(std::string_view name){ return Callable {callmechanism::method_by_name, name}; } // replace struct LuaMethod
-inline Callable LuaCode(std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(code, code)}; } // replace struct LuaCode, use code as name, better than nothing.
-inline Callable LuaCode(std::string_view name, std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(name, code)}; } // replace struct pair<name, LuaCode>
-inline Callable LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
-inline Callable LuaDotCall(std::string_view funcname){ return Callable {callmechanism::element_by_name, funcname}; } // replace struct LuaDotCall
-inline Callable MyElementFunction(absindex table) // replace LuaDotCall
-{
-    return Callable {callmechanism::element_by_key, table};
-}
+Callable LuaMethod(std::string_view name);
+Callable LuaCode(std::string_view code);
+Callable LuaCode(std::string_view name, std::string_view code);
+Callable LuaFuncValue(absindex func);
+Callable LuaElementCall(std::string_view funcname);
+Callable MyElementFunction(absindex table);
 
 // Pushables:
 // LuaMethod

@@ -12,7 +12,7 @@ using namespace LuaAide;
 int join(lua_State*L)
 {
     LuaStack Q(L);
-    Q   <<LuaGlobal("table")<<LuaDotCall("concat")
+    Q   <<LuaGlobal("table")<<LuaElementCall("concat")
         <<LuaValue(1)<<LuaUpValue(1)>>1;
         return 1;
 }
@@ -233,11 +233,11 @@ int main(int argc, char*argv[])
     {
         auto Script=Q<<LuaCode("local args={...}; for j,v in ipairs(args) do print(j,formatany(v)) end");
 
-        Q   <<LuaGlobal("string")<<LuaDotCall("format")
+        Q   <<LuaGlobal("string")<<LuaElementCall("format")
             <<"vector=[%s, %s, %s]"<<21<<22<<23>>1;
 
         Q   <<lualist<<"First"<<"Second";
-        Q   <<LuaGlobal("table")<<LuaDotCall("concat")
+        Q   <<LuaGlobal("table")<<LuaElementCall("concat")
             <<LuaValue(-2)<<"+">>1;
 
         Script>>0;
