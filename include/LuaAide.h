@@ -78,8 +78,13 @@ std::ostream&operator<<(std::ostream&, const LuaStack&);
 unsigned height(const LuaStack&);
 unsigned version(const LuaStack&);
 
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf,me}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue,method
+enum class distinct_pushable {
+    a,s,as,te,u,v,r,lud, // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
+    g,f,dc,gc,cl,co,vf,me // global,field,dotcall,globalcall,closure,code,funcvalue,method
+};
+template<typename X> concept Pushable=requires (X Element) { Element.distinguator; };
 template<typename I, distinct_pushable d> struct Distinct { I value; };
+
 typedef Distinct<int, distinct_pushable::v>                                LuaValue;
 typedef Distinct<int, distinct_pushable::vf>                               LuaFuncValue; // represents function on the stack
 typedef Distinct<unsigned, distinct_pushable::u>                           LuaUpValue;
