@@ -26,7 +26,6 @@
 
     LuaStack --> LuaCall                <<lua_CFunction
                                         <<Callable
-                                        <<LuaDotCall
                                         <<LuaGlobalCall
                                         <<LuaClosure
 

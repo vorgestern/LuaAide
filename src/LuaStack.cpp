@@ -343,6 +343,14 @@ LuaCall LuaStack::operator<<(Callable X)
             *this<<get<absindex>(X.func);
             return LuaCall(*this, index(-1));
         }
+        case callmechanism::element_by_name:
+        {
+            assert(holds_alternative<string_view>(X.func));
+            const int objectindex=-1;
+            lua_getfield(L, objectindex, get<string_view>(X.func).data());
+            remove(objectindex-1);
+            return LuaCall(L);
+        }
         case callmechanism::element_by_key:
         {
             // local result=Table[FuncKey](21,22,23)
@@ -363,14 +371,6 @@ LuaCall LuaStack::operator<<(Callable X)
             return LuaCall(*this, index(-1));
         }
     }
-}
-
-LuaCall LuaStack::operator<<(const LuaDotCall&C)
-{
-    const int objectindex=-1;
-    lua_getfield(L, objectindex, C.value.data());
-    remove(objectindex-1);
-    return LuaCall(L);
 }
 
 LuaCall LuaStack::operator<<(const LuaGlobalCall&C)

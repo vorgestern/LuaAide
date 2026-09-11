@@ -81,7 +81,7 @@ unsigned version(const LuaStack&);
 
 enum class distinct_pushable {
     a,s,as,te,u,v,r,lud, // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
-    g,f,dc,gc,cl,        // global,field,dotcall,globalcall,closure
+    g,f,gc,cl,           // global,field,globalcall,closure
 };
 template<typename X> concept Pushable=requires (X Element) { Element.distinguator; };
 template<typename I, distinct_pushable d> struct Distinct { I value; };
@@ -94,7 +94,6 @@ typedef Distinct<const void*, distinct_pushable::r>                        LuaRe
 typedef Distinct<const void*, distinct_pushable::lud>                      LuaLightUserData;
 typedef Distinct<std::string_view, distinct_pushable::g>                   LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f>                   LuaField;
-typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDotCall;
 typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
@@ -104,6 +103,7 @@ enum class callmechanism {
     value_on_stack,
     method_by_name,
     element_by_key,
+    element_by_name,
     code_to_load,
 };
 typedef std::pair<std::string_view,std::string_view> namedcode; // name, code
@@ -121,6 +121,7 @@ inline Callable LuaMethod(std::string_view name){ return Callable {callmechanism
 inline Callable LuaCode(std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(code, code)}; } // replace struct LuaCode, use code as name, better than nothing.
 inline Callable LuaCode(std::string_view name, std::string_view code){ return Callable {callmechanism::code_to_load, make_pair(name, code)}; } // replace struct pair<name, LuaCode>
 inline Callable LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
+inline Callable LuaDotCall(std::string_view funcname){ return Callable {callmechanism::element_by_name, funcname}; } // replace struct LuaDotCall
 inline Callable MyElementFunction(absindex table) // replace LuaDotCall
 {
     return Callable {callmechanism::element_by_key, table};
@@ -187,7 +188,6 @@ public:
 
     LuaCall operator<<(lua_CFunction);
     LuaCall operator<<(Callable);
-    LuaCall operator<<(const LuaDotCall&);
     LuaCall operator<<(const LuaGlobalCall&);
     LuaCall operator<<(const LuaClosure&);       // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename"); ==> [Stack]
 
