@@ -49,11 +49,11 @@ int main(int argc, char*argv[])
 
     // Execute a script that makes use of function randomkey
     // to select elements of Array 'StringIndex'.
-    Q<<make_pair("DemoScript", LuaCode(R"xxx(
+    Q<<LuaCode("DemoScript", R"xxx(
         for j=1,20 do
             local key=randomkey();
             print(key, StringIndex[key])
         end
-    )xxx"))>>0;
+    )xxx")>>0;
     return 0;
 }

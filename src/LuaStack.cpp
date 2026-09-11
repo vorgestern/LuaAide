@@ -331,8 +331,11 @@ LuaCall LuaStack::operator<<(Callable X)
     {
         case callmechanism::code_to_load:
         {
-            assert(holds_alternative<string_view>(X.func));
-            return *this<<LuaCode(get<string_view>(X.func));
+            assert(holds_alternative<namedcode>(X.func));
+            const auto&[name,code]=get<namedcode>(X.func);
+            const int rc=luaL_loadbufferx(L, code.data(), code.size(), name.data(), nullptr);
+            if (rc!=LUA_OK) *this>>luaerror;
+            return LuaCall(*this, index(-1));
         }
         case callmechanism::value_on_stack:
         {
@@ -373,21 +376,6 @@ LuaCall LuaStack::operator<<(const LuaDotCall&C)
 LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 {
     *this<<LuaGlobal(C.value.data());
-    return LuaCall(L);
-}
-
-LuaCall LuaStack::operator<<(const LuaCode&C)
-{
-    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), C.value.data(), nullptr); // Use string as name, better than nothing.
-    if (rc!=LUA_OK) *this>>luaerror;
-    return LuaCall(L);
-}
-
-LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
-{
-    auto [tag,C]=X;
-    const int rc=luaL_loadbufferx(L, C.value.data(), C.value.size(), tag.data(), nullptr);
-    if (rc!=LUA_OK) *this>>luaerror;
     return LuaCall(L);
 }
 
@@ -815,7 +803,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - <<LuaTable
 // - <<LuaLightUserData
 // - <<LuaClosure
-// + <<LuaCode
 // - <<lua_CFunction
 // + <<LuaDotCall
 // - <<LuaGlobalCall

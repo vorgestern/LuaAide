@@ -52,7 +52,7 @@ int main_throwing(lua_State*L)
     if (true)
     {
         Q<<21<<22<<23;
-        Q<<make_pair("Closuredemo", LuaCode(R"xxx(
+        Q<<LuaCode("Closuredemo", R"xxx(
             function translate(A, M                                                                          -- Missing ')' will cause a compile time error. Repair it to find the next error.
                 local R={}
                 for _,e in ipairs(A) do table.insert(R, M[e] or e) end
@@ -65,7 +65,7 @@ int main_throwing(lua_State*L)
                     return translate(A, {Hier="Wo", wohnen="schlafen", ["Schlümpfe"]="Heinzelmännchen"})
                 end
             }
-        )xxx"))>>0;
+        )xxx")>>0;
         if (const auto rc=Q<<LuaGlobal("Closures")<<LuaDotCall("fleissig")<<vector<string>{"Hier", "wohnen", "die", "Schlümpfe"}>>1; rc==0)
         {
             Q<<LuaGlobal("table")<<LuaDotCall("concat")<<LuaValue(-2)<<" ">>make_pair(1, 1);

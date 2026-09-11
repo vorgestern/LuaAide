@@ -223,11 +223,11 @@ TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
 {
                                                             ASSERT_EQ(0, height(Q));
     Q<<demoerror>>LuaGlobal("demoerror");                   ASSERT_EQ(0, height(Q));
-    Q<<make_pair("myscript", LuaCode(R"xxx(
+    Q<<LuaCode("myscript", R"xxx(
         function gehtnicht(x)
             return demoerror(x+100)
         end
-    )xxx"))>>0;                                             ASSERT_EQ(0, height(Q));
+    )xxx")>>0;                                              ASSERT_EQ(0, height(Q));
     const auto rc=Q<<LuaGlobalCall("gehtnicht")<<21>>2;     ASSERT_EQ(LUA_ERRRUN, rc);
                                                             ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(stringat(Q, -1));
