@@ -804,7 +804,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - <<LuaLightUserData
 // - <<LuaClosure
 // - <<lua_CFunction
-// + <<LuaDotCall
 // - <<LuaGlobalCall
 // - <<LuaArray
 // + <<LuaRegValue
