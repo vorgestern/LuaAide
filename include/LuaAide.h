@@ -81,13 +81,13 @@ unsigned version(const LuaStack&);
 
 enum class distinct_pushable {
     a,s,as,te,u,v,r,lud, // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
-    g,f,dc,gc,cl,co,vf,me // global,field,dotcall,globalcall,closure,code,funcvalue,method
+    g,f,dc,gc,cl,co, // global,field,dotcall,globalcall,closure,code
+//  vf,me // funcvalue,method
 };
 template<typename X> concept Pushable=requires (X Element) { Element.distinguator; };
 template<typename I, distinct_pushable d> struct Distinct { I value; };
 
 typedef Distinct<int, distinct_pushable::v>                                LuaValue;
-typedef Distinct<int, distinct_pushable::vf>                               LuaFuncValue; // represents function on the stack
 typedef Distinct<unsigned, distinct_pushable::u>                           LuaUpValue;
 typedef Distinct<size_t, distinct_pushable::a>                             LuaArray;
 typedef Distinct<size_t, distinct_pushable::s>                             LuaStruct;
@@ -119,10 +119,7 @@ inline Callable MyCode(std::string_view code) // replace LuaCode
 {
     return Callable {callmechanism::code_to_load, code};
 }
-inline Callable MyFunc(absindex func) // replace LuaFuncValue
-{
-    return Callable {callmechanism::value_on_stack, func};
-}
+inline Callable LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
 inline Callable MyElementFunction(absindex table) // replace LuaDotCall
 {
     return Callable {callmechanism::element_by_key, table};
@@ -189,7 +186,6 @@ public:
     LuaCall operator<<(const LuaDotCall&);
     LuaCall operator<<(const LuaGlobalCall&);
     LuaCall operator<<(const LuaClosure&);       // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename"); ==> [Stack]
-    LuaCall operator<<(const LuaFuncValue);
 
     LuaList operator<<(LuaListStart);
 

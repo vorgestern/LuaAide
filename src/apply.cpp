@@ -18,7 +18,7 @@ int LuaAide::apply(lua_State*L)
     if (Q.typeat(-1)!=LuaType::TFUNCTION) return 0;
     Q.swap();
     auto func=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J) Q<<LuaFuncValue(stackindex(func))<<LuaValue(-2)>>0;
+    for (LuaIterator J(Q); next(J); ++J) Q<<LuaFuncValue(func)<<LuaValue(-2)>>0;
     return 0;
 }
 

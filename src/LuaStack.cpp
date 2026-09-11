@@ -337,8 +337,8 @@ LuaCall LuaStack::operator<<(Callable X)
         case callmechanism::value_on_stack:
         {
             assert(holds_alternative<absindex>(X.func));
-            auto&index=get<absindex>(X.func);
-            return LuaCall(*this, index);
+            *this<<get<absindex>(X.func);
+            return LuaCall(*this, index(-1));
         }
         case callmechanism::element_by_key:
         {
@@ -383,12 +383,12 @@ LuaCall LuaStack::operator<<(const LuaCode&C)
     return LuaCall(L);
 }
 
-LuaCall LuaStack::operator<<(const LuaFuncValue F)
-{
-    *this<<LuaValue(F.value);
-    auto a=index(-1);
-    return LuaCall(L, a);
-}
+// LuaCall LuaStack::operator<<(const LuaFuncValue F)
+// {
+//     *this<<LuaValue(F.value);
+//     auto a=index(-1);
+//     return LuaCall(L, a);
+// }
 
 LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
 {

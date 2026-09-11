@@ -15,7 +15,7 @@ int LuaAide::map(lua_State*L)
     {
         // Call func(item)
         // Catch nil-results, because they are not permissible in mapping.
-        Q<<LuaFuncValue(stackindex(func))<<LuaValue(-2)>>1;
+        Q<<LuaFuncValue(func)<<LuaValue(-2)>>1;
         if (Q.hasat(LuaType::TNIL, -1))
         {
             auto item=Q.index(-2);

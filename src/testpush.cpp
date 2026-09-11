@@ -67,7 +67,7 @@ TEST_F(StackEnv, LuaFuncValue)
     auto func=Q.index(-1);
     // Push some random things on the stack on top of it,
     // then call the function with argument 123.
-    Q<<21<<22<<23<<LuaFuncValue(stackindex(func))<<123>>1;
+    Q<<21<<22<<23<<LuaFuncValue(func)<<123>>1;
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
     ASSERT_EQ("123,123", Q.tostring(-1));
 }
