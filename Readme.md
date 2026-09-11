@@ -159,7 +159,7 @@ or `auto Q=LuaStack::New(true, nullptr);`.
 ## Error handling
 ### Handling compile-errors in an application that embeds Lua
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
-- Combine LuaCode with a name in a std::pair to get better error messages.
+- Pass a source name together with Lua source code LuaCode to get better error messages.
     ```
     #include <LuaAide.h>
     using namespace std;
@@ -168,13 +168,13 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     {
         LuaStack Q=L;
         // Executing this Script will fail because a parenthesis is not closed.
-        Q<<make_pair("FunctioningLuaCompiletimeFailureDemo", LuaCode(R"___(
+        Q<<LuaCode("FunctioningLuaCompiletimeFailureDemo", R"___(
             function map(A, M
                 local R={}
                 for _,e in ipairs(A) do table.insert(R, M[e] or e) end
                 return R
             end
-        )___"))>>0;
+        )___")>>0;
     }
 
     int panichandler(lua_State*L)

@@ -20,13 +20,12 @@
 1. _ premake5
 1. _ rename rotate up dig und rotate down tuck.
 1. + Alternative colon call:     Q<<"21 22 23"<<LuaMethod("match")<<"(%d+) (%d+) (%d+)">>3;
-1. _ Alternative list creation:     Q<<21<<22<<23<<LuaList(3);
+1. _ Alternative list creation:  Q<<21<<22<<23<<LuaList(3);
 
 # Transitions
 
-    LuaStack --> LuaCall                <<LuaCode
-                                        <<lua_CFunction
-                                        <<LuaMethod
+    LuaStack --> LuaCall                <<lua_CFunction
+                                        <<Callable
                                         <<LuaDotCall
                                         <<LuaGlobalCall
                                         <<LuaClosure
@@ -44,5 +43,5 @@
 
 ## Usecases Probleme
 
-     Q<<lualist<<1<<2<<LuaCode<<args>>1<<4<<lualistend;               klappt nicht, weil nach dem Abschluss von LuaCall kein LusList mehr vorliegt.
+     Q<<lualist<<1<<2<<LuaCode(...)<<args>>1<<4<<lualistend;        klappt nicht, weil nach dem Abschluss von LuaCall kein LusList mehr vorliegt.
         Liste          Code           Stack ?
