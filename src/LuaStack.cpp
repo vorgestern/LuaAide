@@ -356,9 +356,9 @@ LuaCall LuaStack::operator<<(Callable X)
             // local result=Table[FuncKey](21,22,23)
             // Stack<<FuncKey<<Callable<<21<<22<<23>>1;    ==>    Stack [result]
             assert(holds_alternative<absindex>(X.func));
-            const auto Table=get<absindex>(X.func);
-            lua_gettable(L, stackindex(Table));
-            return LuaCall(*this, -1);
+            const auto table=get<absindex>(X.func);
+            lua_gettable(L, stackindex(table));
+            return LuaCall(*this, index(-1));
         }
         case callmechanism::method_by_name:
         {

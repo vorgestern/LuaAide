@@ -57,6 +57,21 @@ TEST_F(StackEnv, LuaElementCall)
     ASSERT_EQ("x=alpha", Q.tostring(-1));
 }
 
+TEST_F(StackEnv, LuaElementCallByKey)
+{
+    Q.clear();
+    Q<<LuaCode(R"___(
+        A={
+            demo=function(x) return string.format("x=%s", x) end
+        }
+    )___")>>0;
+    Q<<LuaGlobal("A")<<"demo";
+    const auto table=Q.index(-2);
+    Q<<MyElementFunction(table)<<"beta">>1;
+    ASSERT_TRUE(stringat(Q, -1));
+    ASSERT_EQ("x=beta", Q.tostring(-1));
+}
+
 TEST_F(StackEnv, LuaFuncValue)
 {
     Q.clear();
