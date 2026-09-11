@@ -96,7 +96,6 @@ typedef Distinct<const void*, distinct_pushable::lud>                      LuaLi
 typedef Distinct<std::string_view, distinct_pushable::g>                   LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f>                   LuaField;
 typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDotCall;
-// typedef Distinct<std::string_view, distinct_pushable::me>                  LuaMethod;
 typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::string_view, distinct_pushable::co>                  LuaCode;
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
@@ -114,10 +113,8 @@ struct Callable
     callmechanism mecha;
     std::variant<absindex,std::string_view> func;
 };
-inline Callable LuaMethod(std::string_view name) // replace LuaMethod
-{
-    return Callable {callmechanism::method_by_name, name};
-}
+
+inline Callable LuaMethod(std::string_view name){ return Callable {callmechanism::method_by_name, name}; } // replace struct LuaMethod
 inline Callable MyCode(std::string_view code) // replace LuaCode
 {
     return Callable {callmechanism::code_to_load, code};
