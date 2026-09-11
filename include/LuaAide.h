@@ -70,19 +70,7 @@ std::ostream&operator<<(std::ostream&, const LuaStack&);
 unsigned height(const LuaStack&);
 unsigned version(const LuaStack&);
 
-// LuaMethod helps calling a member function of the object on the stack.
-// This is the equivalent of result=X:mymethod(a,b,c).
-// How to use:
-// Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1;
-class LuaMethod
-{
-    friend class LuaStack;
-    const char*name{nullptr};
-public:
-    LuaMethod(const char s[]): name(s){}
-};
-
-enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue
+enum class distinct_pushable {a,s,as,te,u,v,r,lud,g,f,dc,gc,cl,co,vf,me}; // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata,global,field,dotcall,globalcall,closure,code,funcvalue,method
 template<typename I, distinct_pushable d> struct Distinct { I value; };
 typedef Distinct<int, distinct_pushable::v>                                LuaValue;
 typedef Distinct<int, distinct_pushable::vf>                               LuaFuncValue; // represents function on the stack
@@ -94,11 +82,17 @@ typedef Distinct<const void*, distinct_pushable::lud>                      LuaLi
 typedef Distinct<std::string_view, distinct_pushable::g>                   LuaGlobal;
 typedef Distinct<std::string_view, distinct_pushable::f>                   LuaField;
 typedef Distinct<std::string_view, distinct_pushable::dc>                  LuaDotCall;
+typedef Distinct<std::string_view, distinct_pushable::me>                  LuaMethod;
 typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGlobalCall;
 typedef Distinct<std::string_view, distinct_pushable::co>                  LuaCode;
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
+
+// Pushables:
+// LuaMethod
+//      Call a member function of the object on the stack.
+//      Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1;
 
 class LuaStack
 {

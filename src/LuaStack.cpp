@@ -237,7 +237,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
         case LuaType::TTABLE:
         case LuaType::TSTRING:
         {
-            const auto t=(LuaType)lua_getfield(L, -1, C.name); // [X, field]
+            const auto t=(LuaType)lua_getfield(L, -1, C.value.data()); // [X, field]
             switch (t)
             {
                 case LuaType::TFUNCTION:
@@ -248,7 +248,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 case LuaType::TNIL:
                 {
                     drop(1);
-                    const auto tm=(LuaType)luaL_getmetafield(L, -1, C.name);
+                    const auto tm=(LuaType)luaL_getmetafield(L, -1, C.value.data());
                     switch (tm)
                     {
                         case LuaType::TFUNCTION:
@@ -261,7 +261,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                             drop(2);
                             char pad[1000];
                             auto tfs=tostringview(tm);
-                            sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                            sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
                             *this<<pad;
                             break;
                         }
@@ -274,7 +274,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                     drop(2);
                     char pad[1000];
                     auto tfs=tostringview(t);
-                    sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                    sprintf(pad, "Attempt to call a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
                     *this<<pad;
                     break;
                 }
@@ -287,7 +287,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
             if (lua_getmetatable(L, -1))
             {
                 // [X, mt]
-                const auto tf=(LuaType)lua_getfield(L, -1, C.name); // [X, mt, mt.name]
+                const auto tf=(LuaType)lua_getfield(L, -1, C.value.data()); // [X, mt, mt.name]
                 switch (tf)
                 {
                     case LuaType::TFUNCTION:
@@ -302,7 +302,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                         drop(3);
                         char pad[1000];
                         const auto tfs=tostringview(tf);
-                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.name);
+                        sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", tfs.data(), C.value.data());
                         *this<<pad;
                     }
                 }
@@ -313,7 +313,7 @@ LuaCall LuaStack::operator<<(const LuaMethod&C)
                 drop(1);
                 char pad[1000];
                 const auto ts=tostringview(t);
-                sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.name);
+                sprintf(pad, "Attempt to index a %s value (LuaMethod '%s').", ts.data(), C.value.data());
                 *this<<pad;
             }
         }
