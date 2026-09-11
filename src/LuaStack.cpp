@@ -383,13 +383,6 @@ LuaCall LuaStack::operator<<(const LuaCode&C)
     return LuaCall(L);
 }
 
-// LuaCall LuaStack::operator<<(const LuaFuncValue F)
-// {
-//     *this<<LuaValue(F.value);
-//     auto a=index(-1);
-//     return LuaCall(L, a);
-// }
-
 LuaCall LuaStack::operator<<(const pair<string_view, const LuaCode&>&X)
 {
     auto [tag,C]=X;

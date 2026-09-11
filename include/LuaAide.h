@@ -82,7 +82,6 @@ unsigned version(const LuaStack&);
 enum class distinct_pushable {
     a,s,as,te,u,v,r,lud, // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
     g,f,dc,gc,cl,co, // global,field,dotcall,globalcall,closure,code
-//  vf,me // funcvalue,method
 };
 template<typename X> concept Pushable=requires (X Element) { Element.distinguator; };
 template<typename I, distinct_pushable d> struct Distinct { I value; };
@@ -129,6 +128,11 @@ inline Callable MyElementFunction(absindex table) // replace LuaDotCall
 // LuaMethod
 //      Call a member function of the object on the stack.
 //      Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1; ==> Stack [result]
+// LuaFuncValue
+//      Call a function on the stack.
+//      Equivalent to result=print(a,b,c):                     Stack<<LuaGlobal("print");
+//                                                             auto func=Stack.index(-1);
+//                                                             Stack<<LuaFuncValue(func)<<a<<b<<c>>1; ==> Stack [result]
 
 class LuaStack
 {
