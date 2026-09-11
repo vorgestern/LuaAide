@@ -92,7 +92,7 @@ typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaCl
 // Pushables:
 // LuaMethod
 //      Call a member function of the object on the stack.
-//      Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1;
+//      Equivalent to result=X:mymethod(a,b,c):                Stack<<X<<LuaMethod("mymethod")<<a<<b<<c>>1; ==> Stack [result]
 
 class LuaStack
 {
