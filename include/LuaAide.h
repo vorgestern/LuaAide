@@ -66,6 +66,14 @@ class LuaStack;
 class LuaCall;
 class LuaList;
 
+class absindex
+{
+    friend class LuaStack;
+    int posindex {0};
+    friend int stackindex(const absindex&X){ return X.posindex; }
+    absindex(int j): posindex(j){}
+};
+
 std::ostream&operator<<(std::ostream&, const LuaStack&);
 unsigned height(const LuaStack&);
 unsigned version(const LuaStack&);
@@ -102,14 +110,6 @@ class LuaStack
 
 protected:
     lua_State*L{nullptr};
-
-    class absindex
-    {
-        friend class LuaStack;
-        int posindex{0};
-        friend int stackindex(const absindex&X){ return X.posindex; }
-        absindex(int j): posindex(j){}
-    };
 
 public:
     LuaStack(){}
