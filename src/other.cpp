@@ -57,7 +57,7 @@ int LuaAide::keymap(lua_State*L)
     Q<<lualist<<lualistend<<luarot_3;                            // [func, Result, Table]
     const auto func=Q.index(-3), Result=Q.index(-2);
 
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         auto k=Q.index(-2), v=Q.index(-1);
         Q<<k<<LuaFuncValue(func)<<v<<k>>1;
@@ -73,7 +73,7 @@ int LuaAide::applypairs(lua_State*L)
     if (Q.hasat(LuaType::TNIL, 1)) return 0;
     Q.swap();                                                    // [proc, Table]
     auto proc=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // [proc, Table, k, v]
         const auto k=Q.index(-2), v=Q.index(-1);
@@ -92,7 +92,7 @@ int LuaAide::findfirst(lua_State*L)
     Q.swap();                                                    // [nil, nil, pred, Table]
     const auto kr=Q.index(-4), vr=Q.index(-3), pred=Q.index(-2);
     bool found=false;
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // [nil, nil, pred, Table, k, v]
         auto k=Q.index(-2), v=Q.index(-1);
@@ -125,7 +125,7 @@ int LuaAide::contains(lua_State*L)
     Q<<luarot_3; // [item, result, List]
     const auto item=Q.index(-3), result=Q.index(-2);
     bool found=false;
-    for (LuaIterator J(Q); next(J) && !found; ++J)
+    for (LuaPairs J(Q); next(J) && !found; ++J)
     {
         // [item, result, List, k, v]
         if (lua_compare(Q, -1, stackindex(item), LUA_OPEQ))
@@ -155,7 +155,7 @@ int LuaAide::filter(lua_State*L)
     const auto pred=Q.index(-3), Result=Q.index(-2);
 //  cout<<"filter start "<<Q<<"\n";
     unsigned index_neu=0;
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // [pred, Result, List, k, v]
         Q<<LuaFuncValue(pred)<<LuaValue(-2)>>1; // [pred, Result, List, k, v, pred(v)]

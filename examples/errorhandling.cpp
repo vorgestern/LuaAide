@@ -22,7 +22,7 @@ int democlosure(lua_State*L)
     LuaStack Q(L);
     Q<<newtable<<LuaUpValue(1)<<luarot_3;                    // Result, Map, Arg
     auto Result=Q.index(-3), Map=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)                     // Result, Map, Arg, key, value
+    for (LuaPairs J(Q); next(J); ++J)                     // Result, Map, Arg, key, value
     {
         Q.dup(-1);
         lua_gettable(L, stackindex(Map));                    // Result, Map, Arg, key, value, Map[value]

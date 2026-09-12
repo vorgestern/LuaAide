@@ -128,7 +128,7 @@ int main(int argc, char*argv[])
             return X
         )xxx");
         Script<<11>>1;
-        for (LuaIterator I(Q); next(I); ++I)
+        for (LuaPairs I(Q); next(I); ++I)
         {
             auto value=Q.tostring(-1);
             auto key=Q.dup(-2).tostring(-1);
@@ -152,7 +152,7 @@ int main(int argc, char*argv[])
             return X
         )xxx");
         C<<11>>1;
-        for (LuaIterator I(C); next(I); ++I)
+        for (LuaPairs I(C); next(I); ++I)
         {
             auto value=C.tostring(-1);
             auto key=C.dup(-2).tostring(-1);

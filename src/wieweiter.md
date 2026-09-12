@@ -6,7 +6,7 @@
 1.   Introduce iterator equivalent to ipairs
 
 # Features to improve
-1.   Iteration with LuaIterator should check for metamethod __pairs, should be called LuaPairs too.
+1.   Iteration with LuaPairs should check for metamethod __pairs, should be called LuaPairs too.
 1.   Proper LiFo context transitions between LuaStack, LuaCall, LuaList
 
 ## Fehlerbehandlung

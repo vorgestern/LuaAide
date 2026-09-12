@@ -319,7 +319,7 @@ public:
         for key,value in pairs(X) do ... end
     How to use:
         LuaStack Q(...);
-        for (LuaIterator K(Q); next(K); ++K)
+        for (LuaPairs K(Q); next(K); ++K)
         {
             (unsigned)K                 onebased index
             Stack[-2]                   key
@@ -327,11 +327,11 @@ public:
             ...
         }
 */
-class LuaIterator
+class LuaPairs
 {
     lua_State*L {nullptr};
     unsigned index {1};             //!< Onebased index
-    friend bool next(LuaIterator&X) //!< Expect current index on the stack. Increment it and push corresponding value.
+    friend bool next(LuaPairs&X) //!< Expect current index on the stack. Increment it and push corresponding value.
     {
         if (lua_next(X.L, -2)!=0) return true;
         else
@@ -341,8 +341,8 @@ class LuaIterator
         }
     }
 public:
-    LuaIterator(LuaStack&S): L(S){ lua_pushnil(L); }
-   ~LuaIterator()
+    LuaPairs(LuaStack&S): L(S){ lua_pushnil(L); }
+   ~LuaPairs()
     {
         // Index>0: Loop was left by break.
         if (index>0) lua_pop(L, 2);

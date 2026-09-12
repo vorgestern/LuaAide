@@ -168,11 +168,11 @@ TEST_F(StackEnv, LuaList)
     ASSERT_EQ(22, Q.toint(-1));
 }
 
-TEST_F(StackEnv, LuaIterator)
+TEST_F(StackEnv, LuaPairs)
 {
     Q<<lualist<<121<<122<<123<<124<<125;
 
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         auto j=(unsigned)J;
         ASSERT_EQ(120+j, Q.toint(-1));
@@ -189,7 +189,7 @@ TEST_F(StackEnv, LuaIteratorBreak)
 {
     Q<<lualist<<121<<122<<123<<124<<125;
 
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         auto j=(unsigned)J;
         if (j==2) break;

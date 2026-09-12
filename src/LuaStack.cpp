@@ -854,7 +854,7 @@ TEST_F(StackEnv, LuaStackAbsindex)
 
 // Teststatus Sonstige:
 // ====================
-// + LuaIterator
+// + LuaPairs
 
 #endif
 

@@ -22,7 +22,7 @@ int LuaAide::keys(lua_State*L)
     Q<<lualist<<lualistend;
     Q.swap();
     const auto Keys=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // [key, item]
         Q<<LuaValue(-2)>>LuaElement({stackindex(Keys), (unsigned)J}); // add result to mappedlist.
@@ -89,7 +89,7 @@ int LuaAide::sortedkeys(lua_State*L)
     Q<<lualist<<lualistend;
     Q.swap();
     const auto Keylist=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
         Q<<LuaValue(-2)>>LuaElement({stackindex(Keylist), (unsigned)J}); // Add key to Keylist.
 
     // Sort the keys generically, supplying a compare-function that can handle
@@ -126,7 +126,7 @@ TEST_F(KeysEnv, keys)
     ASSERT_EQ(1, height(Q));
     Q<<LuaCFunction(LuaAide::keys)<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         auto s=Q.asstring(-1);
         cout<<(unsigned)J<<" "<<s.c_str()<<"\n";
@@ -139,7 +139,7 @@ TEST_F(KeysEnv, sortedkeys)
     ASSERT_EQ(1, height(Q));
     Q<<LuaCFunction(LuaAide::sortedkeys)<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         auto s=Q.asstring(-1);
         cout<<(unsigned)J<<" "<<s.c_str()<<"\n";

@@ -11,7 +11,7 @@ int LuaAide::map(lua_State*L)
     if (Q.typeat(-2)!=LuaType::TTABLE) return 0;
     Q<<lualist<<lualistend<<luarot_3; // ==> [func {} list]
     auto func=Q.index(-3), mappedlist=Q.index(-2);
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // Call func(item)
         // Catch nil-results, because they are not permissible in mapping.
@@ -55,7 +55,7 @@ TEST_F(MapEnv, SimpleExample)
     Q<<lualist<<21<<22<<23<<lualistend;
     Q<<LuaCFunction(LuaAide::map)<<LuaValue(-2)<<mapfunc>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         EXPECT_EQ(LuaType::TNUMBER, Q.typeat(-1));
         EXPECT_EQ(20+(unsigned)J+100, Q.toint(-1));

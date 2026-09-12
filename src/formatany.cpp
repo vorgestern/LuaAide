@@ -15,7 +15,7 @@ static tuple<size_t, size_t, long long>keynum(lua_State*L)
     LuaStack Q(L);
     size_t num_index=0, num_key=0;
     long long max_index=-1;
-    for (LuaIterator J(Q); next(J); ++J)
+    for (LuaPairs J(Q); next(J); ++J)
     {
         // [key, value]
         if (Q.hasintat(-2))
@@ -172,7 +172,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 else result.push_back("{");
                 enum {cont, brk} contstate=cont;
                 string indent_cont(4*(usedlevel+1), ' ');
-                for (LuaIterator I(Q); next(I); ++I)
+                for (LuaPairs I(Q); next(I); ++I)
                 {
                     if ((unsigned)I>1)
                     {
@@ -197,7 +197,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
 
                 const auto Table=valueindex;
                 Q<<LuaCFunction(sortedkeys)<<Table>>1;
-                for (LuaIterator J(Q); next(J); ++J)
+                for (LuaPairs J(Q); next(J); ++J)
                 {
                     ++itindex;
                     if (itindex>1) result.back().append(",");
