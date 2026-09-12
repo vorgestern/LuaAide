@@ -134,3 +134,34 @@ int LuaAide::contains(lua_State*L)
     }
     else return 0;
 }
+
+int LuaAide::filter(lua_State*L)
+{
+    LuaStack Q(L);
+    if (height(Q)<1 || Q.hasat(LuaType::TNIL, 1)) return 0;
+    if (height(Q)<2 || Q.hasat(LuaType::TNIL, 2)){ Q<<lualist; return 1; }
+    // [List, pred]
+    Q<<lualist<<lualistend<<luarot_3; // [pred, Result, List]
+    const auto pred=Q.index(-3), Result=Q.index(-2);
+//  cout<<"filter start "<<Q<<"\n";
+    unsigned index_neu=0;
+    for (LuaIterator J(Q); next(J); ++J)
+    {
+        // [pred, Result, List, k, v]
+        Q<<LuaFuncValue(pred)<<LuaValue(-2)>>1; // [pred, Result, List, k, v, pred(v)]
+        if (Q.hasat(LuaType::TNIL, -1) || (Q.hasat(LuaType::TBOOLEAN, -1) && !Q.tobool(-1)))
+        {
+//          cout<<(unsigned)J<<" fail "<<Q<<"\n";
+            Q.drop(1); // [pred, Result, List, k, v]
+        }
+        else
+        {
+//          cout<<(unsigned)J<<" ok "<<Q<<"\n";
+            Q.drop(1)<<(++index_neu)<<LuaValue(-2); // [pred, Result, List, k, v, index_neu, v]
+            lua_settable(Q, stackindex(Result));    // [pred, Result, List, k, v]
+        }
+    }
+    Q<<Result;
+//  cout<<"filter result "<<Q<<"\n";
+    return 1;
+}

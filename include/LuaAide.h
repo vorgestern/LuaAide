@@ -21,6 +21,7 @@ int keymap(lua_State*);
 int applypairs(lua_State*);
 int findfirst(lua_State*);
 int contains(lua_State*);
+int filter(lua_State*);
 
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
