@@ -6,6 +6,39 @@
 using namespace std;
 using namespace LuaAide;
 
+const auto keymap_lua=R"__(
+return function(L, func)
+    if not L then return end
+    local A={}
+    for k,v in pairs(L) do A[k]=func(v, k) end
+    return A
+end
+)__";
+
+const auto applypairs_lua=R"__(
+return function(L, proc)
+    if not L then return end
+    for k,v in pairs(L) do proc(k,v) end
+end
+)__";
+
+const auto findfirst_lua=R"__(
+return function(L, pred)
+    if not L then return end
+    pred=pred or function(x) return x end
+    for k,v in ipairs(L) do
+        if pred(v) then return v,k end
+    end
+end
+)__";
+
+const auto contains_lua=R"__(
+return function(L, item)
+    if not L or not item then return end
+    for k,v in pairs(L) do if v==item then return k end end
+end
+)__";
+
 int LuaAide::keymap(lua_State*L)
 {
     LuaStack Q(L);                                               // [Table, func]
