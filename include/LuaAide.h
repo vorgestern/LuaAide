@@ -17,6 +17,10 @@ int sortedkeys(lua_State*);
 int keyescape(lua_State*);
 int map(lua_State*);   // mapped=map(list, func)
 int apply(lua_State*); // apply(list, func)
+int keymap(lua_State*);
+int applypairs(lua_State*);
+int findfirst(lua_State*);
+int contains(lua_State*);
 
 const enum class LuaNil {a} luanil=LuaNil::a;
 const enum class LuaError {a} luaerror=LuaError::a;
