@@ -39,6 +39,16 @@ return function(L, item)
 end
 )__";
 
+const auto filter_impl=R"__(
+return function(L, pred)
+    if not L then return end
+    if not pred then return {} end
+    local result={}
+    for k,v in ipairs(L) do if pred(v) then table.insert(result,v) end end
+    return result
+end
+)__";
+
 int LuaAide::keymap(lua_State*L)
 {
     LuaStack Q(L);                                               // [Table, func]
