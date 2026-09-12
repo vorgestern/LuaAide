@@ -162,14 +162,14 @@ extern "C" int luaopen_vec3(lua_State*L)
 {
     LuaStack Q(L);
     Q   <<newtable
-        <<CF {myfinaliser}>>LuaMetaMethod::gc
-        <<CF {mytostring}>>LuaMetaMethod::tostring
-        <<CF {myadd}>>LuaMetaMethod::add
-        <<CF {mysubtract}>>LuaMetaMethod::sub
+        <<myfinaliser>>LuaMetaMethod::gc
+        <<mytostring>>LuaMetaMethod::tostring
+        <<myadd>>LuaMetaMethod::add
+        <<mysubtract>>LuaMetaMethod::sub
         >>mtvec3;
     Q   <<newtable
         <<"0.1">>LuaField("version")
-        <<CF {mydemo}>>LuaField("Demo")
-        <<CF {mynew}>>LuaField("New");
+        <<mydemo>>LuaField("Demo")
+        <<mynew>>LuaField("New");
     return 1;
 }

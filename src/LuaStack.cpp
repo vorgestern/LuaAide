@@ -120,6 +120,12 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 LuaList LuaStack::operator<<(LuaListStart){ *this<<newtable; return LuaList(L); }
 
+LuaStack&LuaStack::operator<<(lua_CFunction X)
+{
+    lua_pushcfunction(L, X);
+    return *this;
+}
+
 LuaStack&LuaStack::operator<<(const CF&X)
 {
     lua_pushcfunction(L, X.func);

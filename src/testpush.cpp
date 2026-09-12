@@ -209,7 +209,7 @@ TEST_F(StackEnv, AsString)
 
     void*p=nullptr;
 
-    Q<<CF {lua_error};
+    Q<<lua_error;
     ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
     Q.drop(1);

@@ -76,10 +76,10 @@ static void defineclass(lua_State*L)
 {
     LuaStack Q(L);
     Q<<newtable
-        <<CF {myfinaliser}>>LuaMetaMethod::gc
-        <<CF {mytostring}>>LuaMetaMethod::tostring
+        <<myfinaliser>>LuaMetaMethod::gc
+        <<mytostring>>LuaMetaMethod::tostring
         >>LuaGlobal("mtdemo");
-    Q<<CF {mynew}>>LuaGlobal("newdemo");
+    Q<<mynew>>LuaGlobal("newdemo");
 }
 
 int main(int argc, char*argv[])

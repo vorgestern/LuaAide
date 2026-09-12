@@ -252,7 +252,7 @@ int demo_studie(lua_State*L)
 }
 TEST_F(CallEnv, Studie)
 {
-    Q<<CF {demo_studie};
+    Q<<demo_studie;
     const auto func=Q.index(-1);                                        EXPECT_EQ(1, stackindex(func));
     Q<<21<<22<<23;
     const auto here=Q.index(-1);                                        EXPECT_EQ(4, stackindex(here));

@@ -94,7 +94,7 @@ int LuaAide::sortedkeys(lua_State*L)
 
     // Sort the keys generically, supplying a compare-function that can handle
     // random combinations of data types.
-    Q<<LuaGlobal("table")<<LuaElementCall("sort")<<Keylist<<CF {cmp_ab}>>0;
+    Q<<LuaGlobal("table")<<LuaElementCall("sort")<<Keylist<<cmp_ab>>0;
 
     Q<<Keylist;
     return 1;

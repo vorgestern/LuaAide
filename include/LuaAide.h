@@ -195,6 +195,7 @@ public:
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
+    LuaStack&operator<<(lua_CFunction);
     LuaStack&operator<<(const CF&);
 
     LuaCall operator<<(Callable);

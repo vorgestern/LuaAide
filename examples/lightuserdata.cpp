@@ -45,7 +45,7 @@ int main(int argc, char*argv[])
     Q>>LuaGlobal("StringIndex");
 
     // Create function randomkey.
-    Q<<CF {randomkey}>>LuaGlobal("randomkey");
+    Q<<randomkey>>LuaGlobal("randomkey");
 
     // Execute a script that makes use of function randomkey
     // to select elements of Array 'StringIndex'.
