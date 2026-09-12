@@ -80,8 +80,8 @@ extern "C" int luaopen_timestamp(lua_State*L)
     Q   <<LuaValue(LUA_REGISTRYINDEX)
             <<newtable
                 <<"timestamp">>LuaMetaMethod::name
-                <<tostring>>LuaMetaMethod::tostring
-                <<tsdiff>>LuaMetaMethod::sub;
+                <<CF {tostring}>>LuaMetaMethod::tostring
+                <<CF {tsdiff}>>LuaMetaMethod::sub;
     mtpointer=lua_topointer(L, -1);
     Q       >>LuaField(mtname);
 
@@ -89,7 +89,7 @@ extern "C" int luaopen_timestamp(lua_State*L)
     Q   <<newtable
         <<"https://github.com/vorgestern/LuaAide">>LuaField("origin")
         <<"0.1">>LuaField("version")
-        <<now>>LuaField("now")
-        <<sleep_ms>>LuaField("sleep_ms");
+        <<CF {now}>>LuaField("now")
+        <<CF {sleep_ms}>>LuaField("sleep_ms");
     return 1;
 }

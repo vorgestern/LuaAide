@@ -76,10 +76,10 @@ static void defineclass(lua_State*L)
 {
     LuaStack Q(L);
     Q<<newtable
-        <<myfinaliser>>LuaMetaMethod::gc
-        <<mytostring>>LuaMetaMethod::tostring
+        <<CF {myfinaliser}>>LuaMetaMethod::gc
+        <<CF {mytostring}>>LuaMetaMethod::tostring
         >>LuaGlobal("mtdemo");
-    Q<<mynew>>LuaGlobal("newdemo");
+    Q<<CF {mynew}>>LuaGlobal("newdemo");
 }
 
 int main(int argc, char*argv[])
@@ -92,7 +92,7 @@ int main(int argc, char*argv[])
     Q<<mynew<<newtable<<55>>LuaElement({-2, 1})<<56>>LuaElement({-2,2})<<57>>LuaElement({-2,3})>>1;  // democlass {55,56,57}
 #else
     Q<<lualist<<55<<56<<57<<lualistend;  // democlass {55,56,57}
-    Q<<mynew<<LuaValue(-2)>>1;
+    Q<<LuaCFunction(mynew)<<LuaValue(-2)>>1;
     Q.remove(-2);
 #endif
     // Save string representation in 'demostring'.

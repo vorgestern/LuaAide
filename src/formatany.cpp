@@ -196,7 +196,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 size_t itindex=0;
 
                 const auto Table=valueindex;
-                Q<<sortedkeys<<Table>>1;
+                Q<<LuaCFunction(sortedkeys)<<Table>>1;
                 for (LuaIterator J(Q); next(J); ++J)
                 {
                     ++itindex;
@@ -225,7 +225,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                         }
                         case LuaType::TSTRING:
                         {
-                            Q<<keyescape<<LuaValue(stackindex(jkey))>>1;
+                            Q<<LuaCFunction(keyescape)<<LuaValue(stackindex(jkey))>>1;
                             const string a=Q.tostring(-1);
                             Q.drop(1);
                             result.push_back(indent1+a+"=");
@@ -330,63 +330,63 @@ protected:
 
 TEST_F(FormatAnyEnv, Nil)
 {
-    Q1<<formatany<<luanil>>1;
+    Q1<<LuaCFunction(formatany)<<luanil>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return nil", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, BoolFalse)
 {
-    Q1<<formatany<<false>>1;
+    Q1<<LuaCFunction(formatany)<<false>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return false", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, BoolTrue)
 {
-    Q1<<formatany<<true>>1;
+    Q1<<LuaCFunction(formatany)<<true>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return true", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, Int)
 {
-    Q1<<formatany<<21>>1;
+    Q1<<LuaCFunction(formatany)<<21>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return 21", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, IntNegative)
 {
-    Q1<<formatany<<-21>>1;
+    Q1<<LuaCFunction(formatany)<<-21>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return -21", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, Float)
 {
-    Q1<<formatany<<3.1415926>>1;
+    Q1<<LuaCFunction(formatany)<<3.1415926>>1;
     ASSERT_EQ(1, height(Q1));
     ASSERT_EQ("return 3.14159", Q1.tostring(-1))<<Q1;
 }
 
 TEST_F(FormatAnyEnv, String1Regular)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"abc-def";                                   ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return \"abc-def\"", Q.tostring(-1))<<Q;
 }
 TEST_F(FormatAnyEnv, String2Newline)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"abc\ndef";                                  ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [[abc\ndef]]", Q.tostring(-1))<<Q;
 }
 TEST_F(FormatAnyEnv, String3Quote)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"ab \"cd\" ef";                              ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [[ab \"cd\" ef]]", Q.tostring(-1))<<Q;
@@ -403,7 +403,7 @@ TEST_F(FormatAnyEnv, BracketLevel)
 
 TEST_F(FormatAnyEnv, String4Bracket1)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"print '\n]]\n'";                            ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [=[print '\n]]\n']=]", Q.tostring(-1))<<Q;
@@ -411,7 +411,7 @@ TEST_F(FormatAnyEnv, String4Bracket1)
 
 TEST_F(FormatAnyEnv, String4Bracket2)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"print '\n]=]\n'";                           ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ("return [[print '\n]=]\n']]", Q.tostring(-1))<<Q;
@@ -419,7 +419,7 @@ TEST_F(FormatAnyEnv, String4Bracket2)
 
 TEST_F(FormatAnyEnv, String4Bracket3)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<"print '\n]=]\n]]'";                         ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ(R"__(return [==[print '
@@ -465,7 +465,7 @@ TEST_F(FormatAnyEnv, KeyNumbersEdgecases)
 
 TEST_F(FormatAnyEnv, OrderIsPredictable)
 {
-    auto Q=Q1<<formatany;                           ASSERT_EQ(1, height(Q));
+    auto Q=Q1<<LuaCFunction(formatany);             ASSERT_EQ(1, height(Q));
     Q<<unordered_map<string,string> {{"x", "21"}, {"y", "22"}, {"z", "23"}}; ASSERT_EQ(2, height(Q));
     Q>>1;                                           ASSERT_EQ(1, height(Q))<<Q;
     ASSERT_EQ(R"__(return {
@@ -477,7 +477,7 @@ TEST_F(FormatAnyEnv, OrderIsPredictable)
 
 TEST_F(FormatAnyEnv, SerialiseMixedTable)
 {
-    auto F=Q1<<formatany;
+    auto F=Q1<<LuaCFunction(formatany);
     Q1<<lualist<<21;
     Q1<<22>>LuaField("a");
     F>>1; // formatany {21, a=22}

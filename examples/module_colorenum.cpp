@@ -74,8 +74,8 @@ extern "C" int luaopen_colorenum(lua_State*L)
     Q   <<LuaValue(LUA_REGISTRYINDEX)
             <<newtable
                 <<"colortype">>LuaMetaMethod::name
-                <<mynumeric>>LuaField("numeric")
-                <<mytostring>>LuaMetaMethod::tostring;
+                <<CF {mynumeric}>>LuaField("numeric")
+                <<CF {mytostring}>>LuaMetaMethod::tostring;
     mtpointer=lua_topointer(L, -1);
     Q.dup(); Q>>LuaMetaMethod::index;
     Q       >>LuaField(mtname);

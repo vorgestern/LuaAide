@@ -138,7 +138,7 @@ TEST_F(CallEnv, CallInt)
 {
                                                     ASSERT_EQ(0, height(Q));
     Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q));
-    Q<<demofunc<<LuaValue(-2)>>2;                   ASSERT_EQ(5, height(Q))<<Q;
+    Q<<LuaCFunction(demofunc)<<LuaValue(-2)>>2;     ASSERT_EQ(5, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==21)<<Q;
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==22)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==23)<<Q;
@@ -151,7 +151,7 @@ static int demo_multret5(lua_State*L){ LuaStack Q(L); Q<<121<<122<<123<<124<<125
 TEST_F(CallEnv, CallIntMultRet)
 {
                                                     ASSERT_EQ(0, height(Q));
-    Q<<demo_multret5>>LUA_MULTRET;                   ASSERT_EQ(5, height(Q))<<Q;
+    Q<<LuaCFunction(demo_multret5)>>LUA_MULTRET;    ASSERT_EQ(5, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==121)<<Q;
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==122)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==123)<<Q;
@@ -163,7 +163,7 @@ TEST_F(CallEnv, CallIntError)
 {
                                                     ASSERT_EQ(0, height(Q));
     Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q));
-    const auto rc=Q<<demoerror<<LuaValue(-2)>>2;    ASSERT_EQ(LUA_ERRRUN, rc);
+    const auto rc=Q<<LuaCFunction(demoerror)<<LuaValue(-2)>>2; ASSERT_EQ(LUA_ERRRUN, rc);
                                                     ASSERT_EQ(4, height(Q));
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==21);
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==22);
@@ -175,7 +175,7 @@ TEST_F(CallEnv, CallIntError)
 TEST_F(CallEnv, CallIntErrorNonemptyStacktrace)
 {
                                                                     ASSERT_EQ(0, height(Q));
-    Q<<demoerror>>LuaGlobal("demoerror");
+    Q<<LuaCFunction(demoerror)>>LuaGlobal("demoerror");
     Q<<LuaCode(R"xxx(function gehtnicht(x) return demoerror(x+100) end)xxx")>>0;
     Q<<21<<22<<23;                                                  ASSERT_EQ(3, height(Q));
     const auto rc=Q<<LuaGlobalCall("gehtnicht")<<LuaValue(-2)>>2;   ASSERT_EQ(LUA_ERRRUN, rc);
@@ -191,7 +191,7 @@ TEST_F(CallEnv, CallPair)
 {
     ASSERT_EQ(0, height(Q));
     Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q))<<Q;
-    Q<<demofunc<<LuaValue(-2)>>make_pair(3, 2);     ASSERT_EQ(2, height(Q))<<Q;
+    Q<<LuaCFunction(demofunc)<<LuaValue(-2)>>make_pair(3, 2);     ASSERT_EQ(2, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-2))<<Q;
     ASSERT_EQ(24, Q.toint(-2))<<Q;
     ASSERT_TRUE(stringat(Q, -1))<<Q;
@@ -201,7 +201,7 @@ TEST_F(CallEnv, CallPair)
 TEST_F(CallEnv, CallPairMultRet)
 {
     Q<<21<<22<<23;                                  ASSERT_EQ(3, height(Q));
-    Q<<demo_multret5>>make_pair(3,LUA_MULTRET);     ASSERT_EQ(5, height(Q))<<Q;
+    Q<<LuaCFunction(demo_multret5)>>make_pair(3,LUA_MULTRET);     ASSERT_EQ(5, height(Q))<<Q;
     ASSERT_TRUE(Q.hasintat(-5) && Q.toint(-5)==121)<<Q;
     ASSERT_TRUE(Q.hasintat(-4) && Q.toint(-4)==122)<<Q;
     ASSERT_TRUE(Q.hasintat(-3) && Q.toint(-3)==123)<<Q;
@@ -213,7 +213,7 @@ TEST_F(CallEnv, CallPairError)
 {
                                                                 ASSERT_EQ(0, height(Q));
     Q<<21<<22<<23;                                              ASSERT_EQ(3, height(Q));
-    const auto rc=Q<<demoerror<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
+    const auto rc=Q<<LuaCFunction(demoerror)<<LuaValue(-2)>>make_pair(3, 2);  ASSERT_EQ(LUA_ERRRUN, rc);
                                                                 ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("demoerror\nstack traceback:", Q.tostring(-1));
@@ -222,7 +222,7 @@ TEST_F(CallEnv, CallPairError)
 TEST_F(CallEnv, CallPairErrorNonemptyStacktrace)
 {
                                                             ASSERT_EQ(0, height(Q));
-    Q<<demoerror>>LuaGlobal("demoerror");                   ASSERT_EQ(0, height(Q));
+    Q<<LuaCFunction(demoerror)>>LuaGlobal("demoerror");     ASSERT_EQ(0, height(Q));
     Q<<LuaCode("myscript", R"xxx(
         function gehtnicht(x)
             return demoerror(x+100)
@@ -252,7 +252,7 @@ int demo_studie(lua_State*L)
 }
 TEST_F(CallEnv, Studie)
 {
-    Q<<demo_studie;
+    Q<<CF {demo_studie};
     const auto func=Q.index(-1);                                        EXPECT_EQ(1, stackindex(func));
     Q<<21<<22<<23;
     const auto here=Q.index(-1);                                        EXPECT_EQ(4, stackindex(here));

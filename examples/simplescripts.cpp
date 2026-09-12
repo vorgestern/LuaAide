@@ -24,7 +24,7 @@ int main(int argc, char*argv[])
     LuaStack Q=LuaStack::New(true, nullptr);
     if (!Q) return printf("Failed to initialise Lua\n"),1;
 
-    Q<<formatany>>LuaGlobal("formatany");
+    Q<<LuaCFunction(formatany)>>LuaGlobal("formatany");
 
     switch (sel) {
 
@@ -211,7 +211,7 @@ int main(int argc, char*argv[])
     {
         // Q<<lua_error<<"This was not expected">>0;
         vector<string> A={"a", "b", "c"};
-        Q<<formatany<<A>>1;
+        Q<<LuaCFunction(formatany)<<A>>1;
         auto str=Q.tostring(-1);
         printf("str='%s'\n", str.c_str());
         break;

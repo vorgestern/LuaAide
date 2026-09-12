@@ -120,6 +120,12 @@ bool LuaStack::dostring(const char code[], int argc, char*argv[], const char tag
 
 LuaList LuaStack::operator<<(LuaListStart){ *this<<newtable; return LuaList(L); }
 
+LuaStack&LuaStack::operator<<(const CF&X)
+{
+    lua_pushcfunction(L, X.func);
+    return *this;
+}
+
 string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
 
 string LuaStack::asstring(int pos)
@@ -363,6 +369,12 @@ LuaCall LuaStack::operator<<(Callable X)
             assert(holds_alternative<string_view>(X.func));
             return pushmethod(get<string_view>(X.func).data());
         }
+        case callmechanism::cfunction:
+        {
+            assert(holds_alternative<lua_CFunction>(X.func));
+            lua_pushcfunction(L, get<lua_CFunction>(X.func));
+            return LuaCall(L, index(-1));
+        }
         default:
         {
             assert(false);
@@ -374,12 +386,6 @@ LuaCall LuaStack::operator<<(Callable X)
 LuaCall LuaStack::operator<<(const LuaGlobalCall&C)
 {
     *this<<LuaGlobal(C.value.data());
-    return LuaCall(L);
-}
-
-LuaCall LuaStack::operator<<(lua_CFunction X)
-{
-    lua_pushcfunction(L, X);
     return LuaCall(L);
 }
 
@@ -493,6 +499,7 @@ Callable LuaAide::LuaCode(std::string_view name, std::string_view code){ return 
 Callable LuaAide::LuaFuncValue(absindex func){ return Callable {callmechanism::value_on_stack, func}; } // replace struct LuaFuncValue
 Callable LuaAide::LuaElementCall(std::string_view funcname){ return Callable {callmechanism::element_by_name, funcname}; } // replace struct LuaDotCall
 Callable LuaAide::LuaCallElementOfTable(absindex table){ return Callable {callmechanism::element_by_key, table}; } // replace LuaDotCall
+Callable LuaAide::LuaCFunction(lua_CFunction func){ return Callable {callmechanism::cfunction, func}; }
 
 // ============================================================================
 
@@ -734,7 +741,7 @@ static int dummyfunc(lua_State*){ return 0; }
 
 TEST_F(StackEnv, HasFunctionAt)
 {
-    Q<<true<<dummyfunc<<true<<true;
+    Q<<true<<LuaCFunction(dummyfunc)<<true<<true;
     ASSERT_EQ(4, height(Q));
     EXPECT_FALSE(funcat(Q, -5));
     EXPECT_FALSE(funcat(Q, -4));
@@ -808,7 +815,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // - <<LuaTable
 // - <<LuaLightUserData
 // - <<LuaClosure
-// - <<lua_CFunction
 // - <<LuaGlobalCall
 // - <<LuaArray
 // + <<LuaRegValue

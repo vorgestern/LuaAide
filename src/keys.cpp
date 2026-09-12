@@ -94,7 +94,7 @@ int LuaAide::sortedkeys(lua_State*L)
 
     // Sort the keys generically, supplying a compare-function that can handle
     // random combinations of data types.
-    Q<<LuaGlobal("table")<<LuaElementCall("sort")<<Keylist<<cmp_ab>>0;
+    Q<<LuaGlobal("table")<<LuaElementCall("sort")<<Keylist<<CF {cmp_ab}>>0;
 
     Q<<Keylist;
     return 1;
@@ -124,7 +124,7 @@ TEST_F(KeysEnv, keys)
 {
     Q<<LuaCode("return {21,a=1,b=2,22,23,[true]=101,c=3}")>>1;
     ASSERT_EQ(1, height(Q));
-    Q<<LuaAide::keys<<LuaValue(-2)>>1;
+    Q<<LuaCFunction(LuaAide::keys)<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {
@@ -137,7 +137,7 @@ TEST_F(KeysEnv, sortedkeys)
 {
     Q<<LuaCode("return {21,a=1,b=2,22,23,[true]=101,c=3}")>>1;
     ASSERT_EQ(1, height(Q));
-    Q<<LuaAide::sortedkeys<<LuaValue(-2)>>1;
+    Q<<LuaCFunction(LuaAide::sortedkeys)<<LuaValue(-2)>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {

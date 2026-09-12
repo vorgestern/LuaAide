@@ -48,7 +48,7 @@ TEST_F(ApplyEnv, SimpleExample)
     Q<<LuaCode("return function(x) Akku=Akku+x; end")>>1;
     auto func=Q.index(-1);
     Q<<lualist<<21<<22<<23<<lualistend;
-    Q<<LuaAide::apply<<LuaValue(-2)<<func>>0;
+    Q<<LuaCFunction(LuaAide::apply)<<LuaValue(-2)<<func>>0;
     Q<<LuaGlobal("Akku");
     ASSERT_TRUE(Q.hasintat(-1));
     ASSERT_EQ(66, Q.toint(-1));

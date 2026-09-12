@@ -53,7 +53,7 @@ TEST_F(MapEnv, SimpleExample)
     Q<<LuaCode("return function(x) return 100+x end")>>1;
     auto mapfunc=Q.index(-1);
     Q<<lualist<<21<<22<<23<<lualistend;
-    Q<<LuaAide::map<<LuaValue(-2)<<mapfunc>>1;
+    Q<<LuaCFunction(LuaAide::map)<<LuaValue(-2)<<mapfunc>>1;
     ASSERT_EQ((int)LuaType::TTABLE, (int)Q.typeat(-1));
     for (LuaIterator J(Q); next(J); ++J)
     {

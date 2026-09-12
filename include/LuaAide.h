@@ -105,6 +105,7 @@ enum class callmechanism {
     element_by_key,
     element_by_name,
     code_to_load,
+    cfunction,
 };
 typedef std::pair<std::string_view,std::string_view> namedcode; // name, code
 struct Callable
@@ -113,16 +114,23 @@ struct Callable
     std::variant<
         absindex,
         std::string_view,
-        namedcode
+        namedcode,
+        lua_CFunction
     > func;
 };
 
 Callable LuaMethod(std::string_view name);
 Callable LuaCode(std::string_view code);
 Callable LuaCode(std::string_view name, std::string_view code);
+Callable LuaCFunction(lua_CFunction);
 Callable LuaFuncValue(absindex func);
 Callable LuaElementCall(std::string_view funcname);
 Callable LuaCallElementOfTable(absindex table);
+
+struct CF
+{
+    lua_CFunction func;
+};
 
 // Pushables:
 // LuaMethod
@@ -187,8 +195,8 @@ public:
     LuaStack&operator<<(const std::vector<std::string>&);
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
+    LuaStack&operator<<(const CF&);
 
-    LuaCall operator<<(lua_CFunction);
     LuaCall operator<<(Callable);
     LuaCall operator<<(const LuaGlobalCall&);
     LuaCall operator<<(const LuaClosure&);       // Stack<<upvalue1<<upvalue2<<LuaClosure(function, 2)>>LuaGlobal("closurename"); ==> [Stack]
