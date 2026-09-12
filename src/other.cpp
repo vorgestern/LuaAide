@@ -50,6 +50,7 @@ int LuaAide::findfirst(lua_State*L)
     Q<<luanil<<luarot3;                                          // [nil, nil, Table, pred]
     Q.swap();                                                    // [nil, nil, pred, Table]
     auto kr=Q.index(-4), vr=Q.index(-3), pred=Q.index(-2);
+    bool found=false;
     for (LuaIterator J(Q); next(J); ++J)
     {
         // [nil, nil, pred, Table, k, v]
@@ -63,10 +64,15 @@ int LuaAide::findfirst(lua_State*L)
         Q.drop(1);
         Q<<k; lua_replace(Q, stackindex(kr));
         Q<<v; lua_replace(Q, stackindex(vr));
+        found=true;
         break;
     }
-    Q<<vr<<kr;
-    return 2;
+    if (found)
+    {
+        Q<<vr<<kr;
+        return 2;
+    }
+    else return 0;
 }
 
 int LuaAide::contains(lua_State*L)
@@ -97,7 +103,7 @@ int LuaAide::contains(lua_State*L)
     {
         assert(height(Q)==3);
         Q.drop(1);
+        return 1;
     }
-    else Q<<luanil;
-    return 1;
+    else return 0;
 }
