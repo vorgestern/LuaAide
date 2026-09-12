@@ -126,12 +126,6 @@ LuaStack&LuaStack::operator<<(lua_CFunction X)
     return *this;
 }
 
-LuaStack&LuaStack::operator<<(const CF&X)
-{
-    lua_pushcfunction(L, X.func);
-    return *this;
-}
-
 string LuaStack::tostring(int pos){ size_t len; const char*s=lua_tolstring(L, pos, &len); return {s, len}; }
 
 string LuaStack::asstring(int pos)

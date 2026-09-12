@@ -127,11 +127,6 @@ Callable LuaFuncValue(absindex func);
 Callable LuaElementCall(std::string_view funcname);
 Callable LuaCallElementOfTable(absindex table);
 
-struct CF
-{
-    lua_CFunction func;
-};
-
 // Pushables:
 // LuaMethod
 //     Call a member function of the object on the stack.
@@ -196,7 +191,6 @@ public:
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
     LuaStack&operator<<(lua_CFunction);
-    LuaStack&operator<<(const CF&);
 
     LuaCall operator<<(Callable);
     LuaCall operator<<(const LuaGlobalCall&);
