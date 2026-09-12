@@ -1,6 +1,6 @@
 
 #include <LuaAide.h>
-#include <iostream>
+// #include <iostream>
 #include <cassert>
 
 using namespace std;
@@ -19,7 +19,6 @@ int LuaAide::keymap(lua_State*L)
         auto k=Q.index(-2), v=Q.index(-1);
         Q<<k<<LuaFuncValue(func)<<v<<k>>1;
         lua_settable(Q, stackindex(Result));
-        // cout<<"J="<<(unsigned)J<<"\n"<<Q<<"\n";
     }
     Q<<Result;
     return 1;
@@ -36,7 +35,6 @@ int LuaAide::applypairs(lua_State*L)
         // [proc, Table, k, v]
         auto k=Q.index(-2), v=Q.index(-1);
         Q<<LuaFuncValue(proc)<<k<<v>>0;
-        cout<<"J="<<(unsigned)J<<"\n"<<Q<<"\n";
     }
     return 0;
 }
@@ -87,18 +85,14 @@ int LuaAide::contains(lua_State*L)
     for (LuaIterator J(Q); next(J) && !found; ++J)
     {
         // [item, result, List, k, v]
-//      cout<<"index "<<(unsigned)J<<"\n"<<Q;
         if (lua_compare(Q, -1, stackindex(item), LUA_OPEQ))
         {
-//          cout<<" eq\n";
             found=true;
             Q<<LuaValue(-2);
             lua_replace(Q, stackindex(result));
-//          cout<<"==>"<<Q<<"\n";
         }
 //      else cout<<" neq\n";
     }
-//  cout<<"contains ende: "<<Q<<"\n";
     if (found)
     {
         assert(height(Q)==3);
