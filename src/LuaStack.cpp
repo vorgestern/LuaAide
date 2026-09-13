@@ -268,7 +268,7 @@ LuaCall LuaStack::pushmethod(const char name[])
                             drop(2);
                             char pad[1000];
                             auto tfs=tostringview(tm);
-                            sprintf(pad, "Attempt to call a %s value (Method '%s').", tfs.data(), name);
+                            snprintf(pad, sizeof(pad), "Attempt to call a %s value (Method '%s').", tfs.data(), name);
                             *this<<pad;
                             break;
                         }
@@ -281,7 +281,7 @@ LuaCall LuaStack::pushmethod(const char name[])
                     drop(2);
                     char pad[1000];
                     auto tfs=tostringview(t);
-                    sprintf(pad, "Attempt to call a %s value (Method '%s').", tfs.data(), name);
+                    snprintf(pad, sizeof(pad), "Attempt to call a %s value (Method '%s').", tfs.data(), name);
                     *this<<pad;
                     break;
                 }
@@ -309,7 +309,7 @@ LuaCall LuaStack::pushmethod(const char name[])
                         drop(3);
                         char pad[1000];
                         const auto tfs=tostringview(tf);
-                        sprintf(pad, "Attempt to index a %s value (Method '%s').", tfs.data(), name);
+                        snprintf(pad, sizeof(pad), "Attempt to index a %s value (Method '%s').", tfs.data(), name);
                         *this<<pad;
                     }
                 }
@@ -320,7 +320,7 @@ LuaCall LuaStack::pushmethod(const char name[])
                 drop(1);
                 char pad[1000];
                 const auto ts=tostringview(t);
-                sprintf(pad, "Attempt to index a %s value (Method '%s').", ts.data(), name);
+                snprintf(pad, sizeof(pad), "Attempt to index a %s value (Method '%s').", ts.data(), name);
                 *this<<pad;
             }
         }

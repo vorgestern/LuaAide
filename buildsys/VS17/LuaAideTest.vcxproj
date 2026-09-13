@@ -66,6 +66,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\testmain.cpp" />
+    <ClCompile Include="..\..\src\testpush.cpp" />
     <ClCompile Include="..\..\src\LuaStack.cpp" />
     <ClCompile Include="..\..\src\LuaCall.cpp" />
     <ClCompile Include="..\..\src\streamout.cpp" />
