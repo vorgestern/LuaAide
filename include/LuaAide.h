@@ -318,7 +318,7 @@ public:
     Equivalent to
         for key,value in pairs(X) do ... end
     How to use:
-        LuaStack Q(...);
+        LuaStack Q=...;
         for (LuaPairs K(Q); next(K); ++K)
         {
             (unsigned)K                 onebased index
@@ -331,29 +331,15 @@ class LuaPairs
 {
     lua_State*L {nullptr};
     unsigned index {1};             //!< Onebased index
-    friend bool next(LuaPairs&X) //!< Expect current index on the stack. Increment it and push corresponding value.
-    {
-        if (lua_next(X.L, -2)!=0) return true;
-        else
-        {
-            X.index=0;
-            return false;
-        }
-    }
+    friend bool next(LuaPairs&);
 public:
-    LuaPairs(LuaStack&S): L(S){ lua_pushnil(L); }
-   ~LuaPairs()
-    {
-        // Index>0: Loop was left by break.
-        if (index>0) lua_pop(L, 2);
-    }
-    operator unsigned(){ return index; }
-    unsigned operator++()
-    {
-        lua_pop(L, 1);
-        return ++index;
-    }
+    LuaPairs(LuaStack&);
+   ~LuaPairs();
+    operator unsigned();
+    unsigned operator++();
 };
+
+bool next(LuaPairs&); //!< Expect current index on the stack. Increment it and push corresponding value.
 
 } // end of namespace LuaAide
 
