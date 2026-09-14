@@ -200,6 +200,58 @@ TEST_F(StackEnv, LuaPairsBreak)
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
 }
 
+TEST_F(StackEnv, LuaIPairs)
+{
+    Q<<lualist<<121<<122<<123<<124<<125;
+
+    for (LuaIPairs J(Q); next(J); ++J)
+    {
+        auto j=(unsigned)J;
+//      cout<<"IPairs "<<j<<" "<<Q<<"\n";
+        ASSERT_EQ(120+j, Q.toint(-1));
+    }
+
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+    Q<<LuaGlobal("table")<<LuaElementCall("concat")<<LuaValue(-2)<<",">>1;
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, LuaIPairsBreak)
+{
+    Q<<lualist<<121<<122<<123<<124<<125;
+
+    for (LuaIPairs J(Q); next(J); ++J)
+    {
+        auto j=(unsigned)J;
+//      cout<<"IPairs "<<j<<" "<<Q<<"\n";
+        ASSERT_EQ(120+j, Q.toint(-1));
+        if (j==2) break;
+    }
+
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+    Q<<LuaGlobal("table")<<LuaElementCall("concat")<<LuaValue(-2)<<",">>1;
+    ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
+    ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
+}
+
+TEST_F(StackEnv, LuaIPairsInterrupted)
+{
+    Q<<lualist<<121<<122<<luanil<<124<<125;
+
+    for (LuaIPairs J(Q); next(J); ++J)
+    {
+        auto j=(unsigned)J;
+        ASSERT_EQ(120+j, Q.toint(-1));
+        ASSERT_LT(j, 3);
+    }
+
+    ASSERT_EQ(1, height(Q));
+    ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
+}
+
 TEST_F(StackEnv, AsString)
 {
     Q<<true;

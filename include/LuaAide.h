@@ -341,6 +341,20 @@ public:
 
 bool next(LuaPairs&); //!< Expect current index on the stack. Increment it and push corresponding value.
 
+class LuaIPairs
+{
+    lua_State*L {nullptr};
+    unsigned index {1};             //!< Onebased index
+    friend bool next(LuaIPairs&);
+public:
+    LuaIPairs(LuaStack&);
+   ~LuaIPairs();
+    operator unsigned();
+    unsigned operator++();
+};
+
+bool next(LuaIPairs&);
+
 } // end of namespace LuaAide
 
 #endif
