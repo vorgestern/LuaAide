@@ -207,7 +207,6 @@ TEST_F(StackEnv, LuaIPairs)
     for (LuaIPairs J(Q); next(J); ++J)
     {
         auto j=(unsigned)J;
-//      cout<<"IPairs "<<j<<" "<<Q<<"\n";
         ASSERT_EQ(120+j, Q.toint(-1));
     }
 
@@ -225,7 +224,6 @@ TEST_F(StackEnv, LuaIPairsBreak)
     for (LuaIPairs J(Q); next(J); ++J)
     {
         auto j=(unsigned)J;
-//      cout<<"IPairs "<<j<<" "<<Q<<"\n";
         ASSERT_EQ(120+j, Q.toint(-1));
         if (j==2) break;
     }
@@ -245,7 +243,7 @@ TEST_F(StackEnv, LuaIPairsInterrupted)
     {
         auto j=(unsigned)J;
         ASSERT_EQ(120+j, Q.toint(-1));
-        ASSERT_LT(j, 3);
+        ASSERT_LT(j, 3u);
     }
 
     ASSERT_EQ(1, height(Q));
