@@ -84,7 +84,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
     }
     string indent(4*level, ' ');
     const auto t=Q.typeat(-1);
-    const auto valueindex=Q.index(-1);
+    const auto Arg=Q.index(-1);
     switch (t)
     {
         case LuaType::TNIL:
@@ -195,7 +195,7 @@ static void format1(lua_State*L, vector<string>&result, int level, int usedlevel
                 else result.push_back("{");
                 size_t itindex=0;
 
-                const auto Table=valueindex;
+                const auto Table=Arg;
                 Q<<LuaCFunction(sortedkeys)<<Table>>1;
                 for (LuaPairs J(Q); next(J); ++J)
                 {
