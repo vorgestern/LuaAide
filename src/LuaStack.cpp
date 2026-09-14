@@ -852,10 +852,6 @@ TEST_F(StackEnv, LuaStackAbsindex)
 // + Konstrktor
 // + push int
 
-// Teststatus Sonstige:
-// ====================
-// + LuaPairs
-
 #endif
 
 #if 0

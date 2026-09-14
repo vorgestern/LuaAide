@@ -185,7 +185,7 @@ TEST_F(StackEnv, LuaPairs)
     ASSERT_EQ("121,122,123,124,125", Q.tostring(-1));
 }
 
-TEST_F(StackEnv, LuaIteratorBreak)
+TEST_F(StackEnv, LuaPairsBreak)
 {
     Q<<lualist<<121<<122<<123<<124<<125;
 
