@@ -9,7 +9,7 @@ int LuaAide::map(lua_State*L)
     LuaStack Q(L);
     if (height(Q)==0) return 0;
     if (Q.typeat(-2)!=LuaType::TTABLE) return 0;
-    Q<<lualist<<lualistend<<luarot_3; // ==> [func {} list]
+    Q<<lualist<<lualistend<<rotate_up3; // ==> [func {} list]
     auto func=Q.index(-3), mappedlist=Q.index(-2);
     for (LuaPairs J(Q); next(J); ++J)
     {

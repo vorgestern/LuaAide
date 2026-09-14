@@ -299,7 +299,7 @@ LuaCall LuaStack::pushmethod(const char name[])
                 {
                     case LuaType::TFUNCTION:
                     {
-                        *this<<luarot3; // [mt.name, X, mt]
+                        *this<<rotate_down3; // [mt.name, X, mt]
                         drop(1);        // [mt.name, X]
                         return LuaCall(L, index(-2));
                     }
@@ -447,7 +447,7 @@ LuaStack&LuaStack::operator>>(const LuaRegValue&X)
                                                     // [value]
     *this<<LuaValue(LUA_REGISTRYINDEX)
         <<LuaLightUserData(X.value)                 // [value, Registry, key]
-        <<luarot_3;                                 // [Registry, key, value]
+        <<rotate_up3;                                 // [Registry, key, value]
     lua_settable(L, -3);                            // [Registry]
     drop(1);                                        // []
     return*this;
@@ -574,14 +574,14 @@ TEST_F(StackEnv, SwapNeu)
 
 TEST_F(StackEnv, Rot3)
 {
-    ASSERT_EQ(3, static_cast<int>(luarot3));
-    ASSERT_EQ(-3, static_cast<int>(luarot_3));
-    Q<<21<<22<<23<<luarot3;
+    ASSERT_EQ(3, static_cast<int>(rotate_down3));
+    ASSERT_EQ(-3, static_cast<int>(rotate_up3));
+    Q<<21<<22<<23<<rotate_down3;
     ASSERT_EQ(23, Q.toint(-3))<<Q;
     ASSERT_EQ(21, Q.toint(-2))<<Q;
     ASSERT_EQ(22, Q.toint(-1))<<Q;
     Q.clear();
-    Q<<21<<22<<23<<luarot_3;
+    Q<<21<<22<<23<<rotate_up3;
     ASSERT_EQ(22, Q.toint(-3))<<Q;
     ASSERT_EQ(23, Q.toint(-2))<<Q;
     ASSERT_EQ(21, Q.toint(-1))<<Q;

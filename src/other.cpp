@@ -54,7 +54,7 @@ int LuaAide::keymap(lua_State*L)
     LuaStack Q(L);                                               // [Table, func]
     if (Q.hasat(LuaType::TNIL, 1)) return 0;
 
-    Q<<lualist<<lualistend<<luarot_3;                            // [func, Result, Table]
+    Q<<lualist<<lualistend<<rotate_up3;                            // [func, Result, Table]
     const auto func=Q.index(-3), Result=Q.index(-2);
 
     for (LuaPairs J(Q); next(J); ++J)
@@ -87,8 +87,8 @@ int LuaAide::findfirst(lua_State*L)
     LuaStack Q(L);                                               // [Table, pred]
     if (Q.hasat(LuaType::TNIL, 1)) return 0;
     if (height(Q)==1) Q<<idfunc;
-    Q<<luanil<<luarot3;                                          // [nil, Table, pred]
-    Q<<luanil<<luarot3;                                          // [nil, nil, Table, pred]
+    Q<<luanil<<rotate_down3;                                          // [nil, Table, pred]
+    Q<<luanil<<rotate_down3;                                          // [nil, nil, Table, pred]
     Q.swap();                                                    // [nil, nil, pred, Table]
     const auto kr=Q.index(-4), vr=Q.index(-3), pred=Q.index(-2);
     bool found=false;
@@ -122,7 +122,7 @@ int LuaAide::contains(lua_State*L)
     if (height(Q)!=2) return  0;
     if (Q.hasat(LuaType::TNIL, -2)) return 0;
     Q<<luanil; // [List, item, result]
-    Q<<luarot_3; // [item, result, List]
+    Q<<rotate_up3; // [item, result, List]
     const auto item=Q.index(-3), result=Q.index(-2);
     bool found=false;
     for (LuaPairs J(Q); next(J) && !found; ++J)
@@ -151,7 +151,7 @@ int LuaAide::filter(lua_State*L)
     if (height(Q)<1 || Q.hasat(LuaType::TNIL, 1)) return 0;
     if (height(Q)<2 || Q.hasat(LuaType::TNIL, 2)){ Q<<lualist; return 1; }
     // [List, pred]
-    Q<<lualist<<lualistend<<luarot_3; // [pred, Result, List]
+    Q<<lualist<<lualistend<<rotate_up3; // [pred, Result, List]
     const auto pred=Q.index(-3), Result=Q.index(-2);
 //  cout<<"filter start "<<Q<<"\n";
     unsigned index_neu=0;
