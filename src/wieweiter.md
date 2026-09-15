@@ -3,7 +3,6 @@
 1.   Create Userdata
 1.   Associate Userdata with POD-Structs
 1.   Create/assign Metatables
-1.   Introduce iterator equivalent to ipairs
 
 # Features to improve
 1.   Iteration with LuaPairs should check for metamethod __pairs.

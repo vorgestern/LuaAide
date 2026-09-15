@@ -156,70 +156,95 @@ or `auto Q=LuaStack::New(true, nullptr);`.
      <<LuaValue(-2)<<"+">>1;                        // Calls table.concat on the list, i.e. pushes
                                                     // "First+Second" on to the stack.
 
+## Iterating over Lists and Tables
+```LuaIPairs``` and ```LuaPairs``` can be used to iterate over lists (indexed by 1,2,...) or generic tables (keys of any type).
+In the body of the loop, [key, value] pairs (or ipairs) are available on top of the stack. The loop body must leave this unchanged,
+i.e. clean up at the end of the body and before ```break``` and ```continue```.
+
+    // Push a list and iterate over its indexes:
+    Q<<List;
+    for (LuaIPairs J(Q); next(J); ++J)
+    {
+        // (unsigned)J is a running index 1,2,...
+        // Stack: [List, J, List[J]] -- J is an integer starting at 1
+        ...
+        if (condition) break; // It is safe to break out of this loop, if the stack ist unchanged.
+    }
+
+    // Push a table and iterate over its fields:
+    Q<<Table;
+    for (LuaPairs J(Q); next(J); ++J)
+    {
+        // (unsigned)J is a running index 1,2,...
+        // Stack: [Table, key, Table[key]] -- key is typically a string
+        ...
+        if (condition) break; // It is safe to break out of this loop, if the stack ist unchanged.
+    }
+
 ## Error handling
 ### Handling compile-errors in an application that embeds Lua
 - Install a PanicHandler to translate Lua-exceptions to C++ runtime exceptions.
 - Pass a source name together with Lua source code LuaCode to get better error messages.
-    ```
-    #include <LuaAide.h>
-    using namespace std;
 
-    int main_throwing(lua_State*L)
-    {
-        LuaStack Q=L;
-        // Executing this Script will fail because a parenthesis is not closed.
-        Q<<LuaCode("FunctioningLuaCompiletimeFailureDemo", R"___(
-            function map(A, M
-                local R={}
-                for _,e in ipairs(A) do table.insert(R, M[e] or e) end
-                return R
-            end
-        )___")>>0;
-    }
+```
+#include <LuaAide.h>
+using namespace std;
 
-    int panichandler(lua_State*L)
+int main_throwing(lua_State*L)
+{
+    LuaStack Q=L;
+    // Executing this Script will fail because a parenthesis is not closed.
+    Q<<LuaCode("FunctioningLuaCompiletimeFailureDemo", R"___(
+        function map(A, M
+            local R={}
+            for _,e in ipairs(A) do table.insert(R, M[e] or e) end
+            return R
+        end
+    )___")>>0;
+}
+
+int panichandler(lua_State*L)
+{
+    LuaStack Q(L);
+    throw runtime_error(Q.errormessage());
+    return 0;
+}
+
+int main()
+{
+    LuaStack Q=LuaStack::New(true, panichandler);
+    try { return main_throwing(Q); }
+    catch (const runtime_error&E)
     {
-        LuaStack Q(L);
-        throw runtime_error(Q.errormessage());
+        printf("Runtime error:\n%s\n", E.what());
+        cout<<Q<<"\n";
         return 0;
     }
-
-    int main()
-    {
-        LuaStack Q=LuaStack::New(true, panichandler);
-        try { return main_throwing(Q); }
-        catch (const runtime_error&E)
-        {
-            printf("Runtime error:\n%s\n", E.what());
-            cout<<Q<<"\n";
-            return 0;
-        }
-    }
-    ```
+}
+```
 
 ### Handling runtime-errors in an application that embeds Lua
 - Throw conventional Lua-errors where applicable. Have them translated to
   a C++ runtime exception as shown above.
 - Handle unexpected results from script execution by checking the return value:
 
-    ```
-    // This script will cause a runtime-error, because table.concat cannot handle
-    // elements of type boolean.
-    const auto rc=Q<<make_pair("Demo", LuaCode(R"___(
-        local a={...}
-        return table.concat(a, ", ")
-    )___"))<<21<<22<<true<<false>>1;
-    if (rc!=LUA_OK)
-    {
-        const auto message=Q.tostring(-1);
-        // Use as suits your application, e.g. throw a C++ runtime-error.
-    }
-    ```
+```
+// This script will cause a runtime-error, because table.concat cannot handle
+// elements of type boolean.
+const auto rc=Q<<make_pair("Demo", LuaCode(R"___(
+    local a={...}
+    return table.concat(a, ", ")
+)___"))<<21<<22<<true<<false>>1;
+if (rc!=LUA_OK)
+{
+    const auto message=Q.tostring(-1);
+    // Use as suits your application, e.g. throw a C++ runtime-error.
+}
+```
 
 ### Handling errors when Extending Scripts (i.e. in binary modules)
 Throw a conventional Lua-Error, let Lua handle it:
 
-    ```
     int demofunction(lua_State*L)
     {
         // Called at runtime from Lua, unhappy with arguments:
@@ -228,7 +253,6 @@ Throw a conventional Lua-Error, let Lua handle it:
         if (Q.typeat(-1)!=LuaType::TSTRING) return Q<<"demofunction: string expected">>luaerror;
         .....
     }
-    ```
 
 ### Debugtool: Print the Stack
 
