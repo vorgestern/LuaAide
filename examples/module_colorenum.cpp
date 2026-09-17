@@ -86,7 +86,7 @@ extern "C" int luaopen_colorenum(lua_State*L)
 
     // Return module table for 'require "colorenum"':
     Q   <<newtable
-            <<"https://github.com/vorgestern/LuaAide/examples/m3">>LuaField("origin")
+            <<"https://github.com/vorgestern/LuaAide/examples/module_colorenum.cpp">>LuaField("origin")
             <<"0.1">>LuaField("version");
 
     Q       <<LuaTable();

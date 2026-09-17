@@ -169,6 +169,7 @@ extern "C" int luaopen_vec3(lua_State*L)
         >>mtvec3;
     Q   <<newtable
         <<"0.1">>LuaField("version")
+        <<"https://github.com/vorgestern/LuaAide/examples/module_vec3.cpp">>LuaField("origin")
         <<mydemo>>LuaField("Demo")
         <<mynew>>LuaField("New");
     return 1;

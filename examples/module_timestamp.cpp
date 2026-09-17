@@ -87,7 +87,7 @@ extern "C" int luaopen_timestamp(lua_State*L)
 
     // Return module table for 'require "timestamp"':
     Q   <<newtable
-        <<"https://github.com/vorgestern/LuaAide">>LuaField("origin")
+        <<"https://github.com/vorgestern/LuaAide/examples/module_timestamp.cpp">>LuaField("origin")
         <<"0.1">>LuaField("version")
         <<now>>LuaField("now")
         <<sleep_ms>>LuaField("sleep_ms");
