@@ -111,7 +111,6 @@ template<EffectivePOD POD> struct LuaUserPOD
     size_t nuv=0;
     POD*luadata {nullptr};
 
-    static const size_t podsize=sizeof(POD);
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
     void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
 };
@@ -210,7 +209,7 @@ public:
     LuaStack&operator<<(lua_CFunction);
     template<EffectivePOD POD>LuaStack&operator<<(LuaUserPOD<POD>&X)
     {
-        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, X.podsize, X.nuv));
+        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
         X.luadata=P;
         return*this;
     };
