@@ -789,6 +789,35 @@ TEST_F(StackEnv, LuaStackAbsindex)
     ASSERT_TRUE(boolat(Q, stackindex(Hoppla)));
 }
 
+TEST_F(StackEnv, LuaUserPOD1)
+{
+    auto J=LuaUserPOD<int>{};
+    Q<<J;
+    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
+    ASSERT_NE(nullptr, J.luadata);
+    J=21;
+    ASSERT_EQ(21, *(int*)J.luadata);
+}
+
+class vec3 // POD
+{
+    double x{0}, y{0}, z{0};
+public:
+    vec3(){}
+    vec3(double x, double y, double z): x(x), y(y), z(z){};
+};
+
+TEST_F(StackEnv, LuaUserPOD2)
+{
+    static_assert(effectivepod<vec3>);
+    LuaUserPOD<vec3> Va, Vb;
+    Q<<Va;
+    ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
+    ASSERT_NE(nullptr, Va.luadata);
+    Q>>Vb;
+    ASSERT_EQ(Va.luadata, Vb.luadata);
+}
+
 // Teststatus LuaStack:
 // ====================
 // + version

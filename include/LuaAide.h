@@ -104,6 +104,18 @@ typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTa
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
 
+template<typename T> constexpr bool effectivepod=std::is_standard_layout<T>::value && std::is_trivially_copyable<T>::value;
+template<typename T> concept EffectivePOD=requires(T any){ static_cast<std::enable_if<effectivepod<T>>::type>(0); };
+template<EffectivePOD POD> struct LuaUserPOD
+{
+    size_t nuv=0;
+    POD*luadata {nullptr};
+
+    static const size_t podsize=sizeof(POD);
+    void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
+    void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
+};
+
 enum class callmechanism {
     value_on_stack,
     method_by_name,
@@ -196,6 +208,12 @@ public:
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
     LuaStack&operator<<(lua_CFunction);
+    template<EffectivePOD POD>LuaStack&operator<<(LuaUserPOD<POD>&X)
+    {
+        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, X.podsize, X.nuv));
+        X.luadata=P;
+        return*this;
+    };
 
     LuaCall operator<<(Callable);
     LuaCall operator<<(const LuaGlobalCall&);
@@ -219,6 +237,13 @@ public:
     LuaStack&operator>>(const LuaField&F){ lua_setfield(L, -2, F.value.data()); return*this; }
     LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.value.first, E.value.second); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
+
+    template<typename T>LuaStack&operator>>(LuaUserPOD<T>&X)
+    {
+        if (void*P=lua_touserdata(L, -1); P!=nullptr) X.luadata=reinterpret_cast<T*>(P);
+        else X.luadata=nullptr;
+        return*this;
+    }
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.value.first, X.value.second)); }
 //  LuaType operator()(const LuaField&X){ return static_cast<LuaType>(lua_getfield(L, -1, X.name)); }
