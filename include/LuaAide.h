@@ -108,7 +108,6 @@ template<typename T> constexpr bool effectivepod=std::is_standard_layout<T>::val
 template<typename T> concept EffectivePOD=requires(T any){ static_cast<std::enable_if<effectivepod<T>>::type>(0); };
 template<EffectivePOD POD> struct LuaUserPOD
 {
-    size_t nuv=0;
     POD*luadata {nullptr};
 
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
@@ -215,7 +214,7 @@ public:
     template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(UV<POD, numextra>X)
     {
         auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
-        return {X.nuv, P};
+        return {P};
     }
 
     LuaCall operator<<(Callable);
@@ -245,7 +244,7 @@ public:
     {
         POD*luadata=nullptr;
         if (void*P=lua_touserdata(L, -1); P!=nullptr) luadata=reinterpret_cast<POD*>(P);
-        return {X.nuv, luadata};
+        return {luadata};
     }
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.value.first, X.value.second)); }
