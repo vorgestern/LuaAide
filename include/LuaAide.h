@@ -109,10 +109,10 @@ template<typename T> concept EffectivePOD=requires(T any){ static_cast<std::enab
 template<EffectivePOD POD> struct LuaUserPOD
 {
     POD*luadata {nullptr};
-
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
     void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
     POD*operator*(){ return luadata; }
+    POD operator()(){ return luadata!=nullptr?*luadata:POD(); }
 };
 template<EffectivePOD POD, unsigned extravalues=0> struct LuaUD
 {

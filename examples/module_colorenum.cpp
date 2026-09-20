@@ -38,7 +38,7 @@ int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    switch (**(Q>>Inst))
+    switch ((Q>>Inst)())
     {
         case colortype::LCT_GREY: return Q<<"LCT_GREY", 1;
         case colortype::LCT_RGB: return Q<<"LCT_RGB", 1;
@@ -53,7 +53,7 @@ int mynumeric(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    auto ct=**(Q>>Inst);
+    auto ct=(Q>>Inst)();
     Q<<(int)ct;
     return 1;
 }
