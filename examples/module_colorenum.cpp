@@ -22,7 +22,7 @@ namespace {
 
 const auto mtname="mtcolortype";
 const void*mtpointer=nullptr; // identify metatable via lua_topointer()
-const UV<colortype,0> Inst;
+const LuaUD<colortype,0> Inst;
 
 bool iscolortype(lua_State*L, int index)
 {

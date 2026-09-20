@@ -20,7 +20,7 @@ namespace { namespace Vec3 {
 const LuaRegValue mtvec3("mtvec3");
 
 struct Vec3 { double x, y, z; };
-const UV<Vec3,0> Inst;
+const LuaUD<Vec3,0> Inst;
 
 static double getelement(LuaStack&Q, int index, int e, const char name[])
 {

@@ -113,7 +113,7 @@ template<EffectivePOD POD> struct LuaUserPOD
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
     void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
 };
-template<EffectivePOD POD, unsigned extravalues=0> struct UV
+template<EffectivePOD POD, unsigned extravalues=0> struct LuaUD
 {
     typedef POD podtype;
     static const unsigned nuv=extravalues;
@@ -211,7 +211,7 @@ public:
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
     LuaStack&operator<<(lua_CFunction);
-    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(UV<POD, numextra>X)
+    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(LuaUD<POD, numextra>X)
     {
         return {reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv))};
     }
@@ -239,7 +239,7 @@ public:
     LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.value.first, E.value.second); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
-    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator>>(UV<POD, numextra>X)
+    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator>>(LuaUD<POD, numextra>X)
     {
         return {reinterpret_cast<POD*>(lua_touserdata(L, -1))};
     }

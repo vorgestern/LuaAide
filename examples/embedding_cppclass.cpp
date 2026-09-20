@@ -23,7 +23,7 @@ struct DemoClass
 {
     int a, b, c;
 };
-const UV<DemoClass> Inst;
+const LuaUD<DemoClass> Inst;
 
 static int mynew(lua_State*L)
 {

@@ -17,7 +17,7 @@ namespace {
 
 const auto mtname="timestamp_highres";
 const void*mtpointer=nullptr; // identify metatable via lua_topointer()
-const UV<tp> Inst;
+const LuaUD<tp> Inst;
 
 static bool istimestamp(lua_State*L, int index)
 {
