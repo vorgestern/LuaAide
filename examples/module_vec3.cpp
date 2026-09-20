@@ -8,10 +8,8 @@
 
 // Handlungsbedarf:
 // + Verbirg mtvec3 (LuaRegValue(tag))
-// - wrap lua_newuserdatauv
 // - wrap lua_setmetatable
 // - wrap indizierten Zugriff auf Listenelemente
-// + wrap lua_touserdata
 // - Konzept für die Identifikation des Datentyps, der in userdata gekapselt ist.
 
 using namespace std;
@@ -22,6 +20,8 @@ namespace { namespace Vec3 {
 const LuaRegValue mtvec3("mtvec3");
 
 struct V { double x, y, z; };
+
+using POD=LuaUserPOD<V>;
 
 static double getelement(LuaStack&Q, int index, int e, const char name[])
 {
@@ -48,8 +48,10 @@ static V argvector(lua_State*L, int index)
     LuaStack  Q(L);
     if (Q.hasat(LuaType::TUSERDATA, index))
     {
-        auto X=Q.touserpointer<V>(index);
-        return*X;
+        POD P;
+        Q<<LuaValue(index)>>P;
+        Q.drop(1);
+        return*P.luadata;
     }
     if (Q.hasat(LuaType::TTABLE, index))
     {
@@ -65,19 +67,22 @@ static int mydemo(lua_State*L)
 {
     LuaStack Q(L);
     const auto A=argvector(Q, -1);
-    auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
-    *P=new V {A};
+
+    POD P;
+    Q<<P;
     Q<<mtvec3;
     lua_setmetatable(L, -2);
+    P=A;
     return 1;
 }
 
 static int myconstructor(LuaStack&Q, const V&arg)
 {
-    auto P=reinterpret_cast<V**>(lua_newuserdatauv(Q, sizeof(V*), 0));
+    POD P;
+    Q<<P;
     Q<<mtvec3;
     lua_setmetatable(Q, -2);
-    *P=new V(arg);
+    P=arg;
     return 1;
 }
 
@@ -93,27 +98,16 @@ static int mynew(lua_State*L)
     else return myconstructor(Q, {0,0,0});
 }
 
-static int myfinaliser(lua_State*L)
-{
-    LuaStack Q(L);
-    if (Q.hasat(LuaType::TUSERDATA, -1))
-    {
-        auto X=Q.touserpointer<V**>(-1);
-        // printf("finaliser deletes %p\n", X);
-        *X=nullptr;
-        delete *X;
-    }
-    return 0;
-}
-
 static int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     if (Q.hasat(LuaType::TUSERDATA, -1))
     {
-        auto*X=Q.touserpointer<V>(-1);
+        POD P;
+        Q>>P;
+        auto X=*P.luadata;
         char pad[100];
-        snprintf(pad, sizeof(pad), "{%g, %g, %g}", X->x, X->y, X->z);
+        snprintf(pad, sizeof(pad), "{%g, %g, %g}", X.x, X.y, X.z);
         Q<<pad;
         return 1;
     }
@@ -130,10 +124,11 @@ static int myadd(lua_State*L)
     if (height(Q)<2) return Q<<"mtvec3.__add: Expect two arguments at least.">>luaerror;
     try {
         const V A=argvector(Q, -2), B=argvector(Q, -1);
-        auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
+        POD P;
+        Q<<P;
         Q<<mtvec3;
         lua_setmetatable(L, -2);
-        *P=new V {A.x+B.x, A.y+B.y, A.z+B.z};
+        P=V {A.x+B.x, A.y+B.y, A.z+B.z};
         return 1;
     }
     catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }
@@ -145,10 +140,11 @@ static int mysubtract(lua_State*L)
     if (height(Q)<2) return Q<<"vec3:sub: Expect two arguments at least (self,other).">>luaerror;
     try {
         const V A=argvector(Q, -2), B=argvector(Q, -1);
-        auto P=reinterpret_cast<V**>(lua_newuserdatauv(L, sizeof(V*), 0));
+        POD P;
+        Q<<P;
         Q<<mtvec3;
         lua_setmetatable(L, -2);
-        *P=new V {A.x-B.x, A.y-B.y, A.z-B.z};
+        P=V {A.x-B.x, A.y-B.y, A.z-B.z};
         return 1;
     }
     catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }
@@ -162,7 +158,6 @@ extern "C" int luaopen_vec3(lua_State*L)
 {
     LuaStack Q(L);
     Q   <<newtable
-        <<myfinaliser>>LuaMetaMethod::gc
         <<mytostring>>LuaMetaMethod::tostring
         <<myadd>>LuaMetaMethod::add
         <<mysubtract>>LuaMetaMethod::sub

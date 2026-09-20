@@ -17,6 +17,7 @@ namespace {
 
 const auto mtname="timestamp_highres";
 const void*mtpointer=nullptr; // identify metatable via lua_topointer()
+using POD=LuaUserPOD<tp>;
 
 static bool istimestamp(lua_State*L, int index)
 {
@@ -32,9 +33,10 @@ extern "C" int tostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, istimestamp, "timestamp");
-    const tp T1=*reinterpret_cast<tp*>(lua_touserdata(Q, 1));
+    POD P;
+    Q>>P;
     char pad[100];
-    const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(T1.time_since_epoch()/1ms));
+    const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(P.luadata->time_since_epoch()/1ms));
     return Q<<string_view {pad, nw}, 1;
 }
 
@@ -43,8 +45,9 @@ extern "C" int tsdiff(lua_State*L)
     LuaStack Q(L);
     Q.argcheck(1, istimestamp, "timestamp");
     Q.argcheck(2, istimestamp, "timestamp");
-    const tp T1=*reinterpret_cast<tp*>(lua_touserdata(L, 1)),
-             T2=*reinterpret_cast<tp*>(lua_touserdata(L, 2));
+    POD P;
+    Q>>P;             const tp T2=*P.luadata;
+    Q<<luaswap>>P;    const tp T1=*P.luadata;
     Q<<(int)((T1-T2)/1ms);
     return 1;
 }
@@ -52,10 +55,11 @@ extern "C" int tsdiff(lua_State*L)
 extern "C" int now(lua_State*L)
 {
     LuaStack Q(L);
-    auto*jetzt=reinterpret_cast<tp*>(lua_newuserdatauv(L, sizeof(tp), 0));    // [userdata]
+    POD P;
+    Q<<P;
     Q<<LuaValue(LUA_REGISTRYINDEX)<<LuaField(mtname); Q.remove(-2);           // [userdata, metatable]
     lua_setmetatable(L, -2);
-    *jetzt=highresclk::now();
+    *P.luadata=highresclk::now();
     return 1;
 }
 

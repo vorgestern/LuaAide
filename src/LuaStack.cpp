@@ -772,7 +772,8 @@ TEST_F(StackEnv, HasLightUserdataAt1)
 
 TEST_F(StackEnv, HasUserdataAt2)
 {
-    lua_newuserdatauv(Q, sizeof(void*), 0);
+    LuaUserPOD<int> P;
+    Q<<P;
     ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasat(LuaType::TUSERDATA, -1));
 }

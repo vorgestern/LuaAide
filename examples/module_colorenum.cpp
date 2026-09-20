@@ -53,8 +53,10 @@ int mynumeric(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    const auto value=*reinterpret_cast<colortype*>(lua_touserdata(L, -1));
-    return Q<<(int)value, 1;
+    LuaUserPOD<colortype>P;
+    Q>>P;
+    Q<<(int)*P.luadata;
+    return 1;
 }
 
 } // anon
@@ -62,8 +64,9 @@ int mynumeric(lua_State*L)
 static void neu(lua_State*L, colortype value)
 {
     LuaStack Q(L);
-    colortype*neu=reinterpret_cast<colortype*>(lua_newuserdatauv(Q, 2, 0));
-    *neu=value;
+    LuaUserPOD<colortype> P;
+    Q<<P;
+    P=value;
 }
 
 extern "C" int luaopen_colorenum(lua_State*L)

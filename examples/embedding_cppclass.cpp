@@ -23,11 +23,13 @@ struct DemoClass
 {
     int a, b, c;
 };
+using POD=LuaUserPOD<DemoClass>;
 
 static int mynew(lua_State*L)
 {
     LuaStack Q(L);
-    auto P=reinterpret_cast<DemoClass**>(lua_newuserdatauv(L, sizeof(DemoClass*), 0));
+    POD P;
+    Q<<P;
     Q<<LuaGlobal("mtdemo");
     lua_setmetatable(L, -2);
     if (Q.hasat(LuaType::TTABLE, -2))
@@ -35,23 +37,10 @@ static int mynew(lua_State*L)
         const auto a=Q(LuaElement({-2, 1}))==LuaType::TNUMBER?Q.toint(-1):101; Q.drop(1);
         const auto b=Q(LuaElement({-2, 2}))==LuaType::TNUMBER?Q.toint(-1):102; Q.drop(1);
         const auto c=Q(LuaElement({-2, 3}))==LuaType::TNUMBER?Q.toint(-1):103; Q.drop(1);
-        *P=new DemoClass {(int)a, (int)b, (int)c};
+        P=DemoClass {(int)a, (int)b, (int)c};
     }
-    else *P=new DemoClass {1, 2, 3};
+    else P=DemoClass {1, 2, 3};
     return 1;
-}
-
-static int myfinaliser(lua_State*L)
-{
-    LuaStack Q(L);
-    if (Q.hasat(LuaType::TUSERDATA, -1))
-    {
-        auto X=Q.touserdata<DemoClass**>(-1);
-        printf("finaliser deletes %p\n", *X);
-        delete *X;
-        *X=nullptr;
-    }
-    return 0;
 }
 
 static int mytostring(lua_State*L)
@@ -59,9 +48,10 @@ static int mytostring(lua_State*L)
     LuaStack Q(L);
     if (Q.hasat(LuaType::TUSERDATA, -1))
     {
-        auto X=Q.touserpointer<DemoClass>(-1);
+        POD P;
+        Q>>P;
         char pad[100];
-        snprintf(pad, sizeof(pad), "{%d, %d, %d}", X->a, X->b, X->c);
+        snprintf(pad, sizeof(pad), "{%d, %d, %d}", P.luadata->a, P.luadata->b, P.luadata->c);
         Q<<pad;
         return 1;
     }
@@ -76,13 +66,12 @@ static void defineclass(lua_State*L)
 {
     LuaStack Q(L);
     Q<<newtable
-        <<myfinaliser>>LuaMetaMethod::gc
         <<mytostring>>LuaMetaMethod::tostring
         >>LuaGlobal("mtdemo");
     Q<<mynew>>LuaGlobal("newdemo");
 }
 
-int main(int argc, char*argv[])
+int main()
 {
     LuaStack Q=LuaStack::New(true, panichandler);
     defineclass(Q);
