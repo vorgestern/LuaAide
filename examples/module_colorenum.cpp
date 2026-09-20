@@ -78,8 +78,7 @@ extern "C" int luaopen_colorenum(lua_State*L)
                 <<mytostring>>LuaMetaMethod::tostring;
     mtpointer=lua_topointer(L, -1);
     Q.dup(); Q>>LuaMetaMethod::index;
-    Q       >>LuaField(mtname);
-    Q.drop(1);
+    Q       >>LuaField(mtname)<<luadrop;
 
     Q<<LuaValue(LUA_REGISTRYINDEX)<<LuaField(mtname);
     auto mt=Q.index(-1);

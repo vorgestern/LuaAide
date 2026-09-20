@@ -1,7 +1,5 @@
 
 # Missing features
-1.   Create Userdata
-1.   Associate Userdata with POD-Structs
 1.   Create/assign Metatables
 
 # Features to improve

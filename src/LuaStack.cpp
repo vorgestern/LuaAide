@@ -547,9 +547,9 @@ TEST_F(StackEnv, Drop)
 {
     Q<<21<<"Hoppla";
     ASSERT_EQ(2, height(Q));
-    Q.drop(1);
+    Q<<luadrop;
     ASSERT_EQ(1, height(Q));
-    Q.drop(1);
+    Q<<luadrop;
     ASSERT_EQ(0, height(Q));
     ASSERT_NO_THROW(Q.drop(1));
     ASSERT_EQ(0, height(Q));
@@ -785,7 +785,7 @@ TEST_F(StackEnv, LuaStackAbsindex)
     ASSERT_TRUE(stringat(Q, stackindex(Hoppla)));
     Q.drop(3);
     ASSERT_TRUE(stringat(Q, stackindex(Hoppla)));
-    Q.drop(1)<<true<<"hoppla woanders";
+    Q<<luadrop<<true<<"hoppla woanders";
     ASSERT_TRUE(boolat(Q, stackindex(Hoppla)));
 }
 

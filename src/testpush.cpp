@@ -108,20 +108,18 @@ TEST_F(StackEnv, LuaElement)
     Q<<LuaElement {{-1, 2}};
     ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("B", Q.tostring(-1));
-    Q.drop(1);
-    Q<<LuaElement {{-1, 4}};
+    Q<<luadrop<<LuaElement {{-1, 4}};
     ASSERT_TRUE(stringat(Q, -1));
     ASSERT_EQ("D", Q.tostring(-1));
-    Q.drop(1);
-    Q<<LuaElement {{-1, 5}};
+    Q<<luadrop<<LuaElement {{-1, 5}};
     ASSERT_TRUE(Q.hasat(LuaType::TNIL, -1));
-    Q.drop(1);
+    Q<<luadrop;
     ASSERT_EQ(1, height(Q));
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1));
     ASSERT_EQ(LuaType::TSTRING, Q(LuaElement {{-1, 1}}));
     ASSERT_EQ(2, height(Q));
     ASSERT_TRUE(stringat(Q, -1));
-    Q.drop(1);
+    Q<<luadrop;
 }
 
 TEST_F(StackEnv, LuaElementSet)
@@ -139,19 +137,17 @@ TEST_F(StackEnv, LuaElementSet)
     lua_len(Q, -1);
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(5, Q.toint(-1));
-    Q.drop(1);
 
-    Q<<LuaElement {{-1, 3}};
+    Q<<luadrop<<LuaElement {{-1, 3}};
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1));
     ASSERT_EQ(23, Q.toint(-1));
-    Q.drop(1);
 
-    Q<<LuaElement {{-1, 5}};
+    Q<<luadrop<<LuaElement {{-1, 5}};
     ASSERT_EQ(2, height(Q));
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1));
     ASSERT_EQ("hoppla", Q.tostring(-1));
-    Q.drop(1);
+    Q<<luadrop;
     ASSERT_EQ(1, height(Q));
 }
 
@@ -255,49 +251,49 @@ TEST_F(StackEnv, AsString)
     Q<<true;
     ASSERT_EQ(LuaType::TBOOLEAN, Q.typeat(-1))<<Q;
     ASSERT_EQ("true", Q.asstring(-1))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     void*p=nullptr;
 
     Q<<lua_error;
     ASSERT_EQ(LuaType::TFUNCTION, Q.typeat(-1));
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "cfunction(%p)", &p))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<LuaLightUserData((void*)lua_error);
     ASSERT_EQ(LuaType::TLIGHTUSERDATA, Q.typeat(-1));
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "lightuserdata(%p)", &p))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<luanil;
     ASSERT_EQ(LuaType::TNIL, Q.typeat(-1))<<Q;
     ASSERT_EQ("nil", Q.asstring(-1))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<3.1415926;
     ASSERT_EQ(LuaType::TNUMBER, Q.typeat(-1))<<Q;
     ASSERT_EQ("3.14159", Q.asstring(-1))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<"hoppla";
     ASSERT_EQ(LuaType::TSTRING, Q.typeat(-1))<<Q;
     ASSERT_EQ("hoppla", Q.asstring(-1))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<newtable;
     ASSERT_EQ(LuaType::TTABLE, Q.typeat(-1))<<Q;
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "table(%p)", &p))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     lua_pushthread(Q);
     ASSERT_EQ(LuaType::TTHREAD, Q.typeat(-1))<<Q;
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 
     Q<<LuaUD<int>() =21;
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1))<<Q;
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
-    Q.drop(1);
+    Q<<luadrop;
 }
 
 TEST_F(StackEnv, ArgCheckTypeThrow)

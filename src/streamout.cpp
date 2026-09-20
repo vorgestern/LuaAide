@@ -86,7 +86,7 @@ namespace {
                     }
                     out<<IndentedLuaStackItem(Q, -1, X.level+1);
                     // removes 'value'; keeps 'key' for next iteration
-                    Q.drop(1);
+                    Q<<luadrop;
                 }
                 return (num>0?out<<"\n"<<Indent:out)<<'}';
             }

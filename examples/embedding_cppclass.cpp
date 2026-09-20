@@ -84,8 +84,7 @@ int main()
 #endif
     // Save string representation in 'demostring'.
     Q[LuaMetaMethod::tostring]>>1;
-    Q>>LuaGlobal("demostring");
-    Q.drop(1);
+    Q>>LuaGlobal("demostring")<<luadrop;
 
     const auto rc=Q<<LuaCode(R"xxx(
         if true then

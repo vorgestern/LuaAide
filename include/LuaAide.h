@@ -87,12 +87,14 @@ unsigned version(const LuaStack&);
 enum class distinct_pushable {
     a,s,as,te,u,v,r,lud, // array,struct,table,tableelement,upvalue,value,regvalue,lightuserdata
     g,f,gc,cl,           // global,field,globalcall,closure
+    drop,                // drop
 };
 template<typename X> concept Pushable=requires (X Element) { Element.distinguator; };
 template<typename I, distinct_pushable d> struct Distinct { I value; };
 
 typedef Distinct<int, distinct_pushable::v>                                LuaValue;
 typedef Distinct<unsigned, distinct_pushable::u>                           LuaUpValue;
+typedef Distinct<unsigned, distinct_pushable::drop>                        LuaDrop;
 typedef Distinct<size_t, distinct_pushable::a>                             LuaArray;
 typedef Distinct<size_t, distinct_pushable::s>                             LuaStruct;
 typedef Distinct<const void*, distinct_pushable::r>                        LuaRegValue;
@@ -103,6 +105,8 @@ typedef Distinct<std::string_view, distinct_pushable::gc>                  LuaGl
 typedef Distinct<std::pair<size_t,size_t>, distinct_pushable::as>          LuaTable;
 typedef Distinct<std::pair<int,lua_Integer>, distinct_pushable::te>        LuaElement; // tablepos, elementindex
 typedef Distinct<std::pair<lua_CFunction,unsigned>, distinct_pushable::cl> LuaClosure;
+
+const LuaDrop luadrop {1};
 
 template<typename T> constexpr bool effectivepod=std::is_standard_layout<T>::value && std::is_trivially_copyable<T>::value;
 template<typename T> concept EffectivePOD=requires(T any){ static_cast<std::enable_if<effectivepod<T>>::type>(0); };
@@ -204,6 +208,7 @@ public:
     LuaStack&operator<<(const LuaField&X){ lua_getfield(L, -1, X.value.data()); return*this; }
     LuaStack&operator<<(const LuaElement&X){ lua_geti(L, X.value.first, X.value.second); return*this; }
     LuaStack&operator<<(const LuaNil&X){ lua_pushnil(L); return*this; }
+    LuaStack&operator<<(const LuaDrop&X){ lua_pop(L, X.value); return*this; }
     LuaStack&operator<<(const LuaTable&X){ lua_createtable(L, X.value.first, X.value.second); return*this; }
     LuaStack&operator<<(const LuaArray&X){ lua_createtable(L, X.value, 0); return*this; }
     LuaStack&operator<<(LuaTableTag){ lua_createtable(L, 0, 0); return*this; }
