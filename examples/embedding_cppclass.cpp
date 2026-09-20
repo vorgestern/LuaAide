@@ -23,13 +23,12 @@ struct DemoClass
 {
     int a, b, c;
 };
-using POD=LuaUserPOD<DemoClass>;
-const UV<DemoClass> NewInst;
+const UV<DemoClass> Inst;
 
 static int mynew(lua_State*L)
 {
     LuaStack Q(L);
-    auto P=Q<<NewInst;
+    auto P=Q<<Inst;
     Q<<LuaGlobal("mtdemo");
     lua_setmetatable(L, -2);
     if (Q.hasat(LuaType::TTABLE, -2))
@@ -48,8 +47,7 @@ static int mytostring(lua_State*L)
     LuaStack Q(L);
     if (Q.hasat(LuaType::TUSERDATA, -1))
     {
-        POD P;
-        Q>>P;
+        auto P=Q>>Inst;
         char pad[100];
         snprintf(pad, sizeof(pad), "{%d, %d, %d}", P.luadata->a, P.luadata->b, P.luadata->c);
         Q<<pad;

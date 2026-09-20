@@ -808,12 +808,12 @@ public:
 
 TEST_F(StackEnv, LuaUserPOD2)
 {
+    const UV<vec3> Inst;
     static_assert(effectivepod<vec3>);
-    auto Va=Q<<UV<vec3>();
+    auto Va=Q<<Inst;
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
     ASSERT_NE(nullptr, Va.luadata);
-    LuaUserPOD<vec3> Vb;
-    Q>>Vb;
+    auto Vb=Q>>Inst;
     ASSERT_EQ(Va.luadata, Vb.luadata);
 }
 

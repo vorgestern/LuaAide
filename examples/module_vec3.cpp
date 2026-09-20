@@ -20,9 +20,7 @@ namespace { namespace Vec3 {
 const LuaRegValue mtvec3("mtvec3");
 
 struct Vec3 { double x, y, z; };
-
-using POD=LuaUserPOD<Vec3>;
-const UV<Vec3,0> NewVec;
+const UV<Vec3,0> Inst;
 
 static double getelement(LuaStack&Q, int index, int e, const char name[])
 {
@@ -49,10 +47,9 @@ static Vec3 argvector(lua_State*L, int index)
     LuaStack  Q(L);
     if (Q.hasat(LuaType::TUSERDATA, index))
     {
-        POD P;
-        Q<<LuaValue(index)>>P;
+        auto P=Q<<LuaValue(index)>>Inst;
         Q.drop(1);
-        return*P.luadata;
+        return *P.luadata;
     }
     if (Q.hasat(LuaType::TTABLE, index))
     {
@@ -68,7 +65,7 @@ static int mydemo(lua_State*L)
 {
     LuaStack Q(L);
     const auto A=argvector(Q, -1);
-    Q<<NewVec =A;
+    Q<<Inst =A;
     Q<<mtvec3;
     lua_setmetatable(L, -2);
     return 1;
@@ -76,7 +73,7 @@ static int mydemo(lua_State*L)
 
 static int myconstructor(LuaStack&Q, const Vec3&arg)
 {
-    Q<<NewVec=arg;
+    Q<<Inst=arg;
     Q<<mtvec3;
     lua_setmetatable(Q, -2);
     return 1;
@@ -99,11 +96,10 @@ static int mytostring(lua_State*L)
     LuaStack Q(L);
     if (Q.hasat(LuaType::TUSERDATA, -1))
     {
-        POD P;
-        Q>>P;
-        auto X=*P.luadata;
+        auto P=Q>>Inst;
+        auto*X=P.luadata;
         char pad[100];
-        snprintf(pad, sizeof(pad), "{%g, %g, %g}", X.x, X.y, X.z);
+        snprintf(pad, sizeof(pad), "{%g, %g, %g}", X->x, X->y, X->z);
         Q<<pad;
         return 1;
     }
@@ -120,7 +116,7 @@ static int myadd(lua_State*L)
     if (height(Q)<2) return Q<<"mtvec3.__add: Expect two arguments at least.">>luaerror;
     try {
         const Vec3 A=argvector(Q, -2), B=argvector(Q, -1);
-        Q<<NewVec=Vec3 {A.x+B.x, A.y+B.y, A.z+B.z};
+        Q<<Inst=Vec3 {A.x+B.x, A.y+B.y, A.z+B.z};
         Q<<mtvec3;
         lua_setmetatable(L, -2);
         return 1;
@@ -134,7 +130,7 @@ static int mysubtract(lua_State*L)
     if (height(Q)<2) return Q<<"vec3:sub: Expect two arguments at least (self,other).">>luaerror;
     try {
         const Vec3 A=argvector(Q, -2), B=argvector(Q, -1);
-        Q<<NewVec=Vec3 {A.x-B.x, A.y-B.y, A.z-B.z};
+        Q<<Inst=Vec3 {A.x-B.x, A.y-B.y, A.z-B.z};
         Q<<mtvec3;
         lua_setmetatable(L, -2);
         return 1;

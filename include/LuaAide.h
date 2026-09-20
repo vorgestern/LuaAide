@@ -212,16 +212,10 @@ public:
     LuaStack&operator<<(const std::unordered_map<std::string, std::string>&);
     LuaStack&operator<<(const LuaRegValue&);
     LuaStack&operator<<(lua_CFunction);
-    template<EffectivePOD POD>LuaStack&operator<<(LuaUserPOD<POD>&X)
-    {
-        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
-        X.luadata=P;
-        return*this;
-    }
     template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(UV<POD, numextra>X)
     {
         auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
-        return LuaUserPOD {X.nuv, P};
+        return {X.nuv, P};
     }
 
     LuaCall operator<<(Callable);
@@ -247,11 +241,11 @@ public:
     LuaStack&operator>>(const LuaElement&E){ lua_seti(L, E.value.first, E.value.second); return*this; }
     LuaStack&operator>>(const LuaRegValue&); // [value] ==> []
 
-    template<typename T>LuaStack&operator>>(LuaUserPOD<T>&X)
+    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator>>(UV<POD, numextra>X)
     {
-        if (void*P=lua_touserdata(L, -1); P!=nullptr) X.luadata=reinterpret_cast<T*>(P);
-        else X.luadata=nullptr;
-        return*this;
+        POD*luadata=nullptr;
+        if (void*P=lua_touserdata(L, -1); P!=nullptr) luadata=reinterpret_cast<POD*>(P);
+        return {X.nuv, luadata};
     }
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.value.first, X.value.second)); }

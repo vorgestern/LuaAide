@@ -22,6 +22,7 @@ namespace {
 
 const auto mtname="mtcolortype";
 const void*mtpointer=nullptr; // identify metatable via lua_topointer()
+const UV<colortype,0> Inst;
 
 bool iscolortype(lua_State*L, int index)
 {
@@ -37,8 +38,7 @@ int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    LuaUserPOD<colortype>P;
-    Q>>P;
+    auto P=Q>>Inst;
     switch (*P.luadata)
     {
         case colortype::LCT_GREY: return Q<<"LCT_GREY", 1;
@@ -54,8 +54,7 @@ int mynumeric(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    LuaUserPOD<colortype>P;
-    Q>>P;
+    auto P=Q>>Inst;
     Q<<(int)*P.luadata;
     return 1;
 }
@@ -65,7 +64,7 @@ int mynumeric(lua_State*L)
 static void neu(lua_State*L, colortype value)
 {
     LuaStack Q(L);
-    Q<<UV<colortype>() =value;
+    Q<<Inst =value;
 }
 
 extern "C" int luaopen_colorenum(lua_State*L)
