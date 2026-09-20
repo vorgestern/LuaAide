@@ -213,8 +213,7 @@ public:
     LuaStack&operator<<(lua_CFunction);
     template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(UV<POD, numextra>X)
     {
-        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
-        return {P};
+        return {reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv))};
     }
 
     LuaCall operator<<(Callable);
@@ -242,9 +241,7 @@ public:
 
     template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator>>(UV<POD, numextra>X)
     {
-        POD*luadata=nullptr;
-        if (void*P=lua_touserdata(L, -1); P!=nullptr) luadata=reinterpret_cast<POD*>(P);
-        return {luadata};
+        return {reinterpret_cast<POD*>(lua_touserdata(L, -1))};
     }
 
     LuaType operator()(const LuaElement&X){ return static_cast<LuaType>(lua_geti(L, X.value.first, X.value.second)); }
