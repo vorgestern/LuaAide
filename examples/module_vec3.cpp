@@ -7,7 +7,6 @@
 // moduletest_vec3.lua demonstrates its use.
 
 // Handlungsbedarf:
-// + Verbirg mtvec3 (LuaRegValue(tag))
 // - wrap lua_setmetatable
 // - wrap indizierten Zugriff auf Listenelemente
 // - Konzept für die Identifikation des Datentyps, der in userdata gekapselt ist.
@@ -47,9 +46,9 @@ static Vec3 argvector(lua_State*L, int index)
     LuaStack  Q(L);
     if (Q.hasat(LuaType::TUSERDATA, index))
     {
-        auto P=Q<<LuaValue(index)>>Inst;
+        auto V=*(Q<<LuaValue(index)>>Inst);
         Q.drop(1);
-        return *P.luadata;
+        return *V;
     }
     if (Q.hasat(LuaType::TTABLE, index))
     {
@@ -65,7 +64,7 @@ static int mydemo(lua_State*L)
 {
     LuaStack Q(L);
     const auto A=argvector(Q, -1);
-    Q<<Inst =A;
+    Q<<Inst=A;
     Q<<mtvec3;
     lua_setmetatable(L, -2);
     return 1;
@@ -96,8 +95,7 @@ static int mytostring(lua_State*L)
     LuaStack Q(L);
     if (Q.hasat(LuaType::TUSERDATA, -1))
     {
-        auto P=Q>>Inst;
-        auto*X=P.luadata;
+        auto*X=*(Q>>Inst);
         char pad[100];
         snprintf(pad, sizeof(pad), "{%g, %g, %g}", X->x, X->y, X->z);
         Q<<pad;

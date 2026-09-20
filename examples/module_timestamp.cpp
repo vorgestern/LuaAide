@@ -33,9 +33,9 @@ extern "C" int tostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, istimestamp, "timestamp");
-    auto P=Q>>Inst;
+    auto*tp=*(Q>>Inst);
     char pad[100];
-    const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(P.luadata->time_since_epoch()/1ms));
+    const size_t nw=snprintf(pad, sizeof(pad), "%.3fs", 0.001*(tp->time_since_epoch()/1ms));
     return Q<<string_view {pad, nw}, 1;
 }
 
@@ -44,10 +44,10 @@ extern "C" int tsdiff(lua_State*L)
     LuaStack Q(L);
     Q.argcheck(1, istimestamp, "timestamp");
     Q.argcheck(2, istimestamp, "timestamp");
-    const tp T2=*(Q>>Inst).luadata; // const tp T2=*P.luadata;
+    const auto*T2=*(Q>>Inst);
     Q<<luaswap;
-    const tp T1=*(Q>>Inst).luadata; // *P.luadata;
-    Q<<(int)((T1-T2)/1ms);
+    const auto*T1=*(Q>>Inst);
+    Q<<(int)((*T1-*T2)/1ms);
     return 1;
 }
 

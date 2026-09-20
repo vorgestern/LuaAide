@@ -38,8 +38,7 @@ int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    auto P=Q>>Inst;
-    switch (*P.luadata)
+    switch (**(Q>>Inst))
     {
         case colortype::LCT_GREY: return Q<<"LCT_GREY", 1;
         case colortype::LCT_RGB: return Q<<"LCT_RGB", 1;
@@ -54,8 +53,8 @@ int mynumeric(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    auto P=Q>>Inst;
-    Q<<(int)*P.luadata;
+    auto ct=**(Q>>Inst);
+    Q<<(int)ct;
     return 1;
 }
 
@@ -64,7 +63,7 @@ int mynumeric(lua_State*L)
 static void neu(lua_State*L, colortype value)
 {
     LuaStack Q(L);
-    Q<<Inst =value;
+    Q<<Inst=value;
 }
 
 extern "C" int luaopen_colorenum(lua_State*L)

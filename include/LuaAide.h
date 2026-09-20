@@ -112,6 +112,7 @@ template<EffectivePOD POD> struct LuaUserPOD
 
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
     void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
+    POD*operator*(){ return luadata; }
 };
 template<EffectivePOD POD, unsigned extravalues=0> struct LuaUD
 {
