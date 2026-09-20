@@ -93,7 +93,13 @@ module_vec3.cpp, module_timestamp.lua, module_colorenum.cpp
 In these examples, it is assumed that Q ist an instance of LuaStack, e.g. from `LuaStack Q(L)`
 or `auto Q=LuaStack::New(true, nullptr);`.
 
-## Creating lists and tables
+### Compiling and executing Lua code snippets
+
+    Q<<LuaCode("return 21")>>1;                     // Execute a script to push one result.
+    auto result=Q.toint(-1);                        // Read value on top of the stack as integer.
+                                                    // Result will be 21.
+
+### Creating lists and tables
 
     using namespace std;
     Q<<lualist<<21<<22<<23;                         // Pushes {21, 22, 23} on to the stack.
@@ -113,13 +119,23 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     Q   <<lualist<<21<<22<<23<<lualistend
         >>LuaGlobal("L1");                          // L1={21, 22, 23} is a global variable.
 
-## Accessing data on the Lua stack from C++
+### Creating and accessing (full) userdata (POD)
+Data types have to be POD (plain-old-data) to be directyly stored in a userdata value.
+Non-POD types can be handled by storing a pointer and assigning a metatable that
+handles finalising.
 
-    Q<<LuaCode("return 21")>>1;                     // Execute a script to push one result.
-    auto result=Q.toint(-1);                        // Read value on top of the stack as integer.
-                                                    // Result will be 21.
+#### POD example Vec3
+    struct Vec3 { double x, y, z; };
+    const auto Vec3Inst=LuaUD<Vec3>;                // Helper to refer to userdata (Vec3) on top of the stack.
 
-## Calling Lua functions
+    Q<<Vec3Inst=Vec3 {1, 0, 0};                     // Pushes a new userdata value
+
+    Vec3 V=(Q>>Vec3Inst)();                         // Access the data of the value on top of the stack (by copy).
+    Vec3*V=*(Q>>Vec3Inst);                          // Access the data of the value on top of the stack (by pointer).
+
+    Implement methods like addition or magnitude as metamethods. See examples/module_vec3.cpp.
+
+### Calling Lua functions
 
     using namespace std;
     Q<<"This was not expected">>luaerror;           // Equiv. of 'error "This was not expected"'
@@ -128,25 +144,25 @@ or `auto Q=LuaStack::New(true, nullptr);`.
     Q<<formatany<<A>>1;                             // formatany is part of LuaAide.
     auto str=Q.tostring(-1);                        // It converts (nearly) any value to a string.
 
-## Creating closures
+### Creating closures
 
-    int join(lua_State*L)                                   // demofunction: table.concat with separator in upvalue
+    int joinwith(lua_State*L)                               // Demo function: table.concat with separator in upvalue
     {
         LuaStack Q(L);
-        Q   <<LuaGlobal("table")<<LuaElementCall("concat")      // local arg=...
+        Q   <<LuaGlobal("table")<<LuaElementCall("concat")  // local arg=...
             <<LuaValue(1)<<LuaUpValue(1)>>1;                // return table.concat(arg, up1)
         return 1;
     }
-    Q<<", "<<LuaClosure({join, 1})>>LuaGlobal("KommaJoin"); // Create Closure that joins with comma.
-    Q<<"-" <<LuaClosure({join, 1})>>LuaGlobal("HyphJoin");  // Create Closure that joins with hyphens.
+    Q<<", "<<LuaClosure({joinwith, 1})>>LuaGlobal("KommaJoin"); // Create Closure that joins with comma.
+    Q<<"-" <<LuaClosure({joinwith, 1})>>LuaGlobal("HyphJoin");  // Create Closure that joins with hyphens.
 
-    Q<<LuaCode(R"__(                                        // Execute demo script
+    Q<<LuaCode(R"__(                                        -- Execute demo script
         local A={"a", "b", "c"}
-        print(KommaJoin(A))                                 // prints "a, b, c"
-        print(HyphJoin(A))                                  // prints "a-b-c"
+        print(KommaJoin(A))                                 -- prints "a, b, c"
+        print(HyphJoin(A))                                  -- prints "a-b-c"
     )__")>>0;
 
-## Calling functions from the Lua runtime
+### Calling functions from the Lua runtime
 
     Q<<LuaGlobal("string")<<LuaElementCall("format")    // Pushes "vector=[21, 22, 23]" on to the stack.
      <<"vector=[%s, %s, %s]"<<21<<22<<23>>1;
@@ -156,7 +172,7 @@ or `auto Q=LuaStack::New(true, nullptr);`.
      <<LuaValue(-2)<<"+">>1;                        // Calls table.concat on the list, i.e. pushes
                                                     // "First+Second" on to the stack.
 
-## Iterating over Lists and Tables
+### Iterating over Lists and Tables
 ```LuaIPairs``` and ```LuaPairs``` can be used to iterate over lists (indexed by 1,2,...) or generic tables (keys of any type).
 In the body of the loop, [key, value] pairs (or ipairs) are available on top of the stack. The loop body must leave this unchanged,
 i.e. clean up at the end of the body and before ```break``` and ```continue```.
