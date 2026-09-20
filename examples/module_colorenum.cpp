@@ -65,9 +65,7 @@ int mynumeric(lua_State*L)
 static void neu(lua_State*L, colortype value)
 {
     LuaStack Q(L);
-    LuaUserPOD<colortype> P;
-    Q<<P;
-    P=value;
+    Q<<UV<colortype>() =value;
 }
 
 extern "C" int luaopen_colorenum(lua_State*L)

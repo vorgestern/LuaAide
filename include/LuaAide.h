@@ -114,6 +114,11 @@ template<EffectivePOD POD> struct LuaUserPOD
     void operator=(const POD*X){ if (luadata!=nullptr) *luadata=*X; }
     void operator=(const POD&X){ if (luadata!=nullptr) *luadata=X; }
 };
+template<EffectivePOD POD, unsigned extravalues=0> struct UV
+{
+    typedef POD podtype;
+    static const unsigned nuv=extravalues;
+};
 
 enum class callmechanism {
     value_on_stack,
@@ -212,7 +217,12 @@ public:
         auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
         X.luadata=P;
         return*this;
-    };
+    }
+    template<EffectivePOD POD, unsigned numextra=0> LuaUserPOD<POD> operator<<(UV<POD, numextra>X)
+    {
+        auto*P=reinterpret_cast<POD*>(lua_newuserdatauv(L, sizeof(POD), X.nuv));
+        return LuaUserPOD {X.nuv, P};
+    }
 
     LuaCall operator<<(Callable);
     LuaCall operator<<(const LuaGlobalCall&);

@@ -24,12 +24,12 @@ struct DemoClass
     int a, b, c;
 };
 using POD=LuaUserPOD<DemoClass>;
+const UV<DemoClass> NewInst;
 
 static int mynew(lua_State*L)
 {
     LuaStack Q(L);
-    POD P;
-    Q<<P;
+    auto P=Q<<NewInst;
     Q<<LuaGlobal("mtdemo");
     lua_setmetatable(L, -2);
     if (Q.hasat(LuaType::TTABLE, -2))

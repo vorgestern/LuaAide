@@ -19,9 +19,10 @@ namespace { namespace Vec3 {
 
 const LuaRegValue mtvec3("mtvec3");
 
-struct V { double x, y, z; };
+struct Vec3 { double x, y, z; };
 
-using POD=LuaUserPOD<V>;
+using POD=LuaUserPOD<Vec3>;
+const UV<Vec3,0> NewVec;
 
 static double getelement(LuaStack&Q, int index, int e, const char name[])
 {
@@ -43,7 +44,7 @@ static double getelement(LuaStack&Q, int index, int e, const char name[])
     return 0;
 }
 
-static V argvector(lua_State*L, int index)
+static Vec3 argvector(lua_State*L, int index)
 {
     LuaStack  Q(L);
     if (Q.hasat(LuaType::TUSERDATA, index))
@@ -67,22 +68,17 @@ static int mydemo(lua_State*L)
 {
     LuaStack Q(L);
     const auto A=argvector(Q, -1);
-
-    POD P;
-    Q<<P;
+    Q<<NewVec =A;
     Q<<mtvec3;
     lua_setmetatable(L, -2);
-    P=A;
     return 1;
 }
 
-static int myconstructor(LuaStack&Q, const V&arg)
+static int myconstructor(LuaStack&Q, const Vec3&arg)
 {
-    POD P;
-    Q<<P;
+    Q<<NewVec=arg;
     Q<<mtvec3;
     lua_setmetatable(Q, -2);
-    P=arg;
     return 1;
 }
 
@@ -123,12 +119,10 @@ static int myadd(lua_State*L)
     LuaStack Q(L);
     if (height(Q)<2) return Q<<"mtvec3.__add: Expect two arguments at least.">>luaerror;
     try {
-        const V A=argvector(Q, -2), B=argvector(Q, -1);
-        POD P;
-        Q<<P;
+        const Vec3 A=argvector(Q, -2), B=argvector(Q, -1);
+        Q<<NewVec=Vec3 {A.x+B.x, A.y+B.y, A.z+B.z};
         Q<<mtvec3;
         lua_setmetatable(L, -2);
-        P=V {A.x+B.x, A.y+B.y, A.z+B.z};
         return 1;
     }
     catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }
@@ -139,12 +133,10 @@ static int mysubtract(lua_State*L)
     LuaStack Q(L);
     if (height(Q)<2) return Q<<"vec3:sub: Expect two arguments at least (self,other).">>luaerror;
     try {
-        const V A=argvector(Q, -2), B=argvector(Q, -1);
-        POD P;
-        Q<<P;
+        const Vec3 A=argvector(Q, -2), B=argvector(Q, -1);
+        Q<<NewVec=Vec3 {A.x-B.x, A.y-B.y, A.z-B.z};
         Q<<mtvec3;
         lua_setmetatable(L, -2);
-        P=V {A.x-B.x, A.y-B.y, A.z-B.z};
         return 1;
     }
     catch (const runtime_error&E) { return Q<<E.what()>>luaerror; }

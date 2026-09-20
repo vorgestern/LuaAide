@@ -294,8 +294,7 @@ TEST_F(StackEnv, AsString)
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "thread(%p)", &p))<<Q;
     Q.drop(1);
 
-    LuaUserPOD<int> P;
-    Q<<P;
+    Q<<UV<int>() =21;
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1))<<Q;
     ASSERT_EQ(1, sscanf(Q.asstring(-1).c_str(), "userdata(%p)", &p))<<Q;
     Q.drop(1);

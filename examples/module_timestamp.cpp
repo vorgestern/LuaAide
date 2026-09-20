@@ -55,11 +55,9 @@ extern "C" int tsdiff(lua_State*L)
 extern "C" int now(lua_State*L)
 {
     LuaStack Q(L);
-    POD P;
-    Q<<P;
+    Q<<UV<tp>() =highresclk::now();
     Q<<LuaValue(LUA_REGISTRYINDEX)<<LuaField(mtname); Q.remove(-2);           // [userdata, metatable]
     lua_setmetatable(L, -2);
-    *P.luadata=highresclk::now();
     return 1;
 }
 

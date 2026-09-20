@@ -772,8 +772,7 @@ TEST_F(StackEnv, HasLightUserdataAt1)
 
 TEST_F(StackEnv, HasUserdataAt2)
 {
-    LuaUserPOD<int> P;
-    Q<<P;
+    Q<<UV<int>();
     ASSERT_EQ(1, height(Q));
     ASSERT_TRUE(Q.hasat(LuaType::TUSERDATA, -1));
 }
@@ -792,8 +791,7 @@ TEST_F(StackEnv, LuaStackAbsindex)
 
 TEST_F(StackEnv, LuaUserPOD1)
 {
-    auto J=LuaUserPOD<int>{};
-    Q<<J;
+    auto J=Q<<UV<int>();
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
     ASSERT_NE(nullptr, J.luadata);
     J=21;
@@ -811,10 +809,10 @@ public:
 TEST_F(StackEnv, LuaUserPOD2)
 {
     static_assert(effectivepod<vec3>);
-    LuaUserPOD<vec3> Va, Vb;
-    Q<<Va;
+    auto Va=Q<<UV<vec3>();
     ASSERT_EQ(LuaType::TUSERDATA, Q.typeat(-1));
     ASSERT_NE(nullptr, Va.luadata);
+    LuaUserPOD<vec3> Vb;
     Q>>Vb;
     ASSERT_EQ(Va.luadata, Vb.luadata);
 }
