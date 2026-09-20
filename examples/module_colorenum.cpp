@@ -37,8 +37,9 @@ int mytostring(lua_State*L)
 {
     LuaStack Q(L);
     Q.argcheck(1, iscolortype, "colortype");
-    const auto value=*reinterpret_cast<colortype*>(lua_touserdata(L, -1));
-    switch (value)
+    LuaUserPOD<colortype>P;
+    Q>>P;
+    switch (*P.luadata)
     {
         case colortype::LCT_GREY: return Q<<"LCT_GREY", 1;
         case colortype::LCT_RGB: return Q<<"LCT_RGB", 1;
